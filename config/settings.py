@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.common',
+    'apps.core',
     'apps.home',
     'apps.max_value',
     'apps.subsidies'
@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -73,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
@@ -125,7 +125,7 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    BASE_DIR / "apps/common/static",
+    BASE_DIR / "apps/core/static",
     "static/",
 ]
 
