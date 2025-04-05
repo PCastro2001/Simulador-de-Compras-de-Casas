@@ -1,0 +1,16 @@
+{% extends 'layout/master.html' %}
+
+{% block layout %}
+
+    {% if is_navbar %}
+        {% include "../layout/partials/navbar/navbar_front.html" %}
+    {% endif %}
+
+    {% block content %}
+    {% endblock content %}
+
+    {% if is_footer %}
+        {% include "../layout/partials/footer/footer_front.html" %}
+    {% endif %}
+    
+{% endblock layout %}

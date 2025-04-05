@@ -1,16 +1,38 @@
 {% load static %}
-
-
 <!DOCTYPE html>
-<html lang="es">
+
+<html lang="en" class="light-style layout-menu-fixed {{content_layout_class}}" data-assets-path="{% static '/' %}" data-base-url="{{url}}" data-framework="django" data-template="vertical-menu-free">
 <head>
     <title>{% block title %}Document{% endblock title %}</title>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon/favicon.ico' %}" />
+    
+    {% comment %} styles_front.html o styles.html {% endcomment %}
+    {% include is_front|yesno:"./partials/styles_front.html,./partials/styles.html" %}
+
+    <!-- CSS -->
+    {% block  vendor_css %}{% endblock vendor_css %}
+    {% block page_css %}{% endblock page_css %}
+
+    {% comment %} scripts_includes_front.html o scripts_includes.html {% endcomment %}
+    {% include is_front|yesno:"./partials/scripts_includes_front.html,./partials/scripts_includes.html" %}
+
+
 </head>
+
 <body>
+    {% block layout %}
+    {% endblock layout %}
+
+    {% comment %} scripts_front.html o scripts.html {% endcomment %}
+    {% include is_front|yesno:"./partials/scripts_front.html,./partials/scripts.html" %}
+    <!-- JS -->
+    {% block vendor_js %}{% endblock vendor_js %}
+    {% block page_js %} {% endblock page_js %}
     
 </body>
+
 </html>

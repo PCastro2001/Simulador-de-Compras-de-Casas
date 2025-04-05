@@ -5,7 +5,8 @@ class TemplateLayout:
 
     def init(self, context):
         
-        layout = "vertical"
+        cpmtext = TemplateHelper.init_context(context)
+        layout = context["layout"]
 
         context.update(
             {
