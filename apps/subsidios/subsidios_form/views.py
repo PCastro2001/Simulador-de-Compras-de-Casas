@@ -16,6 +16,11 @@ class SubsidiosFormView(TemplateView):
         )
         TemplateHelper.map_context(context)
         return context
+
+    
+    def post(self, request):
+        if request.method == "POST":
+            pass
     
     # def get_all_subsidios(self):
         # return Subsidios.objects.all().order_by('id')
