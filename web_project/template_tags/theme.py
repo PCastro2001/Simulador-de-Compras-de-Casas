@@ -5,6 +5,10 @@ from web_project.template_helpers.theme import TemplateHelper
 
 register = template.Library()
 
+@register.simple_tag
+def get_theme_variables(scope):
+    return mark_safe(TemplateHelper.get_theme_variables(scope))
+
 @register.filter
 def has_group(user, group):
     if user.groups.filter(name=group).exists():

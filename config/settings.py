@@ -14,7 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .template import THEME_LAYOUT_DIR, TEMPLATE_CONFIG
+from .template import THEME_LAYOUT_DIR, TEMPLATE_CONFIG, THEME_VARIABLES
 
 load_dotenv()
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.home',
+    'apps.subsidios',
     'auth.apps.AuthConfig'
 
 ]
@@ -145,9 +146,16 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# 
+# ------------------------------------------------------------------------------
 THEME_LAYOUT_DIR = THEME_LAYOUT_DIR
 TEMPLATE_CONFIG = TEMPLATE_CONFIG
-# THEME_VARIABLES = THEME_VARIABLES
+THEME_VARIABLES = THEME_VARIABLES
+
+# 
+# ------------------------------------------------------------------------------
+LOGIN_URL = "/login/"
+LOGOUT_REDIRECT_URL = "/login/"
 
 # Email Settings
 # --------------------------------------------------------
