@@ -38,6 +38,8 @@
     </div>
     <div class="landing-menu-overlay d-lg-none"></div>
     <!-- Menu wrapper: End -->
+
+
     <!-- Toolbar: Start -->
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       {% if has_customizer %}
@@ -64,6 +66,8 @@
           </li>
         </ul>
       </li>
+
+      
       <!-- / Style Switcher-->
       {% endif %}
       <!-- navbar button: Start -->
@@ -82,7 +86,7 @@
         </a>
         <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
           <li>
-            <a class="dropdown-item" href="{% url 'pages-account-settings-account' %}">
+            <a class="dropdown-item" href="{% url 'home' %}">
                <div class="d-flex align-items-center">
                 <div class="flex-shrink-0 me-2">
                   <div class="avatar avatar-online">
@@ -113,7 +117,7 @@
               <span class="text-success"><i class='ri-checkbox-circle-line ri-22px'></i></span>
             </span>
             {% else %}
-            <a class="dropdown-item d-flex justify-content-between align-content-center" href="{% url 'verify-email-page' %}">
+            <a class="dropdown-item d-flex justify-content-between align-content-center" href="{% url 'home' %}">
               <span>
                 <i class='ri-user-line ri-22px me-2'></i>
                 <span class="align-middle">Not Verified</span>

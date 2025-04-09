@@ -163,7 +163,7 @@ THEME_VARIABLES = THEME_VARIABLES
 # 
 # ------------------------------------------------------------------------------
 LOGIN_URL = "/login/"
-LOGOUT_REDIRECT_URL = "/login/"
+LOGOUT_REDIRECT_URL = "/home/"
 
 # Email Settings
 # --------------------------------------------------------
