@@ -14,7 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .template import THEME_LAYOUT_DIR, TEMPLATE_CONFIG
+from .template import THEME_LAYOUT_DIR, TEMPLATE_CONFIG, THEME_VARIABLES
 
 load_dotenv()
 
@@ -147,7 +147,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 THEME_LAYOUT_DIR = THEME_LAYOUT_DIR
 TEMPLATE_CONFIG = TEMPLATE_CONFIG
-# THEME_VARIABLES = THEME_VARIABLES
+THEME_VARIABLES = THEME_VARIABLES
 
 # Email Settings
 # --------------------------------------------------------
