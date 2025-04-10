@@ -29,7 +29,7 @@ TEMPLATE_CONFIG = {
 THEME_VARIABLES = {
     "creator_name": ["Daniel Torres", "Pablo Castro"],
     "creator_url": "",
-    "template_name": "",
+    "template_name": "Simulador",
     "template_suffix": "",
     "template_version": "1.0.0",
     "template_free": True,

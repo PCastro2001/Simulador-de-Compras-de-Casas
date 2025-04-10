@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Exclude everything from vendors
+/src/assets/vendor
+
 # Distribution / packaging
 .Python
 build/

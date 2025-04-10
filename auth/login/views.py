@@ -41,7 +41,7 @@ class LoginView(AuthView):
                 if "next" in request.POST:
                     return redirect(request.POST["next"])
                 else:
-                    return redirect("index")
+                    return redirect("home")
                 
             else:
                 messages.error(request, "Porfavor ingrese un username valido")

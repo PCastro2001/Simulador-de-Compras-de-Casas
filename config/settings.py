@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.home',
+    'apps.subsidios',
+    'apps.core',
+    'apps.chatbot',
     'auth.apps.AuthConfig'
 
 ]
@@ -50,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'apps.core.middleware.IdentificarVisitanteMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,10 +70,15 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                # "config.context_processors.language_code",
+                "config.context_processors.my_setting",
+                # "config.context_processors.get_cookie",
+                # "config.context_processors.environment",
+                "config.context_processors.visitante_id",
             ],
             "libraries": {
                 "theme": "web_project.template_tags.theme",
@@ -145,9 +154,16 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# 
+# ------------------------------------------------------------------------------
 THEME_LAYOUT_DIR = THEME_LAYOUT_DIR
 TEMPLATE_CONFIG = TEMPLATE_CONFIG
 THEME_VARIABLES = THEME_VARIABLES
+
+# 
+# ------------------------------------------------------------------------------
+LOGIN_URL = "/login/"
+LOGOUT_REDIRECT_URL = "/home/"
 
 # Email Settings
 # --------------------------------------------------------
