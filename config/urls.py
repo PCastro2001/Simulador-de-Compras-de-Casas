@@ -27,5 +27,10 @@ urlpatterns = [
     path("", include("apps.home.urls")),
 
     # subsidio urls
-    path("", include("apps.subsidios.urls"))
+    path("", include("apps.subsidios.urls")),
+    
+    # subsidio urls
+    path("", include("apps.chatbot.urls")),
+
+
 ]
