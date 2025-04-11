@@ -2,16 +2,16 @@ from django.views.generic import TemplateView
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 
-class ChatbotView(TemplateView):
-
+class MiscPagesView(TemplateView):
+    
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+
+        # Update the context
         context.update(
             {
-                "layout": "front",
-                "layout_path": TemplateHelper.set_layout("layout_front.html", context),
-                "active_url": self.request.path,
+                "layout_path": TemplateHelper.set_layout("layout_blank.html", context),
             }
         )
-        TemplateHelper.map_context(context)
+
         return context

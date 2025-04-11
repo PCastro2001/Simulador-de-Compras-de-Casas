@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.subsidios',
     'apps.core',
     'apps.chatbot',
+    'apps.pages',
     'auth.apps.AuthConfig'
 
 ]
