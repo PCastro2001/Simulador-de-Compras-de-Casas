@@ -253,3 +253,5 @@ class User(AbstractUser):
 
 #   Y luego en el modelo CustomUser
 #   objects = CustomUserManager()
+
+# asdasd
