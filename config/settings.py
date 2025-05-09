@@ -42,11 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     'apps.home',
     'apps.subsidios',
     'apps.core',
     'apps.chatbot',
     'apps.pages',
+
+    'admin.main',
+
     'auth.apps.AuthConfig'
 
 ]

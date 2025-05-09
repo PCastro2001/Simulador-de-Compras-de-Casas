@@ -34,6 +34,11 @@
         <li class="nav-item">
           <a class="nav-link fw-medium" href="{% url 'about-us' %}">About US</a>
         </li>
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link fw-medium" href="#">Admin</a>
+        </li>
+        {% endif %}
       </ul>
     </div>
     <div class="landing-menu-overlay d-lg-none"></div>
