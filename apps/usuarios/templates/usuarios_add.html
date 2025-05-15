@@ -1,0 +1,126 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Account settings - Account{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/tagify/tagify.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/animate-css/animate.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/sweetalert2/sweetalert2.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'vendor/libs/tagify/tagify.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave-phone.js' %}"></script>
+<script src="{% static 'vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/app-usuarios-add.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<h4 class="mb-1">Agregar Tecnicos</h4>
+<p class="mb-6">Formulario para la creacion de los nuevos Tecnicos en el sistema.</p>
+
+<form id="addUsuarioForm" action="{% url 'usuarios-add' %}" method="post" >
+  {% csrf_token %}
+  <div class="row">
+    <!-- Imagen -->
+    <div class="col-xl-3 col-lg-4 col-md-4">
+      <div class="card mb-2 h-100">
+        <h5 class="card-header">Avatar</h5>
+        <div class="card-body">
+          <div class="user-avatar-section">
+            <div class="d-flex align-items-center flex-column">
+              {% if request.user|has_group:"admin" %}
+              <img src="{% static 'img/avatars/1.png' %}" alt="user image" class="img-fluid rounded mb-4" height="150" width="150">
+              {% else %}
+              <img src="{% static 'img/avatars/3.png' %}" alt="user image" class="img-fluid rounded mb-4" height="150" width="150">
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- DATOS PERSONALES -->
+    <div class="col-xl-9 col-lg-8 col-md-8">
+      <div class="card mb-6 pb-6">
+        <h5 class="card-header">Datos Personales</h5>
+        <div class="card-body pt-0">
+          <div class="row g-5">
+            <!-- Nombre -->
+            <div class="col-md-6">
+              <div class="input-group input-group-merge">
+                <span id="basic-icon-default-fullname2" class="input-group-text"><i class="ri-user-line ri-20px"></i></span>
+                <div class="form-floating form-floating-outline">
+                  <input class="form-control" type="text" id="nombre" name="nombre" autofocus>
+                  <label for="nombre">Nombre </label>
+                </div>
+              </div>
+            </div>
+            <!-- Apellido -->
+            <div class="col-md-6">
+              <div class="input-group input-group-merge">
+                <span id="basic-icon-default-fullname2" class="input-group-text"><i class="ri-user-line ri-20px"></i></span>
+                <div class="form-floating form-floating-outline">
+                  <input class="form-control" type="text" id="apellido" name="apellido" autofocus>
+                  <label for="apellido">Apellido </label>
+                </div>
+              </div>
+            </div>
+            <!-- Email -->
+            <div class="col-md-6">
+              <div class="input-group input-group-merge">
+                <span id="basic-icon-default-fullname2" class="input-group-text"><i class="ri-mail-line ri-20px"></i></span>
+                <div class="form-floating form-floating-outline">
+                  <input class="form-control" type="mail" id="email" name="email" autofocus>
+                  <label for="email">E-mail </label>
+                </div>
+              </div>
+            </div>
+            <!-- Roles -->
+            <div class="col-md-6">
+              <div class="form-floating form-floating-outline">
+                <select id="selectRol" class="select2 form-select form-select-lg" data-allow-clear="true" name="grupo">
+                  <option value="" disabled selected>Seleccione un rol</option>
+                  {% for grupo in grupos %}
+                    <option value="{{ grupo.id }}">{{ grupo.name }}</option>
+                  {% endfor %}
+                </select>
+                <label for="selectRol">Rol</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <div class="mt-6 d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary me-3">Crear</button>
+        <button type="reset" class="btn btn-outline-secondary">Descartar</button>
+      </div>
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-warning{% endif %}" role="alert">
+          {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</form>
+{% endblock %}

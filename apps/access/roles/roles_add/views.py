@@ -36,9 +36,7 @@ class RolesAddView(PermissionRequiredMixin, TemplateView):
     
     def post(self, request, *args, **kwargs):
         form = AddRoleForm(request.POST)
-        print("antes if forms.is_valid()")
         if form.is_valid():
-            print("despues if forms.is_valid()")
 
             nombre = form.cleaned_data["rolename"]
             permisos = form.cleaned_data["permissions"]

@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.admin_home',
     'apps.access.roles',
+    
+    'apps.usuarios',
 
 
     'auth.apps.AuthConfig'

@@ -1,0 +1,79 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}User List - Pages{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave-phone.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/app-usuarios-list.js' %}"></script>
+{% endblock page_js %}
+
+
+{% block content %}
+<!-- Users List Table -->
+<div class="card">
+  <div class="card-datatable table-responsive">
+    <table class="datatables-users table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Staff</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+          <td>      <!-- Avatar - Nombre y Usuario -->
+            <div class="d-flex justify-content-start align-items-center user-name">
+              <div class="avatar-wrapper">
+                <div class="avatar avatar-sm me-4">
+                  {% if is_image %}
+                  <img src="" alt="avatar" class="rounded-circle">
+                  {% else %}
+                  <span class="avatar-initial rounded-circle bg-label-danger">DU</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                <a href="" class="text-heading text-truncate">
+                  <span class="fw-medium">{{usuario.first_name}} {{usuario.last_name}}</span>
+                </a>
+                <small>{{usuario.username}}</small>
+              </div>
+            </div>
+          </td>
+          <td><span>{{usuario.email}}</span></td> <!-- Email -->
+          <td> <!-- Role -->
+            <span class="text-truncate d-flex align-items-center text-heading">
+              <i class="ri-pie-chart-line ri-22px text-success me-2"></i>{{usuario.modalidad_str}}
+            </span>
+          </td> 
+          <td><span class="text-heading">{{usuario.sede_str}}</span></td> <!-- Plan -->
+          <td><span class="badge rounded-pill bg-label-warning" text-capitalized>{{usuario.edificio_str}}</span></td>
+          <td>{{ usuario.direccion_str}}</td>
+        {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

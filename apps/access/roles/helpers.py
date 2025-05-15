@@ -2,7 +2,7 @@
 from collections import defaultdict
 
 # Modelos
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Permission
 
 def get_all_permisos():
         permisos = Permission.objects.select_related("content_type").all()

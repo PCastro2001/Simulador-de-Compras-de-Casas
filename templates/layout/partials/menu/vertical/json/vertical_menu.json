@@ -17,6 +17,12 @@
       "slug": "roles-list",
       "url": "roles-list"
     },
+    {
+      "name": "Usuarios",
+      "icon": "menu-icon tf-icons ri-user-line",
+      "slug": "usuarios",
+      "url": "usuarios-list"
+    },
 
     {
       "menu_header": "Frontend",
@@ -27,8 +33,10 @@
       "name": "Home Frontend",
       "slug": "home",
       "url": "home"
-    }
-
+    },
+    {
+      "menu_header": "Usuarios"
+    } 
   ]
 }
 

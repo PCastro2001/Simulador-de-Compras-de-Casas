@@ -1,0 +1,173 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}User View - Pages{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/animate-css/animate.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/sweetalert2/sweetalert2.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/moment/moment.js' %}"></script>
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave-phone.js' %}"></script>
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/css/pages/page-user-view.css' %}" />
+{% endblock page_css %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/modal-edit-user.js' %}"></script>
+<script src="{% static 'js/app-user-view.js' %}"></script>
+<script src="{% static 'js/app-user-view-account.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<div class="row">
+  <!-- User Sidebar -->
+  <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+    <!-- User Card -->
+    <div class="card mb-6">
+      <div class="card-body pt-12">
+        <div class="user-avatar-section">
+          <div class=" d-flex align-items-center flex-column">
+            <img class="img-fluid rounded mb-4" src="{% static 'img/avatars/10.png' %}" height="120" width="120" alt="User avatar" />
+            <div class="user-info text-center">
+              <h5>{{usuario_id.nombre}}</h5>
+              <span class="badge bg-label-danger rounded-pill">Usuario</span>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-around flex-wrap my-6 gap-0 gap-md-3 gap-lg-4">
+          <div class="d-flex align-items-center me-5 gap-4">
+            <div class="avatar">
+              <div class="avatar-initial bg-label-primary rounded">
+                <i class='ri-check-line ri-24px'></i>
+              </div>
+            </div>
+            <div>
+              <h5 class="mb-0">1.23k</h5>
+              <span>Asignados</span>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-4">
+            <div class="avatar">
+              <div class="avatar-initial bg-label-primary rounded">
+                <i class='ri-briefcase-line ri-24px'></i>
+              </div>
+            </div>
+            <div>
+              <h5 class="mb-0">568</h5>
+              <span>Retirados</span>
+            </div>
+          </div>
+        </div>
+        <small class="card-text text-uppercase text-muted small">About</small>
+        <div class="info-container">
+          <ul class="list-unstyled my-3 py-1">
+            
+            <li class="d-flex align-items-center mb-4"><i class="ri-user-3-line ri-24px"></i>
+              <span class="fw-medium mx-2">RUT:</span><span>{{usuario_id.rut}}</span>
+            </li>
+            
+            <li class="d-flex align-items-center mb-4"><i class="ri-check-line ri-24px"></i>
+              <span class="fw-medium mx-2">Estado:</span> <span>Active</span>
+            </li>
+
+            <li class="d-flex align-items-center mb-4"><i class="ri-star-smile-line ri-24px"></i>
+              <span class="fw-medium mx-2">Cargo</span> Cargo <span></span>
+            </li>
+
+            <li class="d-flex align-items-center mb-4"><i class="ri-star-smile-line ri-24px"></i>
+              <span class="fw-medium mx-2">Departamento</span> Departamento <span></span>
+            </li>
+
+            <li class="d-flex align-items-center mb-4"><i class="ri-star-smile-line ri-24px"></i>
+              <span class="fw-medium mx-2">Facultad</span> Facultad <span></span>
+            </li>
+
+            <li class="d-flex align-items-center mb-4"><i class="ri-flag-2-line ri-24px"></i>
+              <span class="fw-medium mx-2">Sede:</span> <span>{{usuario_id.sede_str}}</span>
+            </li>
+
+            <li class="d-flex align-items-center mb-4"><i class="ri-building-line ri-24px"></i>
+              <span class="fw-medium mx-2">Edificio:</span> <span>{{usuario_id.edificio_str}}</span>
+            </li>
+
+            <li class="d-flex align-items-center mb-2"><i class="ri-map-pin-2-line ri-24px"></i>
+              <span class="fw-medium mx-2">Direccion:</span> <span>{{usuario_id.direccion_str}}</span>
+            </li>
+            
+          </ul>
+          <div class="d-flex justify-content-center">
+            <a href="javascript:;" class="btn btn-primary me-4" data-bs-target="#editUser" data-bs-toggle="modal">Edit</a>
+            <a href="javascript:;" class="btn btn-outline-danger suspend-user">Suspend</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /User Card -->
+  </div>
+  <!--/ User Sidebar -->
+
+
+  <!-- User Content -->
+  <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+    <!-- Invoice table -->
+    <div class="card mb-4">
+      <div class="card-datatable table-responsive">
+        <table class="table datatable-invoice">
+          <thead>
+            <tr>
+              <th>#</th> <!-- ID -->
+              <th>Categoria</th>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Serial</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for acta in actas_equipos %}
+            <tr>
+              <td><a href="{% url  'actas-detalle' acta.id %}"><span>#{{ acta.id }}</span></a></td>
+              <td><span class="fw-medium">{{ acta.equipo.modelo.categoria.nombre }}</span></td>
+              <td><span class="text-heading">{{ acta.equipo.modelo.marca.nombre }}</span></td>
+              <td>{{ acta.equipo.modelo.nombre }}</td>
+              <td>{{ acta.equipo.serial }}</td>
+              <td>
+                <span class="badge rounded-pill bg-label-success" text-capitalized>{{ acta.acta.tipo_acta.nombre }}</span>
+              </td>
+              <td><span class="d-none">{{ acta.fecha }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- /Invoice table -->
+  </div>
+  <!--/ User Content -->
+</div>
+{% endblock %}

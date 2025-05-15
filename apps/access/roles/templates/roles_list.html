@@ -27,19 +27,7 @@
 {% endblock page_js %}
 
 {% block content %}
-<!-- Roles Toast -->
-{% if messages %}
-<div class="toast-container end-0 m-1 me-4">
-  {% for message in messages %}
-  <div class="toast {% if message.tags == 'success' %}bg-success{% elif message.tags == 'error' %}bg-danger{% else %}bg-warning{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-bs-delay="2000">
-    <div class="toast-body text-center text-white">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
-<!--/ Roles Toast -->
+
 
 <h4 class="mb-1">Lista de Roles</h4>
 <p class="mb-6">Un rol proporciona acceso a menús y funciones predefinidos para que, dependiendo del rol asignado, un administrador pueda tener acceso a lo que el usuario necesita.</p>
@@ -102,6 +90,13 @@
       </div>
     </div>
   </div>
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-warning{% endif %}" role="alert">
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
 </div>
 <!--/ Role cards -->
 {% endblock %}
