@@ -3,19 +3,21 @@ from django.urls import path, include
 from web_project.views import SystemView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    # auth urls
-    path("", include("auth.urls")),
-
-    # home urls
-    path("", include("apps.home.urls")),
-
-    # subsidio urls
-    path("", include("apps.subsidios.urls")),
     
-    # subsidio urls
-    path("", include("apps.chatbot.urls")),
+
+    # -------------------- FRONT --------------------
+    # HOME
+    path("", include("apps.front.home.urls")),
+
+
+    # -------------------- BACKEND --------------------
+    path("admin/", include("apps.admin_home.urls")),
+    path("admin/", include("apps.access.roles.urls")),
+    
+    path("admin/", include("auth.urls")),
+
+    path('admin/', admin.site.urls),
+    
 ]
 
 handler404 = SystemView.as_view(template_name="misc_error.html", status=404)

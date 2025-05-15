@@ -26,17 +26,17 @@
           <a class="nav-link fw-medium" aria-current="page" href="{% url 'home' %}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="{% url 'subsidios-list' %}">Subsidios</a>
+          <a class="nav-link fw-medium" href="#">Subsidios</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="{% url 'chatbot' %}">ChatBot</a>
+          <a class="nav-link fw-medium" href="#">ChatBot</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="{% url 'about-us' %}">About US</a>
+          <a class="nav-link fw-medium" href="#">About US</a>
         </li>
         {% if request.user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="#">Admin</a>
+          <a class="nav-link fw-medium" href="{% url 'admin-home' %}">Admin</a>
         </li>
         {% endif %}
       </ul>

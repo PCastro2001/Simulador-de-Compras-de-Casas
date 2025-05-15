@@ -1,0 +1,107 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Roles - Apps{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/app-roles-list.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<!-- Roles Toast -->
+{% if messages %}
+<div class="toast-container end-0 m-1 me-4">
+  {% for message in messages %}
+  <div class="toast {% if message.tags == 'success' %}bg-success{% elif message.tags == 'error' %}bg-danger{% else %}bg-warning{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-bs-delay="2000">
+    <div class="toast-body text-center text-white">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+<!--/ Roles Toast -->
+
+<h4 class="mb-1">Lista de Roles</h4>
+<p class="mb-6">Un rol proporciona acceso a menús y funciones predefinidos para que, dependiendo del rol asignado, un administrador pueda tener acceso a lo que el usuario necesita.</p>
+<!-- Role cards -->
+<div class="row g-6">
+  
+  {% if grupos %}
+  {% for grupo in grupos %}
+    <div class="col-xl-4 col-lg-6 col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <p class="mb-0">Total 2 users</p>
+            <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
+              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Kim Merchent" class="avatar pull-up">
+                <img class="rounded-circle" src="{% static 'img/avatars/10.png' %}" alt="Avatar">
+              </li>
+              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Sam D'souza" class="avatar pull-up">
+                <img class="rounded-circle" src="{% static 'img/avatars/13.png' %}" alt="Avatar">
+              </li>
+              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Nurvi Karlos" class="avatar pull-up">
+                <img class="rounded-circle" src="{% static 'img/avatars/15.png' %}" alt="Avatar">
+              </li>
+              <li class="avatar">
+                <span class="avatar-initial rounded-circle pull-up text-body" data-bs-toggle="tooltip" data-bs-placement="bottom" title="3 more">+3</span>
+              </li>
+            </ul>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="role-heading">
+              <a href="{% url 'roles-update' grupo.id %}">
+                <h5 class="mb-1">{{grupo.name}}</h5>
+                <p class="mb-0">Edit Role</p>
+              </a>
+            </div>
+            <a href="{% url 'roles-delete' grupo.id %}" class="d-inline-flex p-2 align-items-center rounded-circle alert-danger">
+              <i class="ri-delete-bin-7-line ri-22px"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  {% endif %}
+
+  <div class="col-xl-4 col-lg-6 col-md-6">
+    <div class="card h-100">
+      <div class="row h-100">
+        <div class="col-5">
+          <div class="d-flex align-items-end h-100 justify-content-center">
+            <img src="{% static 'img/illustrations/illustration-3.png' %}" class="img-fluid" alt="Image" width="80">
+          </div>
+        </div>
+        <div class="col-7">
+          <div class="card-body text-sm-end text-center ps-sm-0">
+            <a href="{% url 'roles-add' %}" class="btn btn-sm btn-primary mb-4 text-nowrap add-new-role">Crear nuevo rol</a>
+            <p class="mb-0">Crear nuevo rol, si no existe</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--/ Role cards -->
+{% endblock %}

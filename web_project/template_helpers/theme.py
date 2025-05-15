@@ -10,9 +10,11 @@ class TemplateHelper:
             {
                 "layout": settings.TEMPLATE_CONFIG.get("layout"),
                 "theme": settings.TEMPLATE_CONFIG.get("theme"),
-                "style": settings.TEMPLATE_CONFIG.get("style"), 
+                "style": settings.TEMPLATE_CONFIG.get("style"),
                 "has_customizer": settings.TEMPLATE_CONFIG.get("has_customizer"),
-                "display_customizer": settings.TEMPLATE_CONFIG.get("display_customizer"),
+                "display_customizer": settings.TEMPLATE_CONFIG.get(
+                    "display_customizer"
+                ),
                 "content_layout": settings.TEMPLATE_CONFIG.get("content_layout"),
                 "navbar_type": settings.TEMPLATE_CONFIG.get("navbar_type"),
                 "header_type": settings.TEMPLATE_CONFIG.get("header_type"),

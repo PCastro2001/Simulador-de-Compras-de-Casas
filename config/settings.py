@@ -43,13 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'apps.home',
-    'apps.subsidios',
+    'apps.front.home',
+    
     'apps.core',
-    'apps.chatbot',
-    'apps.pages',
+    'apps.admin_home',
+    'apps.access.roles',
 
-    'admin.main',
 
     'auth.apps.AuthConfig'
 
@@ -79,10 +78,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                # "config.context_processors.language_code",
                 "config.context_processors.my_setting",
-                # "config.context_processors.get_cookie",
-                # "config.context_processors.environment",
                 "config.context_processors.visitante_id",
             ],
             "libraries": {
