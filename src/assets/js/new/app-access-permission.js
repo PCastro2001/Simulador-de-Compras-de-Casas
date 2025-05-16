@@ -6,22 +6,12 @@
 
 $(function () {
   var dataTablePermissions = $('.datatables-permissions'),
-    dt_permission,
-    userList = '/app/user/list/';
+    dt_permission
 
   // Users List datatable
   if (dataTablePermissions.length) {
     dt_permission = dataTablePermissions.DataTable({
-      ajax: assetsPath + 'json/permissions-list.json', // JSON file to add data
-      columns: [
-        // columns according to JSON
-        { data: '' },
-        { data: 'id' },
-        { data: 'name' },
-        { data: 'assigned_to' },
-        { data: 'created_date' },
-        { data: '' }
-      ],
+      
       columnDefs: [
         {
           // For Responsive
@@ -42,49 +32,16 @@ $(function () {
         {
           // Name
           targets: 2,
-          render: function (data, type, full, meta) {
-            var $name = full['name'];
-            return '<span class="text-nowrap text-heading">' + $name + '</span>';
-          }
         },
         {
           // User Role
           targets: 3,
           orderable: false,
-          render: function (data, type, full, meta) {
-            var $assignedTo = full['assigned_to'],
-              $output = '';
-            var roleBadgeObj = {
-              Admin:
-                '<a href="' +
-                userList +
-                '"><span class="badge rounded-pill bg-label-primary me-4">Administrator</span></a>',
-              Manager:
-                '<a href="' + userList + '"><span class="badge rounded-pill bg-label-warning me-4">Manager</span></a>',
-              Users:
-                '<a href="' + userList + '"><span class="badge rounded-pill bg-label-success me-4">Users</span></a>',
-              Support:
-                '<a href="' + userList + '"><span class="badge rounded-pill bg-label-info me-4">Support</span></a>',
-              Restricted:
-                '<a href="' +
-                userList +
-                '"><span class="badge rounded-pill bg-label-danger me-4">Restricted User</span></a>'
-            };
-            for (var i = 0; i < $assignedTo.length; i++) {
-              var val = $assignedTo[i];
-              $output += roleBadgeObj[val];
-            }
-            return '<span class="text-nowrap">' + $output + '</span>';
-          }
         },
         {
           // remove ordering from Name
           targets: 4,
           orderable: false,
-          render: function (data, type, full, meta) {
-            var $date = full['created_date'];
-            return '<span class="text-nowrap">' + $date + '</span>';
-          }
         },
         {
           // Actions
@@ -168,30 +125,6 @@ $(function () {
           }
         }
       },
-      initComplete: function () {
-        // Adding role filter once table initialized
-        this.api()
-          .columns(3)
-          .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option></select>'
-            )
-              .appendTo('.user_role')
-              .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
-              });
-
-            column
-              .data()
-              .unique()
-              .sort()
-              .each(function (d, j) {
-                select.append('<option value="' + d + '" class="text-capitalize">' + d + '</option>');
-              });
-          });
-      }
     });
   }
 
