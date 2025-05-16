@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.admin_home',
     'apps.access.roles',
+    'apps.access.permisos',
     
     'apps.usuarios',
 

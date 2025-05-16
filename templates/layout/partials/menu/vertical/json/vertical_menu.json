@@ -18,6 +18,12 @@
       "url": "roles-list"
     },
     {
+     "icon": "menu-icon tf-icons ri-lock-2-line",
+      "name": "Permisos",
+      "slug": "permisos",
+      "url": "permisos-list"
+    },
+    {
       "name": "Usuarios",
       "icon": "menu-icon tf-icons ri-user-line",
       "slug": "usuarios",
