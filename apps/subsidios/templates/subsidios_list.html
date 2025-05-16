@@ -1,139 +1,53 @@
 {% extends layout_path %}
 
-{% block title %} Subsidios - Lista {% endblock title %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Help Center Landing - Front Pages{% endblock %}
 
 {% block page_css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'vendor/css/pages/page-home.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/css/pages/page-faq.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/css/pages/front-page-help-center.css' %}" />
 {% endblock page_css %}
 
-{% block page_js %}
-{{ block.super }}
-<script src="{% static 'js/page-home.js' %}"></script>
-{% endblock page_js %}
-
 {% block content %}
-<section class="section-py first-section-pt">
-    <div class="container">
-        <h2 class="text-center mb-2">Lista de subsidios</h2>
-        <p class="text-center text-muted px-sm-12 mb-3 py-5 mb-md-4">
-          <span>En esta lista se mostraran los subsidios disponibles.</span>
-          <br>Elige uno para revisar si eres apto para postular a este subsidio
-        </p>
-        
-        <div class="row">
-            <div class="pricing-plans row mx-0 gap-6 d-flex justify-content-center">
-                <!-- DS49 TODO: Despues cambiar por un for-->
-                <div class="col-lg mb-md-0 mb-6 px-0">
-                    <div class="card border-primary border shadow-none">
-                        <div class="card-body pt-12">
-                            <div class="mt-3 mb-5 text-center">
-                                <img src="{% static 'img/illustrations/pricing-basic.png' %}" alt="Basic Image"
-                                    height="100">
-                            </div>
-                            <h4 class="card-title text-center text-capitalize mb-1 text-primary">Subsidio DS49</h4>
-                            <h5 class="text-center">Requisitos</h5>
-                            <ul class="list-group ps-6 my-5 pt-2">
-                                <li class="mb-2">requisito 1</li>
-                                <li class="mb-2">requisito 2</li>
-                                <li class="mb-0">requisito 3</li>
-                            </ul>
-                            <a href="{% url 'subsidios-ds49' %}" class="btn btn-primary d-grid w-100">Simular</a>
-                        </div>
-                    </div>
-                </div>
+<div class="faq-header d-flex flex-column justify-content-center align-items-center h-px-300 position-relative overflow-hidden rounded-3">
+  <img src="{% static 'img/pages/header-' %}{{ COOKIES.style|default:style }}.png" class="scaleX-n1-rtl faq-banner-img h-px-300 z-n1" alt="background image" data-app-light-img="pages/header-light.png" data-app-dark-img="pages/header-dark.png" />
+  <h4 class="text-center text-primary mb-2"> Hello, how can we help? </h4>
+  <p class="text-body text-center mb-0 px-4">or choose a category to quickly find the help you need</p>
+  <div class="input-wrapper my-6 input-group input-group-merge px-sm-5">
+    <span class="input-group-text" id="basic-addon1"><i class="ri-search-line"></i></span>
+    <input type="text" class="form-control" placeholder="Ask a question...." aria-label="Search" aria-describedby="basic-addon1" />
+  </div>
+</div>
+<!-- Help Center Header: End -->
 
-                <!-- DS1 Tramo 1 -->
-                <div class="col-lg mb-md-0 mb-6 px-0">
-                    <div class="card border-primary border shadow-none">
-                        <div class="card-body pt-12">
-                            <div class="mt-3 mb-5 text-center">
-                                <img src="{% static 'img/illustrations/pricing-basic.png' %}" alt="Basic Image"
-                                    height="100">
-                            </div>
-                            <h4 class="card-title text-center text-capitalize mb-1 text-primary">Subsidio DS1</h4>
-                            <p class="text-center mb-2">Tramo 1</p>
-                            <h5 class="text-center pt-1">Requisitos</h5>
-
-                            <ul class="list-group ps-6 my-5 pt-2">
-                                <li class="mb-2">requisito 1</li>
-                                <li class="mb-2">requisito 2</li>
-                                <li class="mb-0">requisito 3</li>
-                            </ul>
-                            <a href="{% url 'subsidios-ds1-tramo-1' %}" class="btn btn-primary d-grid w-100">Simular</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- DS1 Tramo 2 -->
-                <div class="col-lg mb-md-0 mb-6 px-0">
-                    <div class="card border-primary border shadow-none">
-                        <div class="card-body pt-12">
-                            <div class="mt-3 mb-5 text-center">
-                                <img src="{% static 'img/illustrations/pricing-basic.png' %}" alt="Basic Image"
-                                    height="100">
-                            </div>
-                            <h4 class="card-title text-center text-capitalize mb-1 text-primary">Subsidio DS1</h4>
-                            <p class="text-center mb-2">Tramo 2</p>
-                            <h5 class="text-center pt-1">Requisitos</h5>
-
-                            <ul class="list-group ps-6 my-5 pt-2">
-                                <li class="mb-2">requisito 1</li>
-                                <li class="mb-2">requisito 2</li>
-                                <li class="mb-0">requisito 3</li>
-                            </ul>
-                            <a href="{% url 'subsidios-ds1-tramo-2' %}" class="btn btn-primary d-grid w-100">Simular</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FILA 2 -->
-            <div class="pricing-plans row mx-0 gap-6 d-flex justify-content-center">
-                <!-- DS1 Tramo 3 -->
-                <div class="col-lg mb-md-0 mb-6 px-0">
-                    <div class="card border-primary border shadow-none">
-                        <div class="card-body pt-12">
-                            <div class="mt-3 mb-5 text-center">
-                                <img src="{% static 'img/illustrations/pricing-basic.png' %}" alt="Basic Image"
-                                    height="100">
-                            </div>
-                            <h4 class="card-title text-center text-capitalize mb-1 text-primary">Subsidio DS1</h4>
-                            <p class="text-center mb-2">Tramo 3</p>
-                            <h5 class="text-center pt-1">Requisitos</h5>
-
-                            <ul class="list-group ps-6 my-5 pt-2">
-                                <li class="mb-2">requisito 1</li>
-                                <li class="mb-2">requisito 2</li>
-                                <li class="mb-0">requisito 3</li>
-                            </ul>
-                            <a href="{% url 'subsidios-ds1-tramo-3' %}" class="btn btn-primary d-grid w-100">Simular</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- DS19 -->
-                <div class="col-lg mb-md-0 mb-6 px-0">
-                    <div class="card border-primary border shadow-none">
-                        <div class="card-body pt-12">
-                            <div class="mt-3 mb-5 text-center">
-                                <img src="{% static 'img/illustrations/pricing-basic.png' %}" alt="Basic Image"
-                                    height="100">
-                            </div>
-                            <h4 class="card-title text-center text-capitalize mb-1 text-primary">Subsidio DS49</h4>
-                            <h5 class="text-center">Requisitos</h5>
-                            <ul class="list-group ps-6 my-5 pt-2">
-                                <li class="mb-2">requisito 1</li>
-                                <li class="mb-2">requisito 2</li>
-                                <li class="mb-0">requisito 3</li>
-                            </ul>
-                            <a href="{% url 'subsidios-ds19' %}" class="btn btn-primary d-grid w-100">Simular</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- Knowledge Base: Start -->
+<section class="section-py pt-4 bg-body">
+  <div class="container">
+    <h4 class="text-center mb-6">Subsidios</h4>
+    <div class="row">
+      {% if subsidios %}
+      <div class="col-md-4 col-ms-6 mb-6">
+        <div class="card">
+          <div class="card-body">
+              <p class="mb-0">Total 2 users</p>
+          </div>
         </div>
-    </div>
-</section>
+      </div>
+      {% endif %}
 
-{% endblock content %}
+      <div class="col-md-4 col-ms-6 mb-6">
+        <div class="card">
+          <div class="card-body">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Knowledge Base: End -->
+
+{% endblock %}

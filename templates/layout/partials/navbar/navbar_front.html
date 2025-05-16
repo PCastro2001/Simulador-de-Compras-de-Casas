@@ -26,13 +26,13 @@
           <a class="nav-link fw-medium" aria-current="page" href="{% url 'home' %}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="#">Subsidios</a>
+          <a class="nav-link fw-medium" href="{% url 'subsidios' %}">Subsidios</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="#">ChatBot</a>
+          <a class="nav-link fw-medium" href="{% url 'chatbot' %}">ChatBot</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="#">About US</a>
+          <a class="nav-link fw-medium" href="{% url 'about-us' %}">About US</a>
         </li>
         {% if request.user.is_authenticated %}
         <li class="nav-item">
@@ -144,7 +144,7 @@
       </li>
       {% else %}
       <li>
-        <a href="{% url 'login' %}" class="btn btn-primary px-2 px-sm-4 px-lg-2 px-xl-4" target="_blank"><span class="tf-icons ri-user-line me-md-1"></span><span class="d-none d-md-block">Login/Register</span></a>
+        <a href="{% url 'login' %}" class="btn btn-primary px-2 px-sm-4 px-lg-2 px-xl-4"><span class="tf-icons ri-user-line me-md-1"></span><span class="d-none d-md-block">Login/Register</span></a>
       </li>
       {% endif %}
       <!-- navbar button: End -->

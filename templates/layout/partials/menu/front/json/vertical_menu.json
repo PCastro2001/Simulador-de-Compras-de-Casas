@@ -29,15 +29,7 @@
       "slug": "usuarios",
       "url": "usuarios-list"
     },
-    {
-      "menu_header": "Subsidios"
-    },
-    {
-      "icon": "menu-icon tf-icons ri-home-4-line",
-      "name": "Subsidios",
-      "slug": "subsidios",
-      "url": "subsidios-list"
-    },
+
     {
       "menu_header": "Frontend",
       "slug": "front"
@@ -47,8 +39,10 @@
       "name": "Home Frontend",
       "slug": "home",
       "url": "home"
-    }
-    
+    },
+    {
+      "menu_header": "Usuarios"
+    } 
   ]
 }
 

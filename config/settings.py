@@ -49,8 +49,8 @@ INSTALLED_APPS = [
     'apps.admin_home',
     'apps.access.roles',
     'apps.access.permisos',
-    
     'apps.usuarios',
+    'apps.subsidios',
 
 
     'auth.apps.AuthConfig'
@@ -166,7 +166,7 @@ THEME_VARIABLES = THEME_VARIABLES
 
 # 
 # ------------------------------------------------------------------------------
-LOGIN_URL = "/login/"
+LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "/home/"
 
 # Email Settings

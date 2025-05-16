@@ -14,7 +14,7 @@ class UsuariosUpdateView(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
-        usuario = self.get_rol(self.kwargs['pk'])
+        usuario = self.get_usuario(self.kwargs['pk'])
 
         context.update(
             {

@@ -9,3 +9,6 @@ class Visitante(models.Model):
 
     def __str__(self):
         return self.visitor_id
+    
+class Funciones(models.Model):
+    pass

@@ -11,17 +11,17 @@ urlpatterns = [
         name="home",
     ),
     path(
-        "home/subsidios",
+        "home/subsidios/",
         HomeViews.as_view(template_name="subsidios.html"),
         name="subsidios",
     ),
     path(
-        "home/chatbot",
+        "home/chatbot/",
         HomeViews.as_view(template_name="chatbot.html"),
         name="chatbot"
     ),
     path(
-        "home/about-us",
+        "home/about-us/",
         HomeViews.as_view(template_name="about_us.html"),
         name="about-us",
     ),

@@ -54,10 +54,12 @@
                 </div>
               </div>
               <div class="d-flex flex-column">
-                <a href="" class="text-heading text-truncate">
+                <a href="{% url 'usuarios-update' usuario.id %}" class="text-heading text-truncate">
                   <span class="fw-medium">{{usuario.first_name}} {{usuario.last_name}}</span>
                 </a>
-                <small>{{usuario.username}}</small>
+                <a href="{% url 'usuarios-update' usuario.id %}" class="text-reset">
+                  <small>{{usuario.username}}</small>
+                </a>
               </div>
             </div>
           </td>
