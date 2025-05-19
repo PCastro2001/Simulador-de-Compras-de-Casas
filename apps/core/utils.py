@@ -10,3 +10,5 @@ def suma(valor_1, valor_2):
 def resta(valor_1, valor_2):
     pass
 
+def get_all_grupos():
+    pass

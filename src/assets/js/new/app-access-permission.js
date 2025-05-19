@@ -49,14 +49,6 @@ $(function () {
           searchable: false,
           title: 'Actions',
           orderable: false,
-          render: function (data, type, full, meta) {
-            return (
-              '<div class="d-flex align-items-center">' +
-              '<button class="btn btn-sm btn-icon btn-text-secondary rounded-pill delete-record waves-effect waves-light me-1"><i class="ri-delete-bin-7-line ri-22px"></i></button>' +
-              '<span class="text-nowrap"><button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light" data-bs-target="#editPermissionModal" data-bs-toggle="modal" data-bs-dismiss="modal"><i class="ri-edit-box-line ri-22px"></i></button></span>' +
-              '</div>'
-            );
-          }
         }
       ],
       order: [[1, 'asc']],
@@ -127,9 +119,4 @@ $(function () {
       },
     });
   }
-
-  // Delete Record
-  $('.datatables-permissions tbody').on('click', '.delete-record', function () {
-    dt_permission.row($(this).parents('tr')).remove().draw();
-  });
 });
