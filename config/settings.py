@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'guardian',
     
     'apps.front.home',
     
@@ -53,9 +54,14 @@ INSTALLED_APPS = [
     'apps.subsidios',
 
 
-    'auth.apps.AuthConfig'
-
+    'auth.apps.AuthConfig',
+    
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # Default
+    'guardian.backends.ObjectPermissionBackend',  # Permisos por objeto
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

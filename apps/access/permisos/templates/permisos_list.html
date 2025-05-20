@@ -44,37 +44,52 @@
         </tr>
       </thead>
       <tbody>
-        <td></td>
-        <td></td>
-        <td>
-          <span class="text-nowrap text-heading">Name</span>
-        </td>
-        <td>
-          <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-primary me-4">Administrador</span></a></span>
-          <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-warning me-4">Manager</span></a></span>
-          <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-success me-4">Users</span></a></span>
-          <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-info me-4">Support</span></a></span>
-          <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-danger me-4">Restricted User</span></a></span>
-        </td>
-        <td><span class="text-nowrap">Date</span></td>
-        <td>
-          <div class="d-flex align-items-center">
-            <a href="#" class="btn btn-sm btn-icon btn-text-secondary rounded-pill delete-record waves-effect waves-light me-1">
-              <i class="ri-delete-bin-7-line ri-22px"></i>
-            </a>
-            <span class="text-nowrap">
-              <a href="#" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
+        {% for permiso in permisos %}
+        <tr>
+          <td></td>
+          <td></td>
+          <td>
+            <span class="text-nowrap text-heading">
+              {{ permiso.name }}<br>
+              <small class="text-muted">{{ permiso.codename }}</small><br>
+              <small class="text-muted">({{ permiso.app_label }}.{{ permiso.model }})</small>
+            </span>
+          </td>
+          <td>
+            {% for grupo in permiso.grupos %}
+              <span class="text-nowrap">
+                <span class="badge rounded-pill bg-label-primary me-1">{{ grupo }}</span>
+              </span>
+            {% empty %}
+              <span class="text-muted">Ninguno</span>
+            {% endfor %}
+          </td>
+          <td><span class="text-nowrap">-</span></td> {# si no tienes fecha de creación #}
+          <td>
+            <div class="d-flex align-items-center">
+              <a href="{% url 'permisos-delete' permiso.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill delete-record waves-effect waves-light me-1">
+                <i class="ri-delete-bin-7-line ri-22px"></i>
+              </a>
+              <a href="{% url 'permisos-update' permiso.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
                 <i class="ri-edit-box-line ri-22px"></i>
               </a>
-            </span>
-          </div>
-        </td>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
       </tbody>
+
     </table>
   </div>
 </div>
 <!--/ Permission Table -->
 
+
+<span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-primary me-4">Administrador</span></a></span>
+<span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-warning me-4">Manager</span></a></span>
+<span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-success me-4">Users</span></a></span>
+<span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-info me-4">Support</span></a></span>
+<span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-danger me-4">Restricted User</span></a></span>
 
 <!-- Modal -->
 {% comment %} {% include "partials/_modals/modal_add_permission.html" %}
