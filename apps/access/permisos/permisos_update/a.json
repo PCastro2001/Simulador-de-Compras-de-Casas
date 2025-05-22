@@ -1,0 +1,44 @@
+{
+  "id": 1,
+  "app_label": "admin",
+  "model": "logentry",
+  "permisos": [
+    {
+      "id": 1,
+      "name": "Can add log entry",
+      "codename": "add_logentry",
+      "grupos": [
+        { "id": 3, "name": "Administrador" },
+        { "id": 6, "name": "Sistem" }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Can change log entry",
+      "codename": "change_logentry",
+      "grupos": [
+        { "id": 3, "name": "Administrador" },
+        { "id": 4, "name": "Corredor Propiedades" },
+        { "id": 6, "name": "Sistem" }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Can delete log entry",
+      "codename": "delete_logentry",
+      "grupos": [
+        { "id": 3, "name": "Administrador" },
+        { "id": 6, "name": "Sistem" }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Can view log entry",
+      "codename": "view_logentry",
+      "grupos": [
+        { "id": 3, "name": "Administrador" },
+        { "id": 6, "name": "Sistem" }
+      ]
+    }
+  ]
+}

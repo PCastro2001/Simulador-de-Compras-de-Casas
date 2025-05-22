@@ -4,28 +4,27 @@ from django.views.generic import TemplateView
 from web_project.template_helpers.theme import TemplateHelper
 
 # Contribuciones
+from apps.access.permisos.helpers import get_permisos_por_modelo
 
 # Permisos
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
-# Modelos
-from django.contrib.auth.models import Permission
 
 class PermisosUpdateView(PermissionRequiredMixin, TemplateView):
     permission_required = ("auth.view_user")
 
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
-        permisos = self.get_permisos(self.kwargs['pk'])
+        id_permiso = get_permisos_por_modelo(self.kwargs['pk'])
+
+        print("aaaaa", id_permiso)
 
         context.update(
             {
-                "id_permisos": permisos,
+                "id_permiso": id_permiso,
             }
         )
 
         TemplateHelper.map_context(context)
         return context
     
-    def get_permisos(self, pk):
-        return Permission.objects.get(pk=pk)
+    

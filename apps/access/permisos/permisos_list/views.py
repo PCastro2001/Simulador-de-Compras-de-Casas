@@ -7,7 +7,7 @@ from web_project.template_helpers.theme import TemplateHelper
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # Contrib
-from apps.core.utils import get_all_permisos
+from apps.access.permisos.helpers import get_all_permisos
 
 
 class PermisosListView(PermissionRequiredMixin, TemplateView):
