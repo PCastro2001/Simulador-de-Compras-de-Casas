@@ -12,7 +12,7 @@
       "slug": "accesos"
     },
     {
-     "icon": "menu-icon tf-icons ri-lock-2-line",
+     "icon": "menu-icon tf-icons ri-shield-keyhole-line",
       "name": "Roles",
       "slug": "roles-list",
       "url": "roles-list"

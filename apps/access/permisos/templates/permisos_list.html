@@ -62,13 +62,14 @@
           <td>
             {% if modelo.grupos %}
               {% for grupo in modelo.grupos %}
-                <span class="badge rounded-pill bg-label-primary me-1">{{ grupo }}</span>
+              <a href="{% url 'roles-update' grupo.id %}">
+                <span class="badge rounded-pill bg-label-primary me-4">{{ grupo.name }}</span>
+              </a>
               {% endfor %}
             {% else %}
               <span class="text-muted">Ninguno</span>
             {% endif %}
           </td>
-
 
           <!-- Fecha de creacion -->
           <td>

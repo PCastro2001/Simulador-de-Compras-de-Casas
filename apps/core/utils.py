@@ -20,7 +20,7 @@ def get_all_grupos():
 def get_all_permisos():
     """
     Retorna una lista de todos los permisos agrupados por modelo,
-    junto con sus grupos asociados.
+    junto con sus grupos asociados (nombre e ID).
     """
     permisos = (
         Permission.objects
@@ -30,6 +30,7 @@ def get_all_permisos():
     )
 
     permisos_agrupados = defaultdict(lambda: {
+        "id": "",
         "app_label": "",
         "model": "",
         "permisos": [],
@@ -44,21 +45,27 @@ def get_all_permisos():
             permisos_agrupados[key]["app_label"] = permiso.content_type.app_label
             permisos_agrupados[key]["model"] = permiso.content_type.model
 
-        grupos = list(permiso.group_set.values_list("name", flat=True))
+        grupos = list(permiso.group_set.values("id", "name"))
+
         permisos_agrupados[key]["permisos"].append({
             "id": permiso.id,
             "name": permiso.name,
             "codename": permiso.codename,
-            "grupos": grupos
+            "grupos": grupos,
         })
 
-        permisos_agrupados[key]["grupos"].update(grupos)
+        # Actualiza los grupos totales por modelo (como tuviste antes, ahora usando tuplas para deduplicar)
+        permisos_agrupados[key]["grupos"].update((g["id"], g["name"]) for g in grupos)
 
-    # Convertir sets a listas ordenadas
+    # Convertir set de tuplas a lista de dicts ordenados por nombre
     for datos in permisos_agrupados.values():
-        datos["grupos"] = sorted(datos["grupos"])
+        datos["grupos"] = sorted(
+            [{"id": gid, "name": gname} for gid, gname in datos["grupos"]],
+            key=lambda g: g["name"]
+        )
 
     return list(permisos_agrupados.values())
+
 
 # from collections import defaultdict
 # from django.contrib.auth.models import Permission
