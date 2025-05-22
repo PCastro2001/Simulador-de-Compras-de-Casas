@@ -1,7 +1,6 @@
 from django.contrib.auth.models import Permission
-from django.db.models import Prefetch
-from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
+from itertools import chain
 
 def validar_rut(rut):
     pass
@@ -20,7 +19,8 @@ def get_all_grupos():
 
 def get_all_permisos():
     """
-    Retorna una lista de todos los permisos junto con su aplicación y modelo
+    Retorna una lista de todos los permisos agrupados por modelo,
+    junto con sus grupos asociados.
     """
     permisos = (
         Permission.objects
@@ -32,24 +32,31 @@ def get_all_permisos():
     permisos_agrupados = defaultdict(lambda: {
         "app_label": "",
         "model": "",
-        "permisos": []
+        "permisos": [],
+        "grupos": set()
     })
 
-
     for permiso in permisos:
-        key = f"{permiso.content_type.model}"
+        key = f"{permiso.content_type.app_label}.{permiso.content_type.model}"
 
-        permisos_agrupados[key]["id"] = permiso.content_type_id
-        permisos_agrupados[key]["app_label"] = permiso.content_type.app_label
-        permisos_agrupados[key]["model"] = permiso.content_type.model
+        if not permisos_agrupados[key]["app_label"]:
+            permisos_agrupados[key]["id"] = permiso.content_type_id
+            permisos_agrupados[key]["app_label"] = permiso.content_type.app_label
+            permisos_agrupados[key]["model"] = permiso.content_type.model
 
+        grupos = list(permiso.group_set.values_list("name", flat=True))
         permisos_agrupados[key]["permisos"].append({
             "id": permiso.id,
             "name": permiso.name,
             "codename": permiso.codename,
-            "grupos": list(permiso.group_set.values_list("name", flat=True))
+            "grupos": grupos
         })
 
+        permisos_agrupados[key]["grupos"].update(grupos)
+
+    # Convertir sets a listas ordenadas
+    for datos in permisos_agrupados.values():
+        datos["grupos"] = sorted(datos["grupos"])
 
     return list(permisos_agrupados.values())
 

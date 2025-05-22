@@ -50,26 +50,25 @@
           <td></td>
           <td></td>
 
-          <!-- Nombre permiso -->
+          <!-- Nombre del modelo -->
           <td>
             <div class="d-flex flex-column">
-              <span class="text-heading text-truncate fw-medium text-capitalize">{{modelo.model}}</span>
-              <code>{{modelo.app_label}}</code>
+              <span class="text-heading text-truncate fw-medium text-capitalize">{{ modelo.model }}</span>
+              <code>{{ modelo.app_label }}</code>
             </div>
-            
           </td>
-          
 
-          <!-- Grupos permisos -->
+          <!-- Grupos asociados a este modelo -->
           <td>
-            {% for grupo in modelo.permisos.grupos %}
-            <span class="text-nowrap">
-              <span class="badge rounded-pill bg-label-primary me-1">{{grupo}}</span>
-            </span>
-            {% empty %}
-            <span class="text-muted">Ninguno</span>
-            {% endfor %}
+            {% if modelo.grupos %}
+              {% for grupo in modelo.grupos %}
+                <span class="badge rounded-pill bg-label-primary me-1">{{ grupo }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">Ninguno</span>
+            {% endif %}
           </td>
+
 
           <!-- Fecha de creacion -->
           <td>
