@@ -15,9 +15,9 @@ class PermisosDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = ("auth.view_user")
 
     def get(self, request, pk):
-        permisos = get_object_or_404(Permission, pk=pk)
-        permisos.delete()
+        permiso = get_object_or_404(Permission, pk=pk)
+        permiso.delete()
 
-        messages.success(request, f"El grupo '{permisos.name}' fue eliminado correctamente")
-        return redirect('roles-list')
+        messages.success(request, f"El permiso '{permiso.name}' fue eliminado correctamente")
+        return redirect('permisos-list')
         

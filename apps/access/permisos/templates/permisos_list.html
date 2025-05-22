@@ -44,38 +44,52 @@
         </tr>
       </thead>
       <tbody>
-        {% for permiso in permisos %}
+        {% for modelo in permisos_modelos %}
+        
         <tr>
           <td></td>
           <td></td>
+
+          <!-- Nombre permiso -->
           <td>
-            <span class="text-nowrap text-heading">
-              {{ permiso.name }}<br>
-              <small class="text-muted">{{ permiso.codename }}</small><br>
-              <small class="text-muted">({{ permiso.app_label }}.{{ permiso.model }})</small>
-            </span>
+            <div class="d-flex flex-column">
+              <span class="text-heading text-truncate fw-medium text-capitalize">{{modelo.model}}</span>
+              <code>{{modelo.app_label}}</code>
+            </div>
+            
           </td>
+          
+
+          <!-- Grupos permisos -->
           <td>
-            {% for grupo in permiso.grupos %}
-              <span class="text-nowrap">
-                <span class="badge rounded-pill bg-label-primary me-1">{{ grupo }}</span>
-              </span>
+            {% for grupo in modelo.permisos.grupos %}
+            <span class="text-nowrap">
+              <span class="badge rounded-pill bg-label-primary me-1">{{grupo}}</span>
+            </span>
             {% empty %}
-              <span class="text-muted">Ninguno</span>
+            <span class="text-muted">Ninguno</span>
             {% endfor %}
           </td>
-          <td><span class="text-nowrap">-</span></td> {# si no tienes fecha de creación #}
+
+          <!-- Fecha de creacion -->
+          <td>
+            <span class="text-nowrap">-</span>
+          </td>
+
+          <!-- Acciones -->
           <td>
             <div class="d-flex align-items-center">
-              <a href="{% url 'permisos-delete' permiso.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill delete-record waves-effect waves-light me-1">
+              <a href="#" class="btn btn-sm btn-icon btn-text-secondary rounded-pill delete-record waves-effect waves-light me-1">
                 <i class="ri-delete-bin-7-line ri-22px"></i>
               </a>
-              <a href="{% url 'permisos-update' permiso.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
+              <a href="{% url 'permisos-update' modelo.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
                 <i class="ri-edit-box-line ri-22px"></i>
               </a>
             </div>
+            
           </td>
         </tr>
+        
         {% endfor %}
       </tbody>
 
@@ -84,15 +98,9 @@
 </div>
 <!--/ Permission Table -->
 
-
 <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-primary me-4">Administrador</span></a></span>
 <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-warning me-4">Manager</span></a></span>
 <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-success me-4">Users</span></a></span>
 <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-info me-4">Support</span></a></span>
 <span class="text-nowrap"><a href="#"><span class="badge rounded-pill bg-label-danger me-4">Restricted User</span></a></span>
-
-<!-- Modal -->
-{% comment %} {% include "partials/_modals/modal_add_permission.html" %}
-{% include "partials/_modals/modal_edit_permission.html" %} {% endcomment %}
-<!-- /Modal -->
 {% endblock %}

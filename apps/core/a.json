@@ -1,0 +1,190 @@
+defaultdict(
+    <function get_all_permisos.<locals>.<lambda> at 0x00000221553C07C0>, 
+    {
+        'logentry': 
+        {   
+            'app_label': 'admin', 
+            'model': 'logentry', 
+            'permisos': [
+                {
+                    'id': 1, 
+                    'name': 'Can add log entry', 
+                    'codename': 'add_logentry', 
+                    'grupos': ['Administrador', 'Corredor Propiedades', 'Administrador Sistema'] 
+                }, 
+                {
+                    'id': 2, 
+                    'name': 'Can change log entry', 
+                    'codename': 'change_logentry', 
+                    'grupos': ['Administrador', 'Corredor Propiedades', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 3, 
+                    'name': 'Can delete log entry', 
+                    'codename': 'delete_logentry', 
+                    'grupos': ['Administrador', 'Corredor Propiedades', 'Administrador Sistema']
+                },
+                {
+                    'id': 4, 
+                    'name': 
+                    'Can view log entry', 
+                    'codename': 'view_logentry', 
+                    'grupos': ['Administrador', 'Corredor Propiedades', 'Administrador Sistema']
+                }
+            ]
+        },
+        'group': 
+        {
+            'app_label': 'auth', 
+            'model': 'group', 
+            'permisos': [
+                {
+                    'id': 9, 
+                    'name': 'Can add group', 
+                    'codename': 'add_group', 
+                    'grupos': 
+                    [
+                        'Administrador', 
+                        'Administrador Sistema'
+                    ]
+                }, 
+                {
+                    'id': 10, 
+                    'name': 'Can change group', 
+                    'codename': 'change_group', 
+                    'grupos': 
+                    [
+                        'Administrador', 
+                        'Administrador Sistema'
+                    ]
+                }, 
+                {
+                    'id': 11, 
+                    'name': 'Can delete group', 
+                    'codename': 'delete_group', 
+                    'grupos': 
+                    [
+                        'Administrador', 
+                        'Administrador Sistema'
+                    ]
+                }, 
+                {
+                    'id': 12, 
+                    'name': 'Can view group', 
+                    'codename': 'view_group', 
+                    'grupos': 
+                    [
+                        'Administrador', 
+                        'Administrador Sistema'
+                    ]
+                }
+            ]
+        }, 
+        'permission': 
+        {
+            'app_label': 'auth', 
+            'model': 'permission', 
+            'permisos': [
+                {
+                    'id': 5, 
+                    'name': 'Can add permission', 
+                    'codename': 'add_permission', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 6, 
+                    'name': 'Can change permission', 
+                    'codename': 'change_permission', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 7, 
+                    'name': 'Can delete permission', 
+                    'codename': 'delete_permission', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 8, 
+                    'name': 'Can view permission', 
+                    'codename': 'view_permission', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }
+            ]
+        }, 
+        'user': 
+        {
+            'app_label': 'auth', 
+            'model': 'user', 
+            'permisos': [
+                {
+                    'id': 13, 
+                    'name': 'Can add user', 
+                    'codename': 'add_user', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 14, 
+                    'name': 'Can change user', 
+                    'codename': 'change_user', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 15, 
+                    'name': 'Can delete user', 
+                    'codename': 'delete_user', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 16, 
+                    'name': 'Can view user', 
+                    'codename': 'view_user', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }
+            ]
+        }, 
+        'contenttype': 
+        {
+            'app_label': 'contenttypes', 
+            'model': 'contenttype', 
+            'permisos': [
+                {
+                    'id': 17, 
+                    'name': 'Can add content type', 
+                    'codename': 'add_contenttype', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 18, 
+                    'name': 'Can change content type', 
+                    'codename': 'change_contenttype', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 19, 
+                    'name': 'Can delete content type', 
+                    'codename': 'delete_contenttype', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 20, 
+                    'name': 'Can view content type', 
+                    'codename': 'view_contenttype', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }
+            ]
+        }, 
+        'visitante': 
+        {
+            'app_label': 'core', 
+            'model': 'visitante', 
+            'permisos': [
+                {
+                    'id': 26, 
+                    'name': 'Can change visitante', 
+                    'codename': 'change_visitante', 
+                    'grupos': ['Administrador', 'Administrador Sistema']
+                }, 
+                {
+                    'id': 27, 
+                    'name': 'Can delete visitante', 'codename': 'delete_visitante', 'grupos': ['Administrador', 'Administrador Sistema']}, {'id': 28, 'name': 
+'Can view visitante', 'codename': 'view_visitante', 'grupos': ['Administrador', 'Administrador Sistema']}]}, 'session': {'app_label': 'sessions', 'model': 'session', 'permisos': [{'id': 21, 'name': 'Can add session', 'codename': 'add_session', 'grupos': ['Administrador', 'Administrador Sistema']}, {'id': 22, 'name': 'Can change session', 'codename': 'change_session', 'grupos': ['Administrador', 'Administrador Sistema']}, {'id': 23, 'name': 'Can delete session', 'codename': 'delete_session', 'grupos': ['Administrador', 'Administrador Sistema']}, {'id': 24, 'name': 'Can view session', 'codename': 'view_session', 'grupos': ['Administrador', 'Administrador Sistema']}]}})

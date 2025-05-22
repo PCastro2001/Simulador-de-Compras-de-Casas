@@ -27,5 +27,5 @@ class PermisosUpdateView(PermissionRequiredMixin, TemplateView):
         TemplateHelper.map_context(context)
         return context
     
-    def get_rol(self, pk):
+    def get_permisos(self, pk):
         return Permission.objects.get(pk=pk)

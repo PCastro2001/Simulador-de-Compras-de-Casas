@@ -11,6 +11,7 @@ def get_all_permisos():
         for permiso in permisos:
             app = permiso.content_type.app_label
             model = permiso.content_type.model
+            
             permisos_agrupados[model].append({
                 "id": permiso.id,
                 "codename": permiso.codename,
