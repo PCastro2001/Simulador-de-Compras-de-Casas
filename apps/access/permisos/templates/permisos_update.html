@@ -1,66 +1,47 @@
 {% extends layout_path %}
 
-{% comment %} 
-<div class="container-xxl flex-grow-1 container-p-y">
-
-  <div class="card">
-    <h3 class="mb-3">Permisos del Modelo: {{ id_permiso.model|capfirst }}</h3>
-    <p><strong>Aplicación:</strong> <code>{{ id_permiso.app_label }}</code></p>
-
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Nombre del Permiso</th>
-          <th>Codename</th>
-          <th>Grupos Asociados</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for permiso in id_permiso.permisos %}
-        <tr>
-          <td>{{ permiso.name }}</td>
-          <td><code>{{ permiso.codename }}</code></td>
-          <td>
-            {% if permiso.grupos %}
-              {% for grupo in permiso.grupos %}
-                <a href="{% url 'roles-update' grupo.id %}">
-                  <span class="badge bg-primary me-1">{{ grupo.name }}</span>
-                </a>
-              {% endfor %}
-            {% else %}
-              <span class="text-muted">Ninguno</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <a href="{% url 'permisos-list' %}" class="btn btn-secondary mt-3">← Volver a la lista</a>
-  </div>
-</div>
-{% endblock %} 
-{% endcomment %}
-
 {% load static %}
 {% load i18n %}
 
 {% block title %}Tables - Basic Tables{% endblock %}
 
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/new/app-access-permission-add-update.js' %}"></script>
+<script src="{% static 'js/new/modal-add-permission.js' %}"></script>
+<script src="{% static 'js/new/modal-edit-permission.js' %}"></script>
+{% endblock page_js %}
+
+
 {% block content %}
 <!-- Basic Bootstrap Table -->
-<div class="card">
+<div class="card p-6">
   
   <div class="card-datatable table-responsive">
-
-    <h5 class="card-header">Modelo - {{id_permiso.model}}</h5>
-    <p><strong>Aplicación:</strong> <code>{{ id_permiso.app_label }}</code></p>
-
-    <table class="datatables-permissions table">
+    <div class="card-header pb-1">
+      <h5 class="card-title">Modelo - {{id_permiso.model}}</h5>
+      <p class="card-subtitle"><strong>Aplicación:</strong> <code>{{ id_permiso.app_label }}</code></p>
+    </div>
+    <table class="datatables-permisos table">
       <thead>
         <tr>
-          <th></th>  <!-- PARA DATATABLES -->
-          <th></th> <!-- PARA DATATABLES -->
+          <th></th>  <!-- PARA RESPONSIVO -->
           <th>Permiso</th>
           <th>Descripcion</th>
           <th>Grupos asociados</th>
@@ -70,7 +51,6 @@
       <tbody class="table-border-bottom-0">
         {% for permiso in id_permiso.permisos %}
         <tr>
-          <td></td>
           <td></td>
           <td><code>{{ permiso.codename }}</code></td>
           <td>{{ permiso.name }}</td>

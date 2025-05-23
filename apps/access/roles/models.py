@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import Group
 
-
 # Create your models here.
 class Group_except(models.Model):
     pass
@@ -13,5 +12,10 @@ class GroupDescription(models.Model):
     icon = models.CharField(max_length=150)
     date_created = models.DateTimeField()
 
+    class Meta:
+        db_table = "group_description"
+
     def __str__(self):
         return f"Metadatos de grupo: {self.group.name}"
+    
+    

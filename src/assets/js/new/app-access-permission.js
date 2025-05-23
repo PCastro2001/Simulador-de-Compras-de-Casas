@@ -27,7 +27,6 @@ $(function () {
         {
           targets: 1,
           searchable: false,
-          visible: false
         },
         {
           // Name

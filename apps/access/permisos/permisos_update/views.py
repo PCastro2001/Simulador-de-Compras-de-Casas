@@ -16,8 +16,6 @@ class PermisosUpdateView(PermissionRequiredMixin, TemplateView):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
         id_permiso = get_permisos_por_modelo(self.kwargs['pk'])
 
-        print("aaaaa", id_permiso)
-
         context.update(
             {
                 "id_permiso": id_permiso,
