@@ -6,15 +6,15 @@ from web_project.template_helpers.theme import TemplateHelper
 # Permisos
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
-# Modelos
-from django.contrib.auth.models import Group
+# Contrib
+from apps.access.roles.helpers import get_list_group
 
 class RolesListView(PermissionRequiredMixin, TemplateView):
     permission_required = ("auth.view_user")
 
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
-        grupos = self.get_all_usergroup()
+        grupos = get_list_group()
 
         context.update(
             {
@@ -24,5 +24,3 @@ class RolesListView(PermissionRequiredMixin, TemplateView):
         TemplateHelper.map_context(context)
         return context
     
-    def get_all_usergroup(self):
-        return Group.objects.all().order_by('id')

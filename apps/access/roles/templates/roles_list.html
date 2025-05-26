@@ -40,20 +40,31 @@
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-4">
-            <p class="mb-0">Total 2 users</p>
+            <p class="mb-0">Total {{ grupo.total }} users</p>
             <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Kim Merchent" class="avatar pull-up">
-                <img class="rounded-circle" src="{% static 'img/avatars/10.png' %}" alt="Avatar">
-              </li>
-              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Sam D'souza" class="avatar pull-up">
+            {% if grupo.usuarios %}
+            
+              {% for usuario in grupo.usuarios|slice:":3" %}
+              
+              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ usuario.username}}" class="avatar pull-up">
                 <img class="rounded-circle" src="{% static 'img/avatars/13.png' %}" alt="Avatar">
               </li>
-              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Nurvi Karlos" class="avatar pull-up">
-                <img class="rounded-circle" src="{% static 'img/avatars/15.png' %}" alt="Avatar">
-              </li>
+            
+              {% endfor %}
+
+              {% if grupo.usuarios|length > 3 %}
+                <li class="avatar">
+                  <span class="avatar-initial rounded-circle pull-up text-body" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ grupo.usuarios|length|add:'-3' }} más">
+                    +{{ grupo.usuarios|length|add:"-3" }}
+                  </span>
+                </li>
+              {% endif %}
+
+            {% else %}
               <li class="avatar">
-                <span class="avatar-initial rounded-circle pull-up text-body" data-bs-toggle="tooltip" data-bs-placement="bottom" title="3 more">+3</span>
+                <span class="avatar-initial rounded-circle pull-up text-body" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sin usuarios">?</span>
               </li>
+            {% endif %}
             </ul>
           </div>
           <div class="d-flex justify-content-between align-items-center">

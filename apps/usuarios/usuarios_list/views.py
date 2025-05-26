@@ -6,15 +6,15 @@ from web_project.template_helpers.theme import TemplateHelper
 # Permisos
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
-# Modelos
-from django.contrib.auth.models import User
+# Contrib
+from apps.usuarios.helpers import get_all_user
 
 class UsuariosListView(PermissionRequiredMixin, TemplateView):
     permission_required = ("auth.view_user")
 
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
-        usuarios = self.get_all_user()
+        usuarios = get_all_user()
 
         context.update(
             {
@@ -24,5 +24,3 @@ class UsuariosListView(PermissionRequiredMixin, TemplateView):
         TemplateHelper.map_context(context)
         return context
     
-    def get_all_user(self):
-        return User.objects.all().order_by('id')

@@ -17,7 +17,6 @@ from django.contrib.auth.models import Group
 # Formularios
 from apps.access.roles.forms import AddRoleForm
 
-
 class RolesAddView(PermissionRequiredMixin, TemplateView):
     permission_required = ("auth.view_user")
 

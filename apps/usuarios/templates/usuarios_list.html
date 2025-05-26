@@ -29,7 +29,7 @@
 <!-- Users List Table -->
 <div class="card">
   <div class="card-datatable table-responsive">
-    <table class="datatables-users table">
+    <table class="datatables-usuarios table">
       <thead>
         <tr>
           <th>Usuario</th>
@@ -37,12 +37,14 @@
           <th>Rol</th>
           <th>Estado</th>
           <th>Staff</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         {% for usuario in usuarios %}
         <tr>
-          <td>      <!-- Avatar - Nombre y Usuario -->
+          <!-- Avatar - Nombre y Usuario -->
+          <td>      
             <div class="d-flex justify-content-start align-items-center user-name">
               <div class="avatar-wrapper">
                 <div class="avatar avatar-sm me-4">
@@ -63,19 +65,54 @@
               </div>
             </div>
           </td>
-          <td><span>{{usuario.email}}</span></td> <!-- Email -->
-          <td> <!-- Role -->
-            <span class="text-truncate d-flex align-items-center text-heading">
-              <i class="ri-pie-chart-line ri-22px text-success me-2"></i>{{usuario.modalidad_str}}
-            </span>
+          <!-- Email -->
+          <td><span>{{usuario.email}}</span></td> 
+          <!-- Role -->
+          <td> 
+            {% if usuario.groups.all %}
+              {% for grupo in usuario.groups.all %}
+                <span class="badge rounded-pill bg-label-primary me-1">{{ grupo.name }}</span>
+              {% empty %}
+                <span class="text-muted">Sin rol</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">Sin rol</span>
+            {% endif %}
           </td> 
-          <td><span class="text-heading">{{usuario.sede_str}}</span></td> <!-- Plan -->
-          <td><span class="badge rounded-pill bg-label-warning" text-capitalized>{{usuario.edificio_str}}</span></td>
-          <td>{{ usuario.direccion_str}}</td>
+          <!-- Estado -->
+          <td>
+            {% if usuario.is_active %}
+            <span class="badge badge-dot bg-success me-1"></span>Activo 
+            {% else %}
+            <span class="badge badge-dot bg-danger me-1"></span>Inactivo
+            {% endif %}
+          </td>
+          <!-- Staff -->
+          <td>
+            {% if usuario.is_staff %}
+            <span class="badge rounded-pill bg-label-success" text-capitalized>Staff</span>
+            {% else %}
+            <span class="badge rounded-pill bg-label-warning" text-capitalized>No staff</span>
+            {% endif %}
+          </td>
+          <!-- Acciones -->
+          <td>
+            <a href="{% url 'usuarios-delete' usuario.id %}" class="d-inline-flex p-2 align-items-center rounded-circle alert-danger">
+              <i class="ri-delete-bin-7-line ri-22px"></i>
+            </a>
+          </td>
         {% endfor %}
         </tr>
       </tbody>
     </table>
   </div>
 </div>
+
+{% if messages %}
+  {% for message in messages %}
+  <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-warning{% endif %}" role="alert">
+    {{ message }}
+  </div>
+  {% endfor %}
+{% endif %}
 {% endblock %}
