@@ -2,8 +2,8 @@ from django.db import models
 from django.contrib.auth.models import Group
 
 # Create your models here.
-class Group_except(models.Model):
-    pass
+# class Group_except(models.Model):
+#     pass
 
 class GroupDescription(models.Model):
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
