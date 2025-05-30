@@ -7,7 +7,7 @@ urlpatterns = [
 
     # -------------------- FRONT --------------------
     # HOME
-    path("", include("apps.front.home.urls")),
+    path("", include("front.home.urls")),
 
 
     # -------------------- BACKEND --------------------
