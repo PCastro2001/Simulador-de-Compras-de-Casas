@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Calcula el subsidio DS1 Tramo 2 para vivienda">
     <title>Subsidio DS1 Tramo 2 - Simulador</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/subsidies.css">
+    <link rel="stylesheet" href="{% static 'assets/css/subsidies.css' %}">
 </head>
 <body>
     <header>
@@ -66,6 +67,6 @@
     <footer>
         <button onclick="window.location.href='../percentile.html'">Volver</button>
     </footer>
-    <script src="../../assets/js/percentile/ds1t2.js"></script>
+    <script src="{% static 'assets/js/percentile/ds1t2.js' %}"></script>
 </body>
 </html>
