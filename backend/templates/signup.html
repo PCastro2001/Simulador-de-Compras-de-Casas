@@ -3,15 +3,26 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Registrarse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Regístrate para guardar tus datos y recibir sugerencias de subsidios">
+    <title>Registrarse - Simulador de Subsidios para Vivienda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
 </head>
 <body>
-    <h1>Registrarse</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Registrarse</button>
-    </form>
+    <header>
+        <h1>Simulador de Subsidios para Vivienda</h1>
+    </header>
+    <main>
+        <h2>Registrarse</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Registrarse</button>
+        </form>
+    </main>
+    <footer>
+        <p>© 2025 Simulador de Subsidios para Vivienda</p>
+    </footer>
 </body>
 </html>
