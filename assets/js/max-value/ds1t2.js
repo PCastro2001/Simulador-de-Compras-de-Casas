@@ -124,27 +124,7 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
     `;
 
     document.getElementById('show-links').addEventListener('click', () => {
-        showRealEstateLinks(Math.round(maxPropertyValuePossible * ufValue));
+        const maxPrice = Math.round(maxPropertyValuePossible * ufValue);
+        window.location.href = '../real-estate-offers.html?maxPrice=' + maxPrice;
     });
 });
-
-function showRealEstateLinks(maxPriceCLP) {
-    const region = prompt('Ingresa la región (ej. metropolitana):');
-    if (!region) return;
-    const adults = parseInt(prompt('Cantidad de adultos:'), 10);
-    const children = parseInt(prompt('Cantidad de niños:'), 10);
-    if (isNaN(adults) || isNaN(children)) return;
-
-    const bedrooms = Math.ceil((adults + children) / 2);
-
-    const toctoc = `https://www.toctoc.com/resultados/mapa/compra/departamento/${region}/?moneda=1&precioDesde=30000000&precioHasta=${maxPriceCLP}&dormitoriosDesde=${bedrooms}&banosDesde=1`;
-    const portal = `https://www.portalinmobiliario.com/venta/departamento/${region}/_PriceRange_30000000CLP-${maxPriceCLP}CLP_BEDROOMS_${bedrooms}-*_FULL*BATHROOMS_1-*`;
-
-    const linksHtml = `
-        <p><a href="${toctoc}" target="_blank">Buscar en TocToc</a></p>
-        <p><a href="${portal}" target="_blank">Buscar en Portal Inmobiliario</a></p>
-    `;
-
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML += linksHtml;
-}
