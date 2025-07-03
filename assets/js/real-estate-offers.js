@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const portalCasa = `https://www.portalinmobiliario.com/venta/casa/${pi}/_DisplayType_M_PriceRange_30000000CLP-${maxPrice}CLP_BEDROOMS_${bedrooms}-`;
 
         results.innerHTML = `
-            <p><a href="${toctoc}" target="_blank">Buscar departamentos en TocToc</a></p>
+            <p><a href="${toctoc}" target="_blank">Buscar Departamentos y Casas en TocToc</a></p>
             <p><a href="${portalDepto}" target="_blank">Departamentos en Portal Inmobiliario</a></p>
             <p><a href="${portalCasa}" target="_blank">Casas en Portal Inmobiliario</a></p>
         `;
