@@ -120,5 +120,11 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
         <p>Monto máximo del crédito: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
         <p>Dividendo mensual máximo: ${maxMonthlyPayment.toFixed(2)} UF (${formatCurrency(maxMonthlyPayment * ufValue)})</p>
         <p>Valor máximo de la vivienda: ${maxPropertyValuePossible.toFixed(2)} UF (${formatCurrency(maxPropertyValuePossible * ufValue)})</p>
+        <button id="show-links" style="margin-top:10px;">Ofertas Inmobiliarias</button>
     `;
+
+    document.getElementById('show-links').addEventListener('click', () => {
+        const maxPrice = Math.round(maxPropertyValuePossible * ufValue);
+        window.location.href = '../real-estate-offers.html?maxPrice=' + maxPrice;
+    });
 });
