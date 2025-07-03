@@ -18,15 +18,15 @@
             <form id="subsidy-form">
                 <div class="form-group">
                     <label for="total-income">Sueldo mensual total (CLP):</label>
-                    <input type="number" id="total-income" min="0" required>
+                    <input type="number" id="total-income" min="0" required {% if request.user.is_authenticated %}value="{{ request.user.profile.salary }}"{% endif %}>
                 </div>
                 <div class="form-group">
                     <label for="household-size">Número de personas en el hogar:</label>
-                    <input type="number" id="household-size" min="1" required>
+                    <input type="number" id="household-size" min="1" required {% if request.user.is_authenticated %}value="{{ request.user.profile.household_size }}"{% endif %}>
                 </div>
                 <div class="form-group">
                     <label for="rent">Arriendo mensual (CLP):</label>
-                    <input type="number" id="rent" min="0" required>
+                    <input type="number" id="rent" min="0" required {% if request.user.is_authenticated %}value="{{ request.user.profile.rent }}"{% endif %}>
                 </div>
                 <button type="submit">Calcular</button>
             </form>
