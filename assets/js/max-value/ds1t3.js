@@ -121,5 +121,31 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
         <p>Monto máximo del crédito: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
         <p>Dividendo mensual máximo: ${maxMonthlyPayment.toFixed(2)} UF (${formatCurrency(maxMonthlyPayment * ufValue)})</p>
         <p>Valor máximo de la vivienda: ${maxPropertyValuePossible.toFixed(2)} UF (${formatCurrency(maxPropertyValuePossible * ufValue)})</p>
+        <button id="show-links" style="margin-top:10px;">Ofertas Inmobiliarias</button>
     `;
+
+    document.getElementById('show-links').addEventListener('click', () => {
+        showRealEstateLinks(Math.round(maxPropertyValuePossible * ufValue));
+    });
 });
+
+function showRealEstateLinks(maxPriceCLP) {
+    const region = prompt('Ingresa la región (ej. metropolitana):');
+    if (!region) return;
+    const adults = parseInt(prompt('Cantidad de adultos:'), 10);
+    const children = parseInt(prompt('Cantidad de niños:'), 10);
+    if (isNaN(adults) || isNaN(children)) return;
+
+    const bedrooms = Math.ceil((adults + children) / 2);
+
+    const toctoc = `https://www.toctoc.com/resultados/mapa/compra/departamento/${region}/?moneda=1&precioDesde=30000000&precioHasta=${maxPriceCLP}&dormitoriosDesde=${bedrooms}&banosDesde=1`;
+    const portal = `https://www.portalinmobiliario.com/venta/departamento/${region}/_PriceRange_30000000CLP-${maxPriceCLP}CLP_BEDROOMS_${bedrooms}-*_FULL*BATHROOMS_1-*`;
+
+    const linksHtml = `
+        <p><a href="${toctoc}" target="_blank">Buscar en TocToc</a></p>
+        <p><a href="${portal}" target="_blank">Buscar en Portal Inmobiliario</a></p>
+    `;
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML += linksHtml;
+}
