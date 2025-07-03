@@ -7,7 +7,7 @@ async function fetchUFValue() {
         return ufValue;
     } catch (error) {
         console.error('Error al obtener el valor de la UF:', error);
-        return 37396.77;
+        return 39345.77;
     }
 }
 
@@ -24,13 +24,13 @@ function adjustDownPaymentOptions() {
     const downPaymentType = document.getElementById('down-payment-type').value;
     const downPaymentInput = document.getElementById('down-payment');
     if (downPaymentType === 'percentage') {
-        downPaymentInput.min = 10;
+        downPaymentInput.min = 20;
         downPaymentInput.max = 50;
-        downPaymentInput.value = 10;
+        downPaymentInput.value = 20;
     } else {
-        downPaymentInput.min = 1;
+        downPaymentInput.min = 100;
         downPaymentInput.max = 999999;
-        downPaymentInput.value = 1;
+        downPaymentInput.value = 100;
     }
 }
 
@@ -53,12 +53,12 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
     const resultsDiv = document.getElementById('results');
 
     // Validaciones
-    if (downPaymentType === 'percentage' && (downPayment < 10 || downPayment > 50)) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en porcentaje debe estar entre 10% y 50%.</p>`;
+    if (downPaymentType === 'percentage' && (downPayment < 20 || downPayment > 50)) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en porcentaje debe estar entre 20% y 50%.</p>`;
         return;
     }
-    if (downPaymentType === 'uf' && downPayment < 1) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en UF debe ser mayor a 0.</p>`;
+    if (downPaymentType === 'uf' && downPayment < 100) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en UF debe ser mayor a 100.</p>`;
         return;
     }
     if (isNaN(incomeUF) || isNaN(interestRate) || isNaN(loanTerm) || isNaN(ufValue)) {
@@ -97,5 +97,11 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
         <p>Monto máximo del crédito: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
         <p>Dividendo mensual máximo: ${maxMonthlyPayment.toFixed(2)} UF (${formatCurrency(maxMonthlyPayment * ufValue)})</p>
         <p>Valor máximo de la vivienda: ${maxPropertyValuePossible.toFixed(2)} UF (${formatCurrency(maxPropertyValuePossible * ufValue)})</p>
+        <button id="show-links" style="margin-top:10px;">Ofertas Inmobiliarias</button>
     `;
+
+    document.getElementById('show-links').addEventListener('click', () => {
+        const maxPrice = Math.round(maxPropertyValuePossible * ufValue);
+        window.location.href = '../real-estate-offers.html?maxPrice=' + maxPrice;
+    });
 });
