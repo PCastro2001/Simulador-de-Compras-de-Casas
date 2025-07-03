@@ -13,6 +13,16 @@
     <header>
         <h1>Simulador de Subsidios para Vivienda</h1>
         <p>¡Bienvenido! Selecciona una opción para comenzar a simular tu camino hacia una vivienda propia.</p>
+        <nav>
+            {% if user.is_authenticated %}
+                <span>Hola, {{ user.username }}</span> |
+                <a href="{% url 'dashboard' %}">Resultados</a> |
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
+            {% else %}
+                <a href="{% url 'login' %}">Iniciar sesión</a> |
+                <a href="{% url 'signup' %}">Registrarse</a>
+            {% endif %}
+        </nav>
     </header>
     <main>
         <div class="subsidy-options">
@@ -46,6 +56,14 @@
                     <p>Responde preguntas para descubrir a qué subsidios puedes optar.</p>
                 </a>
             </article>
+            {% if user.is_authenticated %}
+            <article class="subsidy-card">
+                <a href="{% url 'dashboard' %}">
+                    <h2>Resultados</h2>
+                    <p>Revisa automáticamente los subsidios recomendados para ti.</p>
+                </a>
+            </article>
+            {% endif %}
         </div>
         <h5 style="text-align: center; display: block;">Aviso: La tasa de crédito anual está por defecto en un 5.1%, pero puede cambiarlo a una tasa mas actual según su banco. Favor de tenerlo en consideración para una simulación mas adecuada a su situación económica.</a>
     </main>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+</head>
+<body>
+    <h1>Bienvenido {{ request.user.username }}</h1>
+    <p>Tu percentil de ingreso es: {{ percentile }}%</p>
+    <div class="subsidy-options">
+        {% for sub in subsidies %}
+            <article class="subsidy-card">
+                <a href="{{ sub.href }}">
+                    <h2>{{ sub.title }}</h2>
+                </a>
+            </article>
+        {% endfor %}
+    </div>
+    <p><a href="{% url 'logout' %}">Cerrar sesión</a></p>
+</body>
+</html>
