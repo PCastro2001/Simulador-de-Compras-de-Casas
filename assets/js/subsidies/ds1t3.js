@@ -27,12 +27,8 @@ function convertToUF() {
     const ufValue = parseFloat(document.getElementById('uf-value').value);
     const propertyValueCLP = parseFloat(document.getElementById('property-value-clp').value);
     if (!isNaN(ufValue) && !isNaN(propertyValueCLP) && ufValue > 0) {
-        const savingsUf = parseFloat(document.getElementById('savings-uf').value);
-        const isNewHome = document.getElementById('is-new-home').checked;
-        const location = document.getElementById('location').value;
-        const maxUF = (isNewHome && savingsUf >= 160) ? 3000 : (location === 'north' || location === 'south') ? 2600 : 2200;
         const propertyValueUF = propertyValueCLP / ufValue;
-        document.getElementById('property-value').value = Math.min(propertyValueUF, maxUF).toFixed(2);
+        document.getElementById('property-value').value = Math.min(propertyValueUF).toFixed(2);
     }
 }
 
