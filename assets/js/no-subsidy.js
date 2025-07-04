@@ -27,9 +27,9 @@ function adjustDownPaymentOptions() {
     const downPaymentType = document.getElementById('down-payment-type').value;
     const downPaymentInput = document.getElementById('down-payment');
     if (downPaymentType === 'percentage') {
-        downPaymentInput.min = 10;
+        downPaymentInput.min = 20;
         downPaymentInput.max = 50;
-        downPaymentInput.value = 10;
+        downPaymentInput.value = 20;
     } else {
         downPaymentInput.min = 1;
         downPaymentInput.max = 999999; // Sin límite práctico
@@ -62,12 +62,12 @@ document.getElementById('simulacion-form').addEventListener('submit', async (eve
         resultsDiv.innerHTML = `<p style="color: #d9534f;">El valor de la vivienda debe ser mayor a 0 UF.</p>`;
         return;
     }
-    if (downPaymentType === 'percentage' && (downPayment < 10 || downPayment > 50)) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en porcentaje debe estar entre 10% y 50%.</p>`;
+    if (downPaymentType === 'percentage' && (downPayment < 20 || downPayment > 50)) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en porcentaje debe estar entre 20% y 50%.</p>`;
         return;
     }
-    if (downPaymentType === 'uf' && downPayment < 1) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en UF debe ser mayor a 0.</p>`;
+    if (downPaymentType === 'uf' && downPayment < 100) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en UF debe ser mayor a 100.</p>`;
         return;
     }
     if (isNaN(interestRate) || isNaN(loanTerm) || isNaN(ufValue)) {
