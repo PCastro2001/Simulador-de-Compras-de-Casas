@@ -126,6 +126,13 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
 
     document.getElementById('show-links').addEventListener('click', () => {
         const maxPrice = Math.round(maxPropertyValuePossible * ufValue);
-        window.location.href = '../real-estate-offers.html?maxPrice=' + maxPrice;
+        const params = new URLSearchParams({
+            maxPrice: maxPrice,
+            maxUF: Math.round(maxPropertyValuePossible),
+            credit: Math.round(loanAmount),
+            origin: 'ds1t3',
+            new: isNewHome
+        });
+        window.location.href = '../real-estate-offers.html?' + params.toString();
     });
 });

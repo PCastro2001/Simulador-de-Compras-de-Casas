@@ -5,6 +5,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const maxPrice = parseInt(params.get('maxPrice'), 10) || 0;
+    const origin = params.get('origin') || '';
+    const credit = parseInt(params.get('credit'), 10) || 0;
+    const maxUFParam = parseInt(params.get('maxUF'), 10) || 0;
     const form = document.getElementById('offers-form');
     const results = document.getElementById('links-result');
 
@@ -28,7 +31,27 @@ document.addEventListener('DOMContentLoaded', () => {
         'magallanes': { tt: 'magallanes', pi: 'magallanes-y-antartica-chilena' }
     };
 
-// Parámetros de texto y viewport específicos por región para TocToc
+    // Mapeo de rutas para Enlace Inmobiliario
+    const enlaceMap = {
+        'arica-y-parinacota': 'norte/listado/region-parinacota',
+        'tarapaca': 'norte/listado/region-tarapaca',
+        'antofagasta': 'norte/listado/region-antofagasta',
+        'atacama': 'norte/listado/region-atacama',
+        'coquimbo': 'coquimbo/listado/region-coquimbo',
+        'valparaiso': 'valparaiso/listado/region-valparaiso',
+        'metropolitana': 'metropolitano/listado/region-metropolitana',
+        'bernardo-ohiggins': 'ohiggins/listado/region-ohiggins',
+        'maule': 'maule/listado/region-maule',
+        'biobio': 'biobio/listado/region-bio',
+        'nuble': 'biobio/listado/region-bio',
+        'araucania': 'araucania/listado/region-araucania',
+        'los-rios': 'sur/listado/region-rios',
+        'los-lagos': 'sur/listado/region-lagos',
+        'aysen': 'sur/listado/region-aysen',
+        'magallanes': 'sur/listado/region-magallanes'
+    };
+
+    // Parámetros de texto y viewport específicos por región para TocToc
     const toctocParams = {
         'arica-y-parinacota': {
             text: 'Arica%20Y%20Parinacota,%20Chile',
@@ -125,17 +148,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const { tt, pi } = regionMap[regionKey];
         const bedrooms = Math.ceil((adults + children) / 2);
 
+        const bedroomSlug = Array.from({ length: bedrooms }, (_, i) => i + 1).join('-') + '-dormitorios';
+
+
         const stateParam = `&estado=${isNew ? 1 : 0}`;
         const projectPath = isNew ? '/proyectos' : '';
 
         const { text, viewport, polygon } = toctocParams[regionKey] || defaultParams;
-        const toctoc = `https://www.toctoc.com/resultados/mapa/compra/departamento-casa/${tt}/?moneda=1&precioDesde=30000000&precioHasta=${maxPrice}&dormitoriosDesde=${bedrooms}&banosDesde=1${stateParam}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`;        const portalDepto = `https://www.portalinmobiliario.com/venta/departamento${projectPath}/${pi}/_DisplayType_M_PriceRange_30000000CLP-${maxPrice}CLP`;
-        const portalCasa = `https://www.portalinmobiliario.com/venta/casa${projectPath}/${pi}/_DisplayType_M_PriceRange_30000000CLP-${maxPrice}CLP_BEDROOMS_${bedrooms}-`;
+        const toctoc = `https://www.toctoc.com/resultados/mapa/compra/departamento-casa/${tt}/?moneda=1&precioDesde=25000000&precioHasta=${maxPrice}&dormitoriosDesde=${bedrooms}&banosDesde=1${stateParam}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`;        const portalDepto = `https://www.portalinmobiliario.com/venta/departamento${projectPath}/${pi}/_DisplayType_M_PriceRange_30000000CLP-${maxPrice}CLP`;
+        const portalCasa = `https://www.portalinmobiliario.com/venta/casa${projectPath}/${pi}/_DisplayType_M_PriceRange_25000000CLP-${maxPrice}CLP_BEDROOMS_${bedrooms}-`;
 
-        results.innerHTML = `
+        let enlace = '';
+        if (isNew && enlaceMap[regionKey]) {
+            let subsidySegment = '';
+            if (origin === 'ds1t2') {
+                subsidySegment = 'subsidio-ds1-tramo-2+subsidio-ds1-hasta-3000-uf';
+            } else if (origin === 'ds1t3') {
+                subsidySegment = 'subsidio-ds1-tramo-3+subsidio-ds1-hasta-3000-uf';
+            } else if (origin === 'no-subsidy') {
+                if (credit >= 1100 && credit <= 2000 && maxUFParam <= 2800) {
+                    subsidySegment = 'subsidio-ds19';
+                } else {
+                    subsidySegment = 'subsidios';
+                }
+            }
+            if (subsidySegment) {
+                const base = enlaceMap[regionKey];
+                const uf = maxUFParam || 0;
+                enlace = `https://www.enlaceinmobiliario.cl/${base}/propiedades/todas/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/${subsidySegment}/banos/entrega/disponibilidad/`;
+            }
+        }
+
+        let html = `
             <p><a href="${toctoc}" target="_blank">Buscar Departamentos y Casas en TocToc</a></p>
             <p><a href="${portalDepto}" target="_blank">Departamentos en Portal Inmobiliario</a></p>
             <p><a href="${portalCasa}" target="_blank">Casas en Portal Inmobiliario</a></p>
         `;
+        if (enlace) {
+            html += `\n            <p><a href="${enlace}" target="_blank">Proyectos Nuevos en Enlace Inmobiliario</a></p>`;
+        }
+        results.innerHTML = html;
     });
 });

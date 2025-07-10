@@ -81,11 +81,18 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
         <p>Subsidio total: ${subsidy.toFixed(2)} UF (${formatCurrency(subsidy * ufValue)})</p>
         <p>Monto máximo del crédito: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
         <p>Dividendo mensual máximo: ${maxMonthlyPayment.toFixed(2)} UF (${formatCurrency(maxMonthlyPayment * ufValue)})</p>
+        <p>Valor máximo de la vivienda: ${maxPropertyValuePossible.toFixed(2)} UF (${formatCurrency(maxPropertyValuePossible * ufValue)})</p>
         <button id="show-links" style="margin-top:10px;">Ofertas Inmobiliarias</button>
     `;
 
     document.getElementById('show-links').addEventListener('click', () => {
         const maxPrice = Math.round(maxPropertyValuePossible * ufValue);
-        window.location.href = '../real-estate-offers.html?maxPrice=' + maxPrice;
+         const params = new URLSearchParams({
+            maxPrice: maxPrice,
+            maxUF: Math.round(maxPropertyValuePossible),
+            credit: Math.round(loanAmount),
+            origin: 'ds1t1'
+        });
+        window.location.href = '../real-estate-offers.html?' + params.toString();
     });
 });

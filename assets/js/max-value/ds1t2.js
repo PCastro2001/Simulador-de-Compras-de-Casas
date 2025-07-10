@@ -1,4 +1,3 @@
-// Función para obtener el valor de la UF desde la API
 async function fetchUFValue() {
     try {
         const response = await fetch('https://mindicador.cl/api/uf');
@@ -8,11 +7,10 @@ async function fetchUFValue() {
         return ufValue;
     } catch (error) {
         console.error('Error al obtener el valor de la UF:', error);
-        return 37396.77; // Valor por defecto
+        return 39345.77;
     }
 }
 
-// Convertir CLP a UF
 function convertToUF() {
     const ufValue = parseFloat(document.getElementById('uf-value').value);
     const incomeCLP = parseFloat(document.getElementById('income-clp').value);
@@ -22,49 +20,48 @@ function convertToUF() {
     }
 }
 
-// Ajustar el valor máximo de la propiedad según las condiciones
-function adjustMaxPropertyValue() {
-    const savingsUf = parseFloat(document.getElementById('savings-uf').value);
-    const isNewHome = document.getElementById('is-new-home').checked;
-    const maxUF = (isNewHome && savingsUf >= 80) ? 3000 : 1600;
-    return maxUF;
+function adjustDownPaymentOptions() {
+    const downPaymentType = document.getElementById('down-payment-type').value;
+    const downPaymentInput = document.getElementById('down-payment');
+    if (downPaymentType === 'percentage') {
+        downPaymentInput.min = 20;
+        downPaymentInput.max = 50;
+        downPaymentInput.value = 20;
+    } else {
+        downPaymentInput.min = 100;
+        downPaymentInput.max = 999999;
+        downPaymentInput.value = 100;
+    }
 }
 
-// Función para calcular el subsidio variable
-function calculateSubsidy(totalValue, maxSubsidy, minSubsidy, minRange, maxRange) {
-    const propertyValue = totalValue / 1.375; // Ajuste según la lógica del segundo fragmento
-    if (propertyValue <= minRange) return maxSubsidy;
-    if (propertyValue >= maxRange) return minSubsidy;
-    const slope = (maxSubsidy - minSubsidy) / (minRange - maxRange);
-    return maxSubsidy + slope * (propertyValue - minRange);
-}
-
-// Cargar UF al iniciar la página
 document.addEventListener('DOMContentLoaded', () => {
     fetchUFValue();
+    adjustDownPaymentOptions();
 });
 
-// Manejar el formulario
 document.getElementById('max-value-form').addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const incomeUF = parseFloat(document.getElementById('income-uf').value);
-    const savingsUf = parseFloat(document.getElementById('savings-uf').value);
-    const location = document.getElementById('location').value;
+    const downPaymentType = document.getElementById('down-payment-type').value;
+    const isNewHome = document.getElementById('is-new-home').checked;
+    let downPayment = parseFloat(document.getElementById('down-payment').value);
     const ufValue = parseFloat(document.getElementById('uf-value').value) || await fetchUFValue();
     const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
     const loanTerm = parseInt(document.getElementById('loan-term').value);
-    const isNewHome = document.getElementById('is-new-home').checked;
     const isYoungSingle = document.getElementById('is-young-single').checked;
 
     const resultsDiv = document.getElementById('results');
 
     // Validaciones
-    if (savingsUf < 40 || isNaN(savingsUf)) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">El ahorro debe ser de al menos 40 UF.</p>`;
+    if (downPaymentType === 'percentage' && (downPayment < 20 || downPayment > 50)) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en porcentaje debe estar entre 20% y 50%.</p>`;
         return;
     }
-    const maxPropertyValueLimit = (isNewHome && savingsUf >= 80) ? 3000 : 1600;
+    if (downPaymentType === 'uf' && downPayment < 100) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El pie en UF debe ser mayor a 100.</p>`;
+        return;
+    }
     if (isNaN(incomeUF) || isNaN(interestRate) || isNaN(loanTerm) || isNaN(ufValue)) {
         resultsDiv.innerHTML = `<p style="color: #d9534f;">Por favor, completa todos los campos correctamente.</p>`;
         return;
@@ -79,36 +76,17 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
     const totalPayments = loanTerm * 12;
     const loanAmount = maxMonthlyPayment * (1 - Math.pow(1 + monthlyRate, -totalPayments)) / monthlyRate;
 
-    // Determinar subsidio y valor máximo según ubicación
-    let subsidyUF, initialSubsidyUF, maxPropertyValue;
-    if (location === 'north') {
-        initialSubsidyUF = 950;
-        maxPropertyValue = savingsUf >= 80 && isNewHome ? 3000 : 1800;
-        subsidyUF = calculateSubsidy(loanAmount + savingsUf + 950, 650, 350, 800, 1600);
-    } else if (location === 'south') {
-        initialSubsidyUF = 1000;
-        maxPropertyValue = savingsUf >= 80 && isNewHome ? 3000 : 1800;
-        subsidyUF = calculateSubsidy(loanAmount + savingsUf + 1000, 700, 400, 800, 1600);
+    // Calcular el valor máximo de la vivienda
+    let maxPropertyValuePossible;
+    if (downPaymentType === 'percentage') {
+        maxPropertyValuePossible = loanAmount / (1 - (downPayment / 100));
+        if (downPayment === 10 && maxPropertyValuePossible > 4500) {
+            resultsDiv.innerHTML = `<p style="color: #d9534f;">No puedes seleccionar un pie del 10% para viviendas de más de 4500 UF.</p>`;
+            return;
+        }
+        downPayment = (downPayment / 100) * maxPropertyValuePossible;
     } else {
-        initialSubsidyUF = 850;
-        maxPropertyValue = savingsUf >= 80 && isNewHome ? 3000 : 1600;
-        subsidyUF = calculateSubsidy(loanAmount + savingsUf + 850, 550, 250, 800, 1600);
-    }
-
-    // Ajustar por vivienda nueva y ahorro >= 80 UF
-    const additionalSubsidyUF = (savingsUf >= 80 && isNewHome) ? 150 : 0;
-    let totalSubsidyUF = subsidyUF + additionalSubsidyUF;
-
-    // Calcular valor máximo de la propiedad
-    let maxPropertyValuePossible = loanAmount + savingsUf + totalSubsidyUF;
-    if (maxPropertyValuePossible < 600) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">No calificas para este subsidio (valor mínimo: 600 UF).</p>`;
-        return;
-    }
-    if (maxPropertyValuePossible > maxPropertyValue) {
-        maxPropertyValuePossible = maxPropertyValue;
-        totalSubsidyUF = location === 'north' ? 350 : location === 'south' ? 400 : 250;
-        totalSubsidyUF += additionalSubsidyUF;
+        maxPropertyValuePossible = loanAmount + downPayment;
     }
 
     // Formatear valores
@@ -116,7 +94,7 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
 
     // Mostrar resultados
     resultsDiv.innerHTML = `
-        <p>Subsidio total estimado: ${totalSubsidyUF.toFixed(2)} UF (${formatCurrency(totalSubsidyUF * ufValue)})</p>
+        <p>Pie: ${downPayment.toFixed(2)} UF (${formatCurrency(downPayment * ufValue)})</p>
         <p>Monto máximo del crédito: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
         <p>Dividendo mensual máximo: ${maxMonthlyPayment.toFixed(2)} UF (${formatCurrency(maxMonthlyPayment * ufValue)})</p>
         <p>Valor máximo de la vivienda: ${maxPropertyValuePossible.toFixed(2)} UF (${formatCurrency(maxPropertyValuePossible * ufValue)})</p>
@@ -125,6 +103,13 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
 
     document.getElementById('show-links').addEventListener('click', () => {
         const maxPrice = Math.round(maxPropertyValuePossible * ufValue);
-        window.location.href = '../real-estate-offers.html?maxPrice=' + maxPrice;
+         const params = new URLSearchParams({
+            maxPrice: maxPrice,
+            maxUF: Math.round(maxPropertyValuePossible),
+            credit: Math.round(loanAmount),
+            origin: 'no-subsidy',
+            new: isNewHome
+        });
+        window.location.href = '../real-estate-offers.html?' + params.toString();
     });
 });

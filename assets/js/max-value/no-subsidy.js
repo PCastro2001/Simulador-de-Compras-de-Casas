@@ -44,6 +44,7 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
 
     const incomeUF = parseFloat(document.getElementById('income-uf').value);
     const downPaymentType = document.getElementById('down-payment-type').value;
+    const isNewHome = document.getElementById('is-new-home').checked;
     let downPayment = parseFloat(document.getElementById('down-payment').value);
     const ufValue = parseFloat(document.getElementById('uf-value').value) || await fetchUFValue();
     const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
@@ -102,6 +103,13 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
 
     document.getElementById('show-links').addEventListener('click', () => {
         const maxPrice = Math.round(maxPropertyValuePossible * ufValue);
-        window.location.href = '../real-estate-offers.html?maxPrice=' + maxPrice;
+         const params = new URLSearchParams({
+            maxPrice: maxPrice,
+            maxUF: Math.round(maxPropertyValuePossible),
+            credit: Math.round(loanAmount),
+            origin: 'no-subsidy',
+            new: isNewHome
+        });
+        window.location.href = '../real-estate-offers.html?' + params.toString();
     });
 });
