@@ -150,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const bedroomSlug = Array.from({ length: bedrooms }, (_, i) => i + 1).join('-') + '-dormitorios';
 
-
         const stateParam = `&estado=${isNew ? 1 : 0}`;
         const projectPath = isNew ? '/proyectos' : '';
 
