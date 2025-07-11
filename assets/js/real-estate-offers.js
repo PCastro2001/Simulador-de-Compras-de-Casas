@@ -148,7 +148,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const { tt, pi } = regionMap[regionKey];
         const bedrooms = Math.ceil((adults + children) / 2);
 
-        const bedroomSlug = Array.from({ length: bedrooms }, (_, i) => i + 1).join('-') + '-dormitorios';
+        const totalPeople = adults + children;
+        let bedroomOptions = [];
+
+        if (totalPeople <= 2) {
+        bedroomOptions = [1, 2, 3, 4];
+        } else if (totalPeople <= 4) {
+        bedroomOptions = [2, 3, 4];
+        } else if (totalPeople <= 6) {
+        bedroomOptions = [3, 4];
+        } else {
+        bedroomOptions = [4];
+        }
+
+        const bedroomSlug = bedroomOptions.join('-') + '-dormitorios';
 
         const stateParam = `&estado=${isNew ? 1 : 0}`;
         const projectPath = isNew ? '/proyectos' : '';
