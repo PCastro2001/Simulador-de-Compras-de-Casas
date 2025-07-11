@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const { text, viewport, polygon } = toctocParams[regionKey] || defaultParams;
         const toctoc = `https://www.toctoc.com/resultados/mapa/compra/departamento-casa/${tt}/?moneda=1&precioDesde=25000000&precioHasta=${maxPrice}&dormitoriosDesde=${bedrooms}&banosDesde=1${stateParam}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`;        
         const portalDepto = `https://www.portalinmobiliario.com/venta/departamento${projectPath}/${pi}/_DisplayType_M_PriceRange_30000000CLP-${maxPrice}CLP`;
-        const portalCasa = `https://www.portalinmobiliario.com/venta/casa${projectPath}/${pi}/_DisplayType_M_PriceRange_25000000CLP-${maxPrice}CLP_BEDROOMS_${bedrooms}-*_NoIndex_True#applied_filter_id%3Dprice%26applied_filter_name%3DPrecio%26applied_filter_order%3D6%26applied_value_id%3D25000000-62000000%26applied_value_name%3DCLP25000000-CLP62000000%26applied_value_order%3D4%26applied_value_results%3DUNKNOWN_RESULTS%26is_custom%3Dtrue`;
+        const portalCasa = `https://www.portalinmobiliario.com/venta/casa${projectPath}/${pi}/_DisplayType_M_PriceRange_25000000CLP-${maxPrice}CLP_BEDROOMS_${bedrooms}-*`;
 
         let enlace = '';
         if (isNew && enlaceMap[regionKey]) {
