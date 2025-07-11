@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (origin === 'ds1t3') {
                 subsidySegment = 'subsidio-ds1-tramo-3+subsidio-ds1-hasta-3000-uf';
             } else if (origin === 'no-subsidy') {
-                if (credit >= 1100 && credit <= 2000 && maxUFParam <= 2800) {
+                if (credit >= 1000 && credit <= 2000 && maxUFParam <= 2800) {
                     subsidySegment = 'subsidio-ds19';
                 } else {
                     subsidySegment = 'subsidios';
