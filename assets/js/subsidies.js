@@ -57,12 +57,12 @@ function getAvailableSubsidies(percentile) {
             </article>
         `;
     }
-    if (percentile <= 70) {
+    if (percentile <= 80) {
         subsidies += `
             <article class="subsidy-card">
                 <a href="../pages/percentile/ds1t2.html">
                     <h2>Subsidio DS1 Tramo 2</h2>
-                    <p>Compra de viviendas hasta 1.600 UF (hasta 70% de vulnerabilidad).</p>
+                    <p>Compra de viviendas hasta 1.600 UF (hasta 80% de vulnerabilidad).</p>
                 </a>
             </article>
         `;
