@@ -17,8 +17,20 @@
         <section class="form-container">
             <form id="ds19-form">
                 <div class="form-group">
-                    <label for="loan-amount">Monto del crédito hipotecario (UF):</label>
-                    <input type="number" id="loan-amount" min="1" step="0.01" required>
+                    <label for="property-value">Valor de la vivienda (UF):</label>
+                    <input type="number" id="property-value" min="1" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="savings">Ahorro DS19 (UF):</label>
+                    <input type="number" id="savings" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="subsidy-clp">Subsidio (CLP):</label>
+                    <input type="number" id="subsidy-clp" min="0" step="1000" onchange="convertSubsidyToUF()">
+                </div>
+                <div class="form-group">
+                    <label for="subsidy-uf">Subsidio (UF):</label>
+                    <input type="number" id="subsidy-uf" min="0" step="0.01" required>
                 </div>
                 <div class="form-group">
                     <label for="is-young-single">¿Eres joven soltero (menor de 35 años)?</label>
