@@ -98,7 +98,7 @@ function getAvailableSubsidies(percentile, householdSize, income, ufValue) {
             <article class="subsidy-card">
                 <a href="../pages/percentile/ds52.html">
                     <h2>Subsidio DS 52</h2>
-                    <p>Arriendo (Ingreso entre 7 y 25 UF).</p>
+                    <p>Subsidio de Arriendo que te ayudara a ahorrar para el Subsidio DS1 o DS19.</p>
                 </a>
             </article>
         `;
