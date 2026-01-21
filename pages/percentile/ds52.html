@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calcula el subsidio de Arriendo DS52">
+    <title>Subsidio de Arriendo DS52 - Simulador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/subsidies-alt.css">
+</head>
+<body>
+    <header>
+        <h1>Subsidio de Arriendo (DS52)</h1>
+        <p>Calcula cuánto cubre el subsidio y cuánto debes pagar tú.</p>
+    </header>
+    <main>
+        <section class="form-container">
+            <form id="ds52-form">
+                <div class="form-group">
+                    <label>Sueldo mensual total (CLP):</label>
+                    <p id="income-display" style="font-weight: bold; color: #333;">Cargando...</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">¿Dónde quieres arrendar?</label>
+                    <select id="location" required>
+                        <option value="regular">Zona Regular (Regiones)</option>
+                        <option value="special">RM, Arica y Parinacota, Tarapacá, Antofagasta, Atacama, Aysén, Magallanes</option>
+                    </select>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        *RM y Zonas Extremas tienen topes más altos (13 UF).
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration-months">¿Por cuánto tiempo quieres distribuir el subsidio?</label>
+                    <select id="duration-months" required>
+                        <option value="12">1 Año (12 meses)</option>
+                        <option value="24">2 Años (24 meses)</option>
+                        <option value="36">3 Años (36 meses)</option>
+                        <option value="48" selected>4 Años (48 meses)</option>
+                        <option value="60">5 Años (60 meses)</option>
+                        <option value="72">6 Años (72 meses)</option>
+                        <option value="84">7 Años (84 meses)</option>
+                        <option value="96">8 Años (Maximo)</option>
+                    </select>
+                    <small>El subsidio total es de 170 UF a repartir.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="uf-value">Valor actual de la UF (CLP):</label>
+                    <input type="number" id="uf-value" step="0.01" readonly>
+                </div>
+
+                <button type="submit">Calcular Arriendo</button>
+            </form>
+        </section>
+
+        <section id="results" class="results-container"></section>
+    </main>
+
+    <footer>
+        <button onclick="window.location.href='../percentile.html'">Volver</button>
+    </footer>
+
+    <script src="../../assets/js/percentile/ds52.js"></script>
+</body>
+</html>

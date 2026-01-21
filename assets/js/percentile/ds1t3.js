@@ -8,7 +8,7 @@ async function fetchUFValue() {
         return ufValue;
     } catch (error) {
         console.error('Error al obtener el valor de la UF:', error);
-        return 37396.77; // Valor por defecto
+        return 40000; // Valor por defecto
     }
 }
 

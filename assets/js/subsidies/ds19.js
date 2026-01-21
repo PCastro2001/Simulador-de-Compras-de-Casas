@@ -8,7 +8,7 @@ async function fetchUFValue() {
         return ufValue;
     } catch (error) {
         console.error('Error al obtener el valor de la UF:', error);
-        return 37396.77; // Valor por defecto
+        return 40000; // Valor por defecto
     }
 }
 
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Convertir subsidio CLP a UF automáticamente
 function convertSubsidyToUF() {
-    const ufValue = parseFloat(document.getElementById('uf-value').value) || 37396.77;
+    const ufValue = parseFloat(document.getElementById('uf-value').value) || 40000;
     const subsidyCLP = parseFloat(document.getElementById('subsidy-clp').value);
     if (!isNaN(subsidyCLP)) {
         document.getElementById('subsidy-uf').value = (subsidyCLP / ufValue).toFixed(2);

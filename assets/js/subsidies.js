@@ -1,9 +1,24 @@
+// 1. Cargar el valor de la UF apenas se abra la página
+document.addEventListener('DOMContentLoaded', () => {
+    fetchUFValue();
+});
+
 document.getElementById('subsidy-form').addEventListener('submit', (event) => {
     event.preventDefault();
 
     const income = parseFloat(document.getElementById('total-income').value);
     const householdSize = parseInt(document.getElementById('household-size').value);
     const rent = parseFloat(document.getElementById('rent').value);
+    
+    // Obtenemos el valor de la UF desde el input (donde lo guardó la función fetch)
+    // Si por alguna razón falló la API, usamos un valor por defecto seguro (ej: 38000)
+    let ufValue = parseFloat(document.getElementById('uf-value').value);
+    if (!ufValue || isNaN(ufValue)) ufValue = 38000;
+
+    if (isNaN(income) || isNaN(householdSize) || isNaN(rent)) {
+        alert("Por favor, ingresa valores numéricos válidos.");
+        return;
+    }
 
     localStorage.setItem('income', income);
     localStorage.setItem('rent', rent);
@@ -11,13 +26,38 @@ document.getElementById('subsidy-form').addEventListener('submit', (event) => {
     const adjustedIncome = (income - rent) / householdSize;
     const percentile = calculatePercentile(adjustedIncome);
 
-    let resultHTML = `<p>Tu percentil de ingreso es: ${percentile}%</p>`;
+    let resultHTML = `<p>Tu percentil estimado es: <strong>${percentile}%</strong></p>`;
+    resultHTML += `<p><small>Valor UF utilizado: $${ufValue}</small></p>`; // Informativo
+    
     resultHTML += '<div class="subsidy-options">';
-    resultHTML += getAvailableSubsidies(percentile);
+    // AHORA PASAMOS 4 ARGUMENTOS: percentil, tamaño hogar, ingreso total y valor UF
+    resultHTML += getAvailableSubsidies(percentile, householdSize, income, ufValue);
     resultHTML += '</div>';
 
     document.getElementById('results').innerHTML = resultHTML;
 });
+
+// Tu función para obtener la UF (sin cambios, solo integrada)
+async function fetchUFValue() {
+    try {
+        const response = await fetch('https://mindicador.cl/api/uf');
+        const data = await response.json();
+        const ufValue = data.serie[0].valor;
+        // Asegúrate de tener un <input type="hidden" id="uf-value"> en tu HTML
+        // o un input visible si quieres mostrarlo
+        const ufInput = document.getElementById('uf-value');
+        if(ufInput) {
+            ufInput.value = ufValue.toFixed(2);
+        }
+        return ufValue;
+    } catch (error) {
+        console.error('Error al obtener el valor de la UF:', error);
+        // Seteamos un fallback en el input si falla
+        const ufInput = document.getElementById('uf-value');
+        if(ufInput) ufInput.value = 38000; 
+        return 38000; 
+    }
+}
 
 function calculatePercentile(income) {
     const thresholds = [
@@ -32,11 +72,39 @@ function calculatePercentile(income) {
         { max: 774525, percentile: 90 },
         { max: Infinity, percentile: 100 }
     ];
-    return thresholds.find(threshold => income < threshold.max).percentile;
+    const found = thresholds.find(threshold => income < threshold.max);
+    return found ? found.percentile : 100;
 }
 
-function getAvailableSubsidies(percentile) {
+// AHORA RECIBE income Y ufValue
+function getAvailableSubsidies(percentile, householdSize, income, ufValue) {
     let subsidies = '';
+
+    // Lógica DS52 con restricción de UF
+    // 1. Percentil <= 70
+    // 2. Más de 1 persona
+    // 3. Ingreso >= 7 UF
+    // 4. Ingreso <= 25 UF
+    
+    const minIncomeDS52 = 7 * ufValue;
+    const maxIncomeDS52 = 25 * ufValue;
+
+    if (percentile <= 70 && 
+        householdSize > 1 && 
+        income >= minIncomeDS52 && 
+        income <= maxIncomeDS52) {
+        
+        subsidies += `
+            <article class="subsidy-card">
+                <a href="../pages/percentile/ds52.html">
+                    <h2>Subsidio DS 52</h2>
+                    <p>Arriendo (Ingreso entre 7 y 25 UF).</p>
+                </a>
+            </article>
+        `;
+    }
+
+    // DS49
     if (percentile <= 40) {
         subsidies += `
             <article class="subsidy-card">
@@ -47,35 +115,42 @@ function getAvailableSubsidies(percentile) {
             </article>
         `;
     }
+
+    // DS1 Tramo 1
     if (percentile <= 60) {
         subsidies += `
             <article class="subsidy-card">
-                <a href=../pages/percentile/ds1t1.html">
+                <a href="../pages/percentile/ds1t1.html">
                     <h2>Subsidio DS1 Tramo 1</h2>
-                    <p>Compra de viviendas hasta 1.100 UF (hasta 60% de vulnerabilidad).</p>
+                    <p>Compra hasta 1.100 UF.</p>
                 </a>
             </article>
         `;
     }
+
+    // DS1 Tramo 2
     if (percentile <= 80) {
         subsidies += `
             <article class="subsidy-card">
                 <a href="../pages/percentile/ds1t2.html">
                     <h2>Subsidio DS1 Tramo 2</h2>
-                    <p>Compra de viviendas hasta 1.600 UF (hasta 80% de vulnerabilidad).</p>
+                    <p>Compra hasta 1.600 UF.</p>
                 </a>
             </article>
         `;
     }
+
+    // DS1 Tramo 3
     if (percentile <= 100) {
         subsidies += `
             <article class="subsidy-card">
                 <a href="../pages/percentile/ds1t3.html">
                     <h2>Subsidio DS1 Tramo 3</h2>
-                    <p>Compra de viviendas hasta 2.200 UF (solo requiere RHS).</p>
+                    <p>Compra hasta 2.200 UF.</p>
                 </a>
             </article>
         `;
     }
+
     return subsidies;
 }
