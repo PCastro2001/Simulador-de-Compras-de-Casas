@@ -37,8 +37,19 @@
                     <input type="checkbox" id="is-young-single">
                 </div>
                 <div class="form-group">
-                    <label for="interest-rate">Tasa de interés anual (%):</label>
-                    <input type="number" id="interest-rate" value="5.1" step="0.01" required>
+                    <label for="bank">Banco donde solicitarías el crédito:</label>
+                    <select id="bank" required>
+                        <option value="">Selecciona un banco</option>
+                        <option value="BancoEstado">BancoEstado</option>
+                        <option value="Santander">Santander</option>
+                        <option value="Coopeuch">Coopeuch</option>
+                        <option value="Internacional">Banco Internacional</option>
+                        <option value="Falabella">Banco Falabella</option>
+                        <option value="Chile">Banco de Chile</option>
+                        <option value="BICE">Banco BICE</option>
+                        <option value="Itau">Banco Itaú</option>
+                        <option value="BCI">Banco BCI</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="loan-term">Plazo del crédito (años):</label>

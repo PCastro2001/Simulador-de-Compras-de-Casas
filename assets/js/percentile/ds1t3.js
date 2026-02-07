@@ -1,3 +1,15 @@
+const BANKS = {
+    BancoEstado: { tasa: 0.0455 },
+    Santander: { tasa: 0.0434 },
+    Coopeuch: { tasa: 0.0450 },
+    Internacional: { tasa: 0.0479 },
+    Falabella: { tasa: 0.0465 },
+    Chile: { tasa: 0.0484 },
+    BICE: { tasa: 0.0510 },
+    Itau: { tasa: 0.0483 },
+    BCI: { tasa: 0.0556 }
+};
+
 // Función para obtener el valor de la UF desde la API
 async function fetchUFValue() {
     try {
@@ -37,7 +49,14 @@ document.getElementById('ds1t3-form').addEventListener('submit', async (event) =
     const isNewHome = document.getElementById('is-new-home').checked;
     const location = document.getElementById('location').value;
     const loanTerm = parseInt(document.getElementById('loan-term').value);
-    const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
+    const selectedBank = document.getElementById('bank').value;
+
+    if (!BANKS[selectedBank]) {
+        resultsDiv.innerHTML = `<p style="color:#d9534f;">Selecciona un banco válido.</p>`;
+        return;
+    }
+
+    const interestRate = BANKS[selectedBank].tasa;
     const ufValue = parseFloat(document.getElementById('uf-value').value) || await fetchUFValue();
 
     const resultsDiv = document.getElementById('results');
@@ -100,6 +119,8 @@ document.getElementById('ds1t3-form').addEventListener('submit', async (event) =
 
     // Mostrar resultados
     resultsDiv.innerHTML = `
+        <p>Banco seleccionado: ${selectedBank}</p>
+        <p>Tasa usada para el cálculo: ${(interestRate * 100).toFixed(2)}%</p>
         <p>Valor máximo de la vivienda: ${propertyValue.toFixed(2)} UF (${formatCurrency(totalCLP)})</p>
         <p>Crédito máximo: ${maxLoanAmountUF.toFixed(2)} UF (${formatCurrency(loanCLP)})</p>
         <p>Subsidio total: ${totalSubsidyUF.toFixed(2)} UF (${formatCurrency(subsidyCLP)})</p>

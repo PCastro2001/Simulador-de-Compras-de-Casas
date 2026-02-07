@@ -1,3 +1,15 @@
+const BANKS = {
+    BancoEstado: { tasa: 0.0455 },
+    Santander: { tasa: 0.0434 },
+    Coopeuch: { tasa: 0.0450 },
+    Internacional: { tasa: 0.0479 },
+    Falabella: { tasa: 0.0465 },
+    Chile: { tasa: 0.0484 },
+    BICE: { tasa: 0.0510 },
+    Itau: { tasa: 0.0483 },
+    BCI: { tasa: 0.0556 }
+};
+
 async function fetchUFValue() {
     try {
         const response = await fetch('https://mindicador.cl/api/uf');
@@ -31,7 +43,14 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
     const savingsUf = parseFloat(document.getElementById('savings-uf').value);
     const location = document.getElementById('location').value;
     const ufValue = parseFloat(document.getElementById('uf-value').value) || await fetchUFValue();
-    const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
+    const selectedBank = document.getElementById('bank').value;
+
+    if (!BANKS[selectedBank]) {
+        resultsDiv.innerHTML = `<p style="color:#d9534f;">Selecciona un banco válido.</p>`;
+        return;
+    }
+
+    const interestRate = BANKS[selectedBank].tasa;
     const loanTerm = parseInt(document.getElementById('loan-term').value);
     const isYoungSingle = document.getElementById('is-young-single').checked;
 
@@ -80,6 +99,8 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
     resultsDiv.innerHTML = `
         <p>Subsidio total: ${subsidy.toFixed(2)} UF (${formatCurrency(subsidy * ufValue)})</p>
         <p>Monto máximo del crédito: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
+        <p>Banco seleccionado: ${selectedBank}</p>
+        <p>Tasa usada para el cálculo: ${(interestRate * 100).toFixed(2)}%</p>
         <p>Dividendo mensual máximo: ${maxMonthlyPayment.toFixed(2)} UF (${formatCurrency(maxMonthlyPayment * ufValue)})</p>
         <p>Valor máximo de la vivienda: ${maxPropertyValuePossible.toFixed(2)} UF (${formatCurrency(maxPropertyValuePossible * ufValue)})</p>
         <button id="show-links" style="margin-top:10px;">Ofertas Inmobiliarias</button>

@@ -1,3 +1,15 @@
+const BANKS = {
+    BancoEstado: { tasa: 0.0455 },
+    Santander: { tasa: 0.0434 },
+    Coopeuch: { tasa: 0.0450 },
+    Internacional: { tasa: 0.0479 },
+    Falabella: { tasa: 0.0465 },
+    Chile: { tasa: 0.0484 },
+    BICE: { tasa: 0.0510 },
+    Itau: { tasa: 0.0483 },
+    BCI: { tasa: 0.0556 }
+};
+
 // Función para obtener el valor de la UF desde la API
 async function fetchUFValue() {
     try {
@@ -33,7 +45,14 @@ document.getElementById('ds1t1-form').addEventListener('submit', async (event) =
 
     const savingsUf = parseFloat(document.getElementById('savings-uf').value);
     const propertyValue = parseFloat(document.getElementById('property-value').value);
-    const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
+    const selectedBank = document.getElementById('bank').value;
+
+    if (!BANKS[selectedBank]) {
+        resultsDiv.innerHTML = `<p style="color:#d9534f;">Selecciona un banco válido.</p>`;
+        return;
+    }
+
+    const interestRate = BANKS[selectedBank].tasa;
     const ufValue = parseFloat(document.getElementById('uf-value').value) || await fetchUFValue();
     const location = document.getElementById('location').value;
     const loanTerm = parseInt(document.getElementById('loan-term').value);
@@ -82,6 +101,8 @@ document.getElementById('ds1t1-form').addEventListener('submit', async (event) =
     resultsDiv.innerHTML = `
         <p>Subsidio total: ${totalSubsidy.toFixed(2)} UF (${formatCurrency(totalSubsidy * ufValue)})</p>
         <p>Monto del crédito hipotecario: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
+        <p>Banco seleccionado: ${selectedBank}</p>
+        <p>Tasa usada para el cálculo: ${(interestRate * 100).toFixed(2)}%</p>
         <p>Dividendo mensual estimado: ${monthlyPayment.toFixed(2)} UF (${formatCurrency(monthlyPaymentCLP)})</p>
         <p>Renta mínima requerida (aprox. 4x el dividendo): ${minimumIncome.toFixed(2)} UF (${formatCurrency(minimumIncomeCLP)})</p>
     `;

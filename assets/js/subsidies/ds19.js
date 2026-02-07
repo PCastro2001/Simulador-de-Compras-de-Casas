@@ -1,3 +1,15 @@
+const BANKS = {
+    BancoEstado: { tasa: 0.0455 },
+    Santander: { tasa: 0.0434 },
+    Coopeuch: { tasa: 0.0450 },
+    Internacional: { tasa: 0.0479 },
+    Falabella: { tasa: 0.0465 },
+    Chile: { tasa: 0.0484 },
+    BICE: { tasa: 0.0510 },
+    Itau: { tasa: 0.0483 },
+    BCI: { tasa: 0.0556 }
+};
+
 // Función para obtener el valor de la UF desde la API
 async function fetchUFValue() {
     try {
@@ -42,7 +54,14 @@ document.getElementById('ds19-form').addEventListener('submit', async (event) =>
         return;
     }
 
-    const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
+    const selectedBank = document.getElementById('bank').value;
+
+    if (!BANKS[selectedBank]) {
+        resultsDiv.innerHTML = `<p style="color:#d9534f;">Selecciona un banco válido.</p>`;
+        return;
+    }
+
+    const interestRate = BANKS[selectedBank].tasa;
     const loanTerm = parseInt(document.getElementById('loan-term').value);
     const isYoungSingle = document.getElementById('is-young-single').checked;
 
@@ -66,6 +85,8 @@ document.getElementById('ds19-form').addEventListener('submit', async (event) =>
         <p>Ahorro ingresado: ${savingsUF.toFixed(2)} UF (${formatCurrency(savingsUF * ufValue)})</p>
         <p>Subsidio aplicado: ${subsidyUF.toFixed(2)} UF (${formatCurrency(subsidyUF * ufValue)})</p>
         <p>Crédito hipotecario estimado: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
+        <p>Banco seleccionado: ${selectedBank}</p>
+        <p>Tasa usada para el cálculo: ${(interestRate * 100).toFixed(2)}%</p>
         <p>Dividendo mensual estimado: ${monthlyPayment.toFixed(2)} UF (${formatCurrency(monthlyPaymentCLP)})</p>
         <p>Renta mínima requerida (aprox. ${incomeMultiplier}x el dividendo): ${minimumIncome.toFixed(2)} UF (${formatCurrency(minimumIncomeCLP)})</p>
     `;
