@@ -122,7 +122,7 @@ document.getElementById('max-value-form').addEventListener('submit', async (even
     // Calcular valor máximo de la propiedad
     let maxPropertyValuePossible = loanAmount + savingsUf + totalSubsidyUF;
     if (maxPropertyValuePossible < 800) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">No calificas para este subsidio (valor mínimo: 600 UF).</p>`;
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">No calificas para este subsidio (valor mínimo: 800 UF).</p>`;
         return;
     }
     if (maxPropertyValuePossible > maxPropertyValue) {

@@ -90,11 +90,11 @@ document.getElementById('ds1t3-form').addEventListener('submit', async (event) =
     // Calcular el subsidio
     let subsidy;
     if (location === 'north') {
-        subsidy = propertyValue <= 800 ? 650 : 650 - ((propertyValue - 800) * (300 / 800));
+        subsidy = propertyValue <= 800 ? 500 : 500 - ((propertyValue - 800) * (300 / 400));
     } else if (location === 'south') {
-        subsidy = propertyValue <= 800 ? 700 : 700 - ((propertyValue - 800) * (300 / 800));
+        subsidy = propertyValue <= 800 ? 550 : 550 - ((propertyValue - 800) * (300 / 400));
     } else {
-        subsidy = propertyValue <= 800 ? 550 : 550 - ((propertyValue - 800) * (300 / 800));
+        subsidy = propertyValue <= 800 ? 400 : 400 - ((propertyValue - 800) * (300 / 400));
     }
 
     // Ajustar subsidio si el valor de la propiedad excede 1600 UF
