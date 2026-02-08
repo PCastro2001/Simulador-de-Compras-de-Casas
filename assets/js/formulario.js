@@ -1,6 +1,24 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+
+
+
     // --- 1. CONFIGURACIÓN Y UTILIDADES ---
+
+    // --- CONFIGURACIÓN DE CONEXIÓN ---
+
+    // TU BACKEND EN LA NUBE (Railway)
+    const RAILWAY_URL = 'https://backend-subsimatch-production.up.railway.app/api/lead'; 
+
+    // DETECCIÓN INTELIGENTE
+    // Si estás probando en tu PC, usa localhost. Si es internet, usa Railway.
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    const API_URL = isLocal 
+        ? 'http://localhost:3000/api/lead' 
+        : RAILWAY_URL; 
+
+    console.log("📡 Conectando a:", API_URL);
     
     // A. Obtención de UF
     async function fetchUFValue() {
@@ -351,9 +369,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Payload Oracle:", payloadDB);
             
             // --- FETCH AL BACKEND ---
-            // Reemplaza la URL por la de tu servidor real en producción
-            const API_URL = 'http://localhost:3000/api/lead'; 
+            
+            // 🗑️ BORRA ESTA LÍNEA (La que tenías antes):
+            // const API_URL = 'http://localhost:3000/api/lead'; 
 
+            // 🔥 DÉJALO ASÍ (Ya usará la variable API_URL que definimos arriba):
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
