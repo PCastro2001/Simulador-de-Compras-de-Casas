@@ -24,16 +24,40 @@ async function fetchUFValue() {
     }
 }
 
+// Ajustar el valor máximo de la propiedad
+function adjustMaxPropertyValue() {
+    const savingsUf = parseFloat(document.getElementById('savings-uf').value);
+    const isNewHome = document.getElementById('is-new-home').checked;
+    const propertyValueInput = document.getElementById('property-value');
+    const maxUF = (isNewHome && savingsUf >= 80) ? 3000 : 1600;
+    propertyValueInput.max = maxUF;
+}
+
+// Convertir CLP a UF
+function convertToUF() {
+    const ufValue = parseFloat(document.getElementById('uf-value').value);
+    const propertyValueCLP = parseFloat(document.getElementById('property-value-clp').value);
+    if (!isNaN(ufValue) && !isNaN(propertyValueCLP) && ufValue > 0) {
+        const propertyValueUF = propertyValueCLP / ufValue;
+        document.getElementById('property-value').value = Math.min(propertyValueUF).toFixed(2);
+    }
+}
+
+// Cargar UF al iniciar la página
+document.addEventListener('DOMContentLoaded', () => {
+    fetchUFValue();
+    adjustMaxPropertyValue// Ajustar el valor máximo al cargar
+});
+
 // Manejar el formulario
 document.getElementById('ds1t2-form').addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const income = parseFloat(localStorage.getItem('income'));
-    const isYoungSingle = document.getElementById('is-young-single').checked;
+    const propertyValueCLP = parseFloat(document.getElementById('property-value-clp').value);
+    const propertyValue = parseFloat(document.getElementById('property-value').value);
     const savingsUf = parseFloat(document.getElementById('savings-uf').value);
-    const isNewHome = document.getElementById('is-new-home').checked;
     const location = document.getElementById('location').value;
-    const loanTerm = parseInt(document.getElementById('loan-term').value);
+    const ufValue = parseFloat(document.getElementById('uf-value').value) || await fetchUFValue();
     const selectedBank = document.getElementById('bank').value;
 
     if (!BANKS[selectedBank]) {
@@ -42,82 +66,73 @@ document.getElementById('ds1t2-form').addEventListener('submit', async (event) =
     }
 
     const interestRate = BANKS[selectedBank].tasa;
-    const ufValue = parseFloat(document.getElementById('uf-value').value) || await fetchUFValue();
+    const loanTerm = parseInt(document.getElementById('loan-term').value);
+    const isNewHome = document.getElementById('is-new-home').checked;
+    const isYoungSingle = document.getElementById('is-young-single').checked;
 
     const resultsDiv = document.getElementById('results');
 
     // Validaciones
-    if (!income || isNaN(income)) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">Error: No hay sueldo registrado. Vuelve a "Subsidios según tu sueldo".</p>`;
+    if (savingsUf < 40 || isNaN(savingsUf)) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El ahorro debe ser de al menos 40 UF.</p>`;
         return;
     }
-    if (savingsUf < 40 || isNaN(savingsUf) || isNaN(loanTerm) || isNaN(interestRate) || isNaN(ufValue)) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">Por favor, completa todos los campos correctamente (Ahorro mínimo: 40 UF).</p>`;
+    const maxPropertyValueLimit = (isNewHome && savingsUf >= 80) ? 3000 : 1600;
+    if (propertyValue > maxPropertyValueLimit || propertyValue < 600 || isNaN(propertyValue)) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El valor de la vivienda debe estar entre 600 UF y ${maxPropertyValueLimit} UF.</p>`;
+        return;
+    }
+    if (isNaN(interestRate) || isNaN(loanTerm) || isNaN(ufValue)) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">Por favor, completa todos los campos correctamente.</p>`;
         return;
     }
 
-    // Calcular monto máximo del crédito
-    
-    const incomeMultiplier = isYoungSingle ? 3 : 4;
-    const monthlyIncomeAvailable = income / incomeMultiplier; 
+    // Calcular el subsidio
+    let subsidy;
+    if (location === 'north') {
+        subsidy = propertyValue <= 800 ? 650 : 650 - ((propertyValue - 800) * (300 / 800));
+    } else if (location === 'south') {
+        subsidy = propertyValue <= 800 ? 700 : 700 - ((propertyValue - 800) * (300 / 800));
+    } else {
+        subsidy = propertyValue <= 800 ? 550 : 550 - ((propertyValue - 800) * (300 / 800));
+    }
+
+    // Ajustar subsidio si el valor de la propiedad excede 1600 UF
+    if (propertyValue > 1600) {
+        subsidy = location === 'north' ? 350 : location === 'south' ? 400 : 250;
+    }
+
+    // Subsidio adicional para vivienda nueva y ahorro >= 80 UF
+    const additionalSubsidy = (isNewHome && savingsUf >= 80) ? 150 : 0;
+    const totalSubsidy = subsidy + additionalSubsidy;
+
+    // Calcular el crédito hipotecario
+    const loanAmount = propertyValue - savingsUf - totalSubsidy;
+    if (loanAmount < 0) {
+        resultsDiv.innerHTML = `<p style="color: #d9534f;">El subsidio y ahorro cubren el valor total de la vivienda. No se necesita crédito.</p>`;
+        return;
+    }
+
     const monthlyRate = interestRate / 12;
     const totalPayments = loanTerm * 12;
-    const maxLoanAmount = (monthlyIncomeAvailable * (1 - Math.pow(1 + monthlyRate, -totalPayments))) / monthlyRate;
-    const maxLoanAmountUF = maxLoanAmount / ufValue;
+    const monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments));
+    const monthlyPaymentCLP = monthlyPayment * ufValue;
 
-    // Determinar subsidio y valor máximo según ubicación
-    let subsidyUF, initialSubsidyUF, maxPropertyValue;
-    if (location === 'north') {
-        initialSubsidyUF = 950;
-        maxPropertyValue = savingsUf >= 80 && isNewHome ? 3000 : 1800;
-        subsidyUF = calculateSubsidy(maxLoanAmountUF + savingsUf + 950, 650, 350, 800, 1600);
-    } else if (location === 'south') {
-        initialSubsidyUF = 1000;
-        maxPropertyValue = savingsUf >= 80 && isNewHome ? 3000 : 1800;
-        subsidyUF = calculateSubsidy(maxLoanAmountUF + savingsUf + 1000, 700, 400, 800, 1600);
-    } else {
-        initialSubsidyUF = 850;
-        maxPropertyValue = savingsUf >= 80 && isNewHome ? 3000 : 1600;
-        subsidyUF = calculateSubsidy(maxLoanAmountUF + savingsUf + 850, 550, 250, 800, 1600);
-    }
-
-    // Ajustar por vivienda nueva y ahorro >= 80 UF
-    const additionalSubsidyUF = (savingsUf >= 80 && isNewHome) ? 150 : 0;
-    let totalSubsidyUF = subsidyUF + additionalSubsidyUF;
-
-    // Calcular valor máximo de la propiedad
-    let propertyValue = maxLoanAmountUF + savingsUf + totalSubsidyUF;
-    if (propertyValue < 600) {
-        resultsDiv.innerHTML = `<p style="color: #d9534f;">No calificas para este subsidio (valor mínimo: 600 UF).</p>`;
-        return;
-    }
-    if (propertyValue > maxPropertyValue) {
-        propertyValue = maxPropertyValue;
-        totalSubsidyUF = location === 'north' ? 350 : location === 'south' ? 400 : 250;
-        totalSubsidyUF += additionalSubsidyUF;
-    }
+    // Renta mínima (3x para jóvenes solteros, 4x para familias)
+    const incomeMultiplier = isYoungSingle ? 3 : 4;
+    const minimumIncome = monthlyPayment * incomeMultiplier;
+    const minimumIncomeCLP = minimumIncome * ufValue;
 
     // Formatear valores
     const formatCurrency = (value) => value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-    const totalCLP = propertyValue * ufValue;
-    const subsidyCLP = totalSubsidyUF * ufValue;
-    const loanCLP = maxLoanAmountUF * ufValue;
 
     // Mostrar resultados
     resultsDiv.innerHTML = `
+        <p>Subsidio total: ${totalSubsidy.toFixed(2)} UF (${formatCurrency(totalSubsidy * ufValue)})</p>
+        <p>Monto del crédito hipotecario: ${loanAmount.toFixed(2)} UF (${formatCurrency(loanAmount * ufValue)})</p>
         <p>Banco seleccionado: ${selectedBank}</p>
-        <p>Tasa usada para el cálculo: ${(interestRate * 100).toFixed(2)}%</p>    
-        <p>Valor máximo de la vivienda: ${propertyValue.toFixed(2)} UF (${formatCurrency(totalCLP)})</p>
-        <p>Crédito máximo: ${maxLoanAmountUF.toFixed(2)} UF (${formatCurrency(loanCLP)})</p>
-        <p>Subsidio total: ${totalSubsidyUF.toFixed(2)} UF (${formatCurrency(subsidyCLP)})</p>
+        <p>Tasa usada para el cálculo: ${(interestRate * 100).toFixed(2)}%</p>
+        <p>Dividendo mensual estimado: ${monthlyPayment.toFixed(2)} UF (${formatCurrency(monthlyPaymentCLP)})</p>
+        <p>Renta mínima requerida (aprox. ${incomeMultiplier}x el dividendo): ${minimumIncome.toFixed(2)} UF (${formatCurrency(minimumIncomeCLP)})</p>
     `;
 });
-
-// Función para calcular el subsidio variable
-function calculateSubsidy(totalValue, maxSubsidy, minSubsidy, minRange, maxRange) {
-    const propertyValue = totalValue / 1.375; // Ajuste según tu lógica
-    if (propertyValue <= minRange) return maxSubsidy;
-    if (propertyValue >= maxRange) return minSubsidy;
-    const slope = (maxSubsidy - minSubsidy) / (minRange - maxRange);
-    return maxSubsidy + slope * (propertyValue - minRange);
-}
