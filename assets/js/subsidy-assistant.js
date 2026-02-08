@@ -72,8 +72,31 @@ function handleOwnsLand(ownsLand) {
     } else {
         currentStep = 5;
         showQuestion('¿Posee capacidad de ahorro?', [
-            { text: 'Sí', onClick: () => showResult('Te recomendamos usar el Simulador de Percentiles para determinar a qué subsidios puedes optar.', window.location.href = 'percentile.html') },
-            { text: 'No', onClick: () => showResult('Subsidio DS52 (Arriendo)') }
+            { 
+    text: 'Sí', 
+    onClick: () => {
+        // 1. Muestra el mensaje primero
+        showResult('Te recomendamos usar el Simulador de Percentiles para determinar a qué subsidios puedes optar.\n\n⏳ Redirigiendo en 5 segundos...');
+        
+        // 2. Espera 5 segundos (5000 ms) y luego cambia de página
+        setTimeout(() => {
+            window.location.href = 'percentile.html';
+        }, 5000);
+    } 
+},
+{ 
+    text: 'No', 
+    onClick: () => {
+        // 1. Muestra el mensaje primero
+        showResult('Tu mejor opción podría ser el Subsidio DS52 (Arriendo).\n\n⏳ Redirigiendo a los detalles en 5 segundos...');
+        
+        // 2. Espera 5 segundos (5000 ms) y luego cambia de página
+        // (Asumí 5 segundos en vez de 5 minutos, porque 5 min es mucho tiempo esperando en una web)
+        setTimeout(() => {
+            window.location.href = 'percentile/ds52.html';
+        }, 5000);
+    } 
+}
         ]);
     }
 }
