@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SubsiMatch - Calculadora Hipotecaria</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/css/max-value.css">
+</head>
+<body>
+
+<header>
+    <h1>🏡 Descubre cuánto puedes comprar</h1>
+    <p>Evalúa tu capacidad de compra real (Crédito + Subsidio + Ahorro)</p>
+</header>
+
+<section class="form-container">
+    <form id="max-value-form">
+
+        <h2 style="text-align:center; margin-bottom:20px;">Datos Personales</h2>
+
+        <div class="form-group">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: Nombre Apellido" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" placeholder="Ej: Nombre@email.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="+56 9 1234 5678" required>
+        </div>
+
+        <div class="form-group">
+            <label for="region">Región donde deseas comprar</label>
+            <select id="region" name="region" required>
+                <option value="">Selecciona una región</option>
+                <option value="arica">Arica y Parinacota</option>
+                <option value="tarapaca">Tarapacá</option>
+                <option value="antofagasta">Antofagasta</option>
+                <option value="atacama">Atacama</option>
+                <option value="coquimbo">Coquimbo</option>
+                <option value="valparaiso">Valparaíso</option>
+                <option value="metropolitana">Región Metropolitana</option>
+                <option value="ohiggins">O Higgins</option>
+                <option value="maule">Maule</option>
+                <option value="nuble">Ñuble</option>
+                <option value="biobio">Biobío</option>
+                <option value="araucania">La Araucanía</option>
+                <option value="rios">Los Ríos</option>
+                <option value="lagos">Los Lagos</option>
+                <option value="aysen">Aysén</option>
+                <option value="magallanes">Magallanes</option>
+                <option value="chiloe">Chiloe</option>
+                <option value="insular">Insular (Isla De Pascua y Juan Fernandez)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="adultos">Adultos en el hogar</label>
+            <input type="number" id="adultos" name="adultos" min="1" value="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="ninos">Niños</label>
+            <input type="number" id="ninos" name="ninos" min="0" value="0">
+        </div>
+
+        <h2 style="text-align:center; margin:25px 0 15px;">Perfil Financiero</h2>
+
+        <div class="form-group">
+            <label for="sueldo">Sueldo líquido mensual ($ CLP)</label>
+            <input type="number" id="sueldo" name="sueldo" placeholder="Ej: 900000" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="ahorro">Ahorro o Pie disponible ($ CLP)</label>
+            <input type="number" id="ahorro" name="ahorro" placeholder="Ej: 3000000" min="0" required>
+            <p style="font-size: 0.8em; color: #666; margin-top: 5px;">
+                *Ingresa el monto en pesos. Nosotros lo convertimos a UF.
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label for="banco">Preferencia de Banco</label>
+            <select id="banco" name="banco" required>
+                <option value="">Selecciona un banco</option>
+                <option value="BancoEstado">BancoEstado</option>
+                <option value="Santander">Santander</option>
+                <option value="BCI">BCI</option>
+                <option value="Chile">Banco de Chile</option>
+                <option value="Itau">Itaú</option>
+                <option value="Falabella">Banco Falabella</option>
+                <option value="BICE">BICE</option>
+                <option value="Coopeuch">Coopeuch</option>
+                <option value="Internacional">Banco Internacional</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="plazo">Plazo deseado</label>
+            <select id="plazo" name="plazo" required>
+                <option value="20">20 años</option>
+                <option value="25" selected>25 años</option>
+                <option value="30">30 años</option>
+            </select>
+        </div>
+
+        <h2 style="text-align:center; margin:30px 0 15px;">
+            Estado del Subsidio
+        </h2>
+
+        <div class="form-group">
+            <label for="has-subsidy">¿Tienes un subsidio adjudicado (Cartón)?</label>
+            <select id="has-subsidy" name="has_subsidy" required>
+                <option value="">Selecciona una opción</option>
+                <option value="yes">Sí, ya lo tengo</option>
+                <option value="no">No tengo subsidio</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="subsidy-type-owned" style="display:none;">
+            <label for="subsidy-owned">Selecciona cuál tienes:</label>
+            <select id="subsidy-owned" name="subsidy_owned">
+                <option value="">Selecciona...</option>
+                <option value="DS1_T1">DS1 – Tramo 1</option>
+                <option value="DS1_T2">DS1 – Tramo 2</option>
+                <option value="DS1_T3">DS1 – Tramo 3</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="subsidy-want" style="display:none;">
+            <label for="want-subsidy">¿Deseas postular a uno?</label>
+            <select id="want-subsidy" name="want_subsidy">
+                <option value="">Selecciona una opción</option>
+                <option value="yes">Sí, quiero postular</option>
+                <option value="no">No, compra sin subsidio</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="subsidy-type-want" style="display:none;">
+            <label for="subsidy-type">¿Cuál te interesa?</label>
+            <select id="subsidy-type" name="subsidy_type">
+                <option value="">Selecciona...</option>
+                <option value="DS1_T1">DS1 – Tramo 1</option>
+                <option value="DS1_T2">DS1 – Tramo 2</option>
+                <option value="DS1_T3">DS1 – Tramo 3</option>
+                <option value="DS19">DS19 (Automático con Inmobiliaria)</option>
+                <option value="NO_SUBSIDY" style="display:none;">Sin Subsidio</option>
+            </select>
+        </div>
+
+        <button type="submit" style="margin-top: 20px;">
+            Evaluar mi capacidad de compra
+        </button>
+
+        <p style="font-size:0.75em; text-align:center; margin-top:15px; color: #888;">
+            Al calcular, aceptas ser contactado con oportunidades inmobiliarias según tu perfil (DS19, DS1 o Venta Privada).
+        </p>
+
+    </form>
+</section>
+
+<footer>
+    <p>© 2026 – SubsiMatch</p>
+</footer>
+
+<script src="../assets/js/formulario.js"></script>
+
+</body>
+</html>

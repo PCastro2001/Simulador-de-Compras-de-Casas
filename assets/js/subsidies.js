@@ -8,22 +8,20 @@ document.getElementById('subsidy-form').addEventListener('submit', (event) => {
 
     const income = parseFloat(document.getElementById('total-income').value);
     const householdSize = parseInt(document.getElementById('household-size').value);
-    const rent = parseFloat(document.getElementById('rent').value);
     
     // Obtenemos el valor de la UF desde el input (donde lo guardó la función fetch)
     // Si por alguna razón falló la API, usamos un valor por defecto seguro (ej: 38000)
     let ufValue = parseFloat(document.getElementById('uf-value').value);
     if (!ufValue || isNaN(ufValue)) ufValue = 38000;
 
-    if (isNaN(income) || isNaN(householdSize) || isNaN(rent)) {
+    if (isNaN(income) || isNaN(householdSize)) {
         alert("Por favor, ingresa valores numéricos válidos.");
         return;
     }
 
     localStorage.setItem('income', income);
-    localStorage.setItem('rent', rent);
 
-    const adjustedIncome = (income - rent) / householdSize;
+    const adjustedIncome = (income) / householdSize;
     const percentile = calculatePercentile(adjustedIncome);
 
     let resultHTML = `<p>Tu percentil estimado es: <strong>${percentile}%</strong></p>`;
