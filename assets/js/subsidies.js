@@ -59,15 +59,15 @@ async function fetchUFValue() {
 
 function calculatePercentile(income) {
     const thresholds = [
-        { max: 69518, percentile: 10 },
-        { max: 109984, percentile: 20 },
-        { max: 145631, percentile: 30 },
-        { max: 181532, percentile: 40 },
-        { max: 221249, percentile: 50 },
-        { max: 278403, percentile: 60 },
-        { max: 353729, percentile: 70 },
-        { max: 476523, percentile: 80 },
-        { max: 774525, percentile: 90 },
+        { max: 82320, percentile: 10 },
+        { max: 141488, percentile: 20 },
+        { max: 195510, percentile: 30 },
+        { max: 246960, percentile: 40 },
+        { max: 308700, percentile: 50 },
+        { max: 398493, percentile: 60 },
+        { max: 514500, percentile: 70 },
+        { max: 699720, percentile: 80 },
+        { max: 1151624, percentile: 90 },
         { max: Infinity, percentile: 100 }
     ];
     const found = thresholds.find(threshold => income < threshold.max);

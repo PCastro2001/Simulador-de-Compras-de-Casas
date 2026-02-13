@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
-
-
-
     // --- 1. CONFIGURACIÓN Y UTILIDADES ---
 
     // --- CONFIGURACIÓN DE CONEXIÓN ---
@@ -68,6 +65,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (propertyValue >= maxRange) return minSubsidy;
         const slope = (maxSubsidy - minSubsidy) / (minRange - maxRange);
         return maxSubsidy + slope * (propertyValue - minRange);
+    }
+
+    //E. Calculo de Percentiles
+    function calculatePercentile(income) {
+        const thresholds = [
+            { max: 82320, percentile: 10 },
+            { max: 141488, percentile: 20 },
+            { max: 195510, percentile: 30 },
+            { max: 246960, percentile: 40 },
+            { max: 308700, percentile: 50 },
+            { max: 398493, percentile: 60 },
+            { max: 514500, percentile: 70 },
+            { max: 699720, percentile: 80 },
+            { max: 1151624, percentile: 90 },
+            { max: Infinity, percentile: 100 }
+        ];
+        const found = thresholds.find(threshold => income < threshold.max);
+        return found ? found.percentile : 100;
     }
 
 
@@ -233,7 +248,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 nombre: 'Sin Subsidio (Crédito Hipotecario)',
                 valorViviendaUF: valorViviendaTeorico,
                 subsidioUF: 0,
-                creditoUF: loanAmountUF,
+                creditoUF: loanAmountUF, 
                 
                 // DATOS EXTRAS PARA TU UI
                 pieNecesarioUF: pieNecesario,
@@ -245,10 +260,100 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // --- 3. UI: MANEJO VISUAL ---
+    
+    // Referencias a elementos
     const hasSubsidySelect = document.getElementById('has-subsidy');
     const wantSubsidySelect = document.getElementById('want-subsidy');
+    
+    // 🔥 NUEVAS REFERENCIAS PARA EL FILTRO 🔥
+    const inputSueldo = document.getElementById('sueldo');
+    const inputAdultos = document.querySelector('input[name="adultos"]'); 
+    const inputNinos = document.querySelector('input[name="ninos"]');
+    const selectSubsidyType = document.getElementById('subsidy-type');
+
     const toggleDisplay = (id, show) => document.getElementById(id).style.display = show ? 'block' : 'none';
 
+    // 🔥 FUNCIÓN DE FILTRADO INTELIGENTE (NUEVO) 🔥
+    function filtrarOpcionesSubsidio() {
+        // 1. Obtener valores actuales (Si están vacíos, asumimos 0 o 1)
+        const sueldo = parseInt(inputSueldo.value) || 0;
+        const adultos = parseInt(inputAdultos.value) || 1;
+        const ninos = parseInt(inputNinos.value) || 0;
+        
+        // 2. Calcular Ingreso Per Cápita (Vital para el RSH)
+        // RSH = Ingreso Total / Cantidad de Personas
+        const totalPersonas = adultos + ninos;
+        const perCapita = sueldo / totalPersonas;
+
+        // console.log(`💰 Per Cápita calculado: $${perCapita.toLocaleString()}`);
+
+        // 3. Definir Límites (Basado en datos RSH 2025)
+        const LIMITE_60_PCT = 398493; // 60%
+        const LIMITE_80_PCT = 699720; // 80%
+        const LIMITE_90_PCT = 1151624; // 90%
+        const LIMITE_DS19_TOTAL = 2600000; // Tope Mercado
+
+        // 4. Aplicar Reglas a las Opciones
+        const opciones = selectSubsidyType.options;
+
+        for (let i = 0; i < opciones.length; i++) {
+            const opt = opciones[i];
+            let bloquear = false;
+            let mensaje = "";
+
+            // Guardamos el texto original la primera vez
+            if (!opt.getAttribute('data-original')) {
+                opt.setAttribute('data-original', opt.text);
+            }
+            const textoOriginal = opt.getAttribute('data-original');
+
+            // REGLAS DE FILTRADO
+            if (opt.value === 'DS1_T1') {
+                if (perCapita > LIMITE_60_PCT) {
+                    bloquear = true;
+                    mensaje = " (Supera 60% RSH)";
+                }
+            } 
+            else if (opt.value === 'DS1_T2') {
+                if (perCapita > LIMITE_80_PCT) {
+                    bloquear = true;
+                    mensaje = " (Supera 80% RSH)";
+                }
+            } 
+            else if (opt.value === 'DS1_T3') {
+                if (perCapita > LIMITE_90_PCT) {
+                    bloquear = true;
+                    mensaje = " (Supera 90% RSH)";
+                }
+            }
+            else if (opt.value === 'DS19') {
+                if (sueldo > LIMITE_DS19_TOTAL) {
+                    bloquear = true;
+                    mensaje = " (Ingreso muy alto)";
+                }
+            }
+
+            // APLICAR CAMBIOS VISUALES
+            if (bloquear) {
+                opt.disabled = true;
+                opt.style.color = "#999"; 
+                opt.text = "🔒 " + textoOriginal + mensaje;
+            } else {
+                opt.disabled = false;
+                opt.style.color = ""; 
+                opt.text = textoOriginal;
+            }
+        }
+    }
+
+    // --- EVENT LISTENERS ---
+
+    // 1. Escuchamos cambios en los Inputs para filtrar en tiempo real
+    inputSueldo.addEventListener('input', filtrarOpcionesSubsidio);
+    inputAdultos.addEventListener('input', filtrarOpcionesSubsidio);
+    if(inputNinos) inputNinos.addEventListener('input', filtrarOpcionesSubsidio);
+
+    // 2. Lógica visual de los Selects
     hasSubsidySelect.addEventListener('change', (e) => {
         toggleDisplay('subsidy-type-owned', e.target.value === 'yes');
         toggleDisplay('subsidy-want', e.target.value === 'no');
@@ -263,6 +368,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (val === 'yes') {
             typeContainer.style.display = 'block'; 
             typeSelect.value = ""; 
+            
+            // 🔥 AQUÍ ACTIVAMOS EL FILTRO AL ABRIR EL MENÚ 🔥
+            filtrarOpcionesSubsidio(); 
         } 
         else if (val === 'no') {
             typeContainer.style.display = 'none'; 
@@ -296,6 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const region = data.region;
             
             const isYoungSingle = (totalPersonas === 1); 
+            const percentile = calculatePercentile(sueldo);
             
             // B. Cálculo de Crédito Puro
             const multiplier = isYoungSingle ? 3 : 4;
@@ -369,11 +478,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Payload Oracle:", payloadDB);
             
             // --- FETCH AL BACKEND ---
-            
-            // 🗑️ BORRA ESTA LÍNEA (La que tenías antes):
-            // const API_URL = 'http://localhost:3000/api/lead'; 
-
-            // 🔥 DÉJALO ASÍ (Ya usará la variable API_URL que definimos arriba):
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
@@ -383,13 +487,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (!response.ok) {
-                // Si el servidor responde con error (ej: 500), lanzamos una excepción
                 throw new Error("Error al guardar los datos en el servidor.");
             }
-
-            // (Opcional) Si quieres usar el ID que devuelve el servidor:
-            // const responseData = await response.json();
-            // console.log("ID Guardado:", responseData.id);
 
             // G. Mensaje Final
             let msg = `✅ Evaluación Exitosa: ${resultado.nombre}\n\n`;
@@ -413,11 +512,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             alert(msg);
             
-            // AQUÍ: FETCH al Backend...
-
         } catch (error) {
             // Manejo de errores (incluye validación de ingresos DS1 T3)
-            alert("⚠️ Atención: " + error); // El error contendrá el mensaje de "Tus ingresos superan..."
+            alert("⚠️ Atención: " + error); 
         }
     });
 
