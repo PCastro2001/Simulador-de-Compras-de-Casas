@@ -183,19 +183,38 @@ document.getElementById('ds1t1-ahorro-form').addEventListener('submit', async (e
             <p>Aprox: ${formatCLP}</p>
         `;
     } else {
-        resultsDiv.innerHTML = `
-            <h2>Resultado de tu Simulación</h2>
-            <p>El puntaje de corte en tu región es de <strong>${puntajeCorte} puntos</strong>.</p>
-            <p>Tu puntaje base estimado es de <strong>${puntajeBase} puntos</strong>. Te faltan ${puntosFaltantes.toFixed(2)} puntos para ganar.</p>
-            <hr>
-            <p>Para asegurar tu subsidio Tramo 1, debes superar el ahorro mínimo legal (30 UF). Esta es la cantidad exacta que necesitas tener en tu libreta:</p>
-            <h3 style="color: #ff8a65; font-size: 1.5em; text-align: center; margin-top: 20px;">Tu Ahorro Seguro Meta:</h3>
-            <div style="background-color: #ffebee; padding: 15px; border-radius: 10px; text-align: center;">
-                <span style="font-size: 2em; font-weight: bold; color: #d32f2f;">${ahorroTotalUF.toFixed(1)} UF</span><br>
-                <span style="font-size: 1.2em; color: #5a3e36;">(Aprox. ${formatCLP})</span>
-            </div>
-            <p style="font-size: 0.8em; text-align: center; margin-top: 10px; color: #777;">Cálculo basado en la tabla de exceso de ahorro del Minvu.</p>
-        `;
+        // AQUÍ ESTÁ EL GRAN CAMBIO: Evaluamos si el ahorro es excesivo
+        if (ahorroTotalUF > 250) {
+            resultsDiv.innerHTML = `
+                <h2>Resultado de tu Simulación</h2>
+                <p>El puntaje de corte en tu región es de <strong>${puntajeCorte} puntos</strong>.</p>
+                <p>Tu puntaje base estimado es de <strong>${puntajeBase} puntos</strong>. Te faltan ${puntosFaltantes.toFixed(2)} puntos para ganar.</p>
+                <hr>
+                <div style="background-color: #fff3e0; padding: 15px; border-radius: 10px; text-align: center;">
+                    <h3 style="color: #e65100; margin-bottom: 10px;">¡Cuidado, el ahorro exigido es demasiado alto! ⚠️</h3>
+                    <p style="color: #5a3e36;">Para asegurar el Tramo 1 en tu región necesitarías ahorrar unas asombrosas <strong>${ahorroTotalUF.toFixed(1)} UF</strong> (Aprox. ${formatCLP}).</p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Por estrategia financiera, <strong>te conviene mucho más postular al Subsidio DS1 Tramo 2</strong>. Aunque pide un mínimo un poco mayor, sus puntajes de corte son muchísimo más bajos, por lo que terminarás usando menos dinero de tu bolsillo.</p>
+                    <button onclick="window.location.href='ds1t2.html'" style="margin-top: 15px; background-color: #ff8a65; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold;">
+                        Ir a Calcular mi Ahorro en Tramo 2
+                    </button>
+                </div>
+            `;
+        } else {
+            // Resultado normal si el ahorro es razonable (menor o igual a 250 UF)
+            resultsDiv.innerHTML = `
+                <h2>Resultado de tu Simulación</h2>
+                <p>El puntaje de corte en tu región es de <strong>${puntajeCorte} puntos</strong>.</p>
+                <p>Tu puntaje base estimado es de <strong>${puntajeBase} puntos</strong>. Te faltan ${puntosFaltantes.toFixed(2)} puntos para ganar.</p>
+                <hr>
+                <p>Para asegurar tu subsidio Tramo 1, debes superar el ahorro mínimo legal (30 UF). Esta es la cantidad exacta que necesitas tener en tu libreta:</p>
+                <h3 style="color: #ff8a65; font-size: 1.5em; text-align: center; margin-top: 20px;">Tu Ahorro Seguro Meta:</h3>
+                <div style="background-color: #ffebee; padding: 15px; border-radius: 10px; text-align: center;">
+                    <span style="font-size: 2em; font-weight: bold; color: #d32f2f;">${ahorroTotalUF.toFixed(1)} UF</span><br>
+                    <span style="font-size: 1.2em; color: #5a3e36;">(Aprox. ${formatCLP})</span>
+                </div>
+                <p style="font-size: 0.8em; text-align: center; margin-top: 10px; color: #777;">Cálculo basado en la tabla de exceso de ahorro del Minvu.</p>
+            `;
+        }
     }
     
     // Hacer scroll suave hacia los resultados
