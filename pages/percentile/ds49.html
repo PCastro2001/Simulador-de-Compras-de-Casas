@@ -3,44 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Calcula el subsidio DS49 para vivienda según tu ahorro">
-    <title>Subsidio DS49 - Simulador</title>
+    <meta name="description" content="Calcula tus probabilidades de ganar el Subsidio DS49">
+    <title>Probabilidad DS49 - SubsiMatch</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/subsidies-alt.css">
 </head>
 <body>
     <header>
-        <h1>Subsidio DS49</h1>
-        <p>Ingresa tu ahorro en UF (mínimo 10 UF) y selecciona el tipo de zona</p>
+        <h1>Probabilidad DS49</h1>
+        <p>Descubre tu puntaje exacto de vulnerabilidad y si te alcanza para ganar la casa sin deuda</p>
     </header>
     <main>
         <section class="form-container">
-            <form id="ds49-form">
+            <form id="ds49-prob-form">
+                
                 <div class="form-group">
-                    <label for="savings-uf">Ahorro en UF (10 a 60 UF):</label>
-                    <input type="number" id="savings-uf" min="10" max="60" step="1" required>
+                    <label for="region">¿En qué región postularás?</label>
+                    <select id="region" required>
+                        <option value="">Selecciona tu región...</option>
+                        <option value="arica">Región de Arica y Parinacota</option>
+                        <option value="tarapaca">Región de Tarapacá</option>
+                        <option value="antofagasta">Región de Antofagasta</option>
+                        <option value="atacama">Región de Atacama</option>
+                        <option value="coquimbo">Región de Coquimbo</option>
+                        <option value="valparaiso">Región de Valparaíso</option>
+                        <option value="ohiggins">Región del Libertador Gral. B. O'Higgins</option>
+                        <option value="maule">Región del Maule</option>
+                        <option value="nuble">Región de Ñuble</option>
+                        <option value="biobio">Región del Biobío</option>
+                        <option value="araucania">Región de La Araucanía</option>
+                        <option value="rios">Región de Los Ríos</option>
+                        <option value="lagos">Región de Los Lagos</option>
+                        <option value="aysen">Región de Aysén del Gral. Carlos Ibáñez</option>
+                        <option value="magallanes">Región de Magallanes y de la Antártica</option>
+                        <option value="metropolitana">Región Metropolitana de Santiago</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="integrantes-extra">¿Cuántas personas conforman tu núcleo familiar? (SIN contarte a ti)</label>
+                    <input type="number" id="integrantes-extra" min="0" value="0" required>
                 </div>
                 <div class="form-group">
-                    <label for="zone-type">Tipo de zona:</label>
-                    <select id="zone-type" required>
-                        <option value="rural">Rural</option>
-                        <option value="urban">Urbana</option>
+                    <label for="menores-5">De ese núcleo, ¿cuántos niños tienen hasta 5 años?</label>
+                    <input type="number" id="menores-5" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="menores-18">¿Cuántos menores tienen entre 6 y 18 años?</label>
+                    <input type="number" id="menores-18" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="adultos-mayores">¿Cuántos integrantes del núcleo (incluyéndote) tienen 60 años o más?</label>
+                    <input type="number" id="adultos-mayores" min="0" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dormitorios">¿Cuántos dormitorios tiene la vivienda donde habitas actualmente?</label>
+                    <input type="number" id="dormitorios" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="vivienda-precaria">¿Vives en una vivienda precaria? (Piso de tierra, pieza prestada, mediagua, ruca, choza o desecho)</label>
+                    <select id="vivienda-precaria" required>
+                        <option value="no">No, es una vivienda estándar</option>
+                        <option value="si">Sí, es precaria</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="uf-value">Valor actual de la UF (CLP):</label>
-                    <input type="number" id="uf-value" step="0.01" readonly>
+                    <label for="agua-precaria">¿Cómo es el acceso al agua potable?</label>
+                    <select id="agua-precaria" required>
+                        <option value="no">Normal (llave dentro de la casa)</option>
+                        <option value="si">Precario (llave en el sitio o acarreo de agua)</option>
+                    </select>
                 </div>
-                <button type="submit">Calcular subsidio</button>
+                <div class="form-group">
+                    <label for="bano-precario">¿Cómo es el sistema de baño?</label>
+                    <select id="bano-precario" required>
+                        <option value="no">Normal (WC conectado a alcantarillado/fosa)</option>
+                        <option value="si">Precario (Letrina, cajón, pozo negro o no tiene)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="postulaciones-fallidas">¿Cuántas veces has postulado antes a un subsidio habitacional individual sin ganar?</label>
+                    <input type="number" id="postulaciones-fallidas" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="meses-libreta">¿Cuántos meses de antigüedad tiene tu libreta de la vivienda?</label>
+                    <input type="number" id="meses-libreta" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="saldo-constante">¿Mantuiste un saldo medio mensual igual o superior al 12,5% de tu ahorro total durante el último semestre?</label>
+                    <select id="saldo-constante" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí (Suma 10 puntos)</option>
+                    </select>
+                    <small style="color: #ff8a65; font-size: 0.85em;">
+                        <strong>Ejemplo práctico:</strong> Si al momento de postular tienes en total $400.000 en tu libreta, significa que durante los últimos 6 meses siempre debiste tener guardados al menos $50.000 (el 12,5%) sin sacarlos.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="discapacidad">¿Cuántas personas del núcleo están inscritas en el Registro Nacional de Discapacidad?</label>
+                    <input type="number" id="discapacidad" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="monoparental">¿Eres padre/madre soltero, divorciado o viudo con hijos menores de 24 años a cargo?</label>
+                    <select id="monoparental" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="victima-politica">¿El postulante o cónyuge son reconocidos como víctimas Valech o Rettig?</label>
+                    <select id="victima-politica" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bomberos">¿Cuántos integrantes son Bomberos voluntarios activos?</label>
+                    <input type="number" id="bomberos" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="profesion-minvu">¿El postulante, cónyuge o conviviente civil pertenece a alguna de estas áreas? (Debe postular en la misma región de domicilio)</label>
+                    <select id="profesion-minvu" required>
+                        <option value="ninguna">Ninguna de las anteriores</option>
+                        <option value="gendarme">Plantas de Suboficiales y Gendarmes</option>
+                        <option value="prof_funcionario">Profesionales funcionarios</option>
+                        <option value="profesional">Profesionales</option>
+                        <option value="tecnico">Técnicos</option>
+                        <option value="administrativo">Administrativos</option>
+                        <option value="aux_gendarmeria">Auxiliares de Gendarmería de Chile</option>
+                    </select>
+                    <small style="color: #ff8a65; font-size: 0.85em;">Cualquiera de estas opciones suma 40 puntos. Incompatible con Servicio Militar.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="servicio-militar">¿Cuántos integrantes del núcleo hicieron el Servicio Militar (A PARTIR DEL AÑO 2004)?</label>
+                    <input type="number" id="servicio-militar" min="0" value="0" required>
+                    <small style="color: #ff8a65; font-size: 0.85em;">Suma 20 puntos por cada uno. (Ojo: Si alguien ya suma puntos en la pregunta anterior, no lo cuentes de nuevo aquí).</small>
+                </div>
+
+                <button type="submit">Calcular Probabilidad de Selección</button>
             </form>
         </section>
-        <section id="results" class="results-container"></section>
+        
+        <section id="results" class="results-container" style="display: none;"></section>
     </main>
     <footer>
         <button onclick="window.location.href='../percentile.html'">Volver</button>
-            <p style="text-align:center">© 2026 SubsiMatch</p>
-
+        <p style="text-align:center">© 2026 SubsiMatch</p>
     </footer>
-    <script src="../../assets/js/percentile/ds49.js"></script>
+    <script src="../../assets/js/percentile/ds49-probabilidad.js"></script>
 </body>
 </html>

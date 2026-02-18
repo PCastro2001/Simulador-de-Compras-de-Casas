@@ -3,74 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Calcula el subsidio DS1 Tramo 1 para vivienda">
-    <title>Subsidio DS1 Tramo 1 - Simulador</title>
+    <meta name="description" content="Calcula el ahorro mínimo seguro para ganar el DS1 Tramo 1">
+    <title>Ahorro Seguro DS1 Tramo 1 - SubsiMatch</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/subsidies-alt.css">
 </head>
 <body>
     <header>
-        <h1>Subsidio DS1 Tramo 1</h1>
-        <p>Ingresa tu ahorro y configura tu crédito para calcular el subsidio</p>
+        <h1>Ahorro Seguro - DS1 Tramo 1</h1>
+        <p>Descubre exactamente cuánto debes ahorrar para asegurar tu subsidio</p>
     </header>
     <main>
         <section class="form-container">
-            <form id="ds1t1-form">
+            <form id="ds1t1-ahorro-form">
+                
                 <div class="form-group">
-                    <label>Sueldo mensual total (CLP):</label>
-                    <p id="income-display">Cargando desde tu perfil...</p>
-                </div>
-                <div class="form-group">
-                    <label for="savings-uf">Ahorro en UF (mínimo 30 UF):</label>
-                    <input type="number" id="savings-uf" min="30" step="1" required>
-                </div>
-                <div class="form-group">
-                    <label for="location">Ubicación:</label>
-                    <select id="location" required>
-                        <option value="none">Zona Regular</option>
-                        <option value="north">Extremo Norte</option>
-                        <option value="south">Extremo Sur</option>
+                    <label for="region">¿En qué región postularás?</label>
+                    <select id="region" required>
+                        <option value="">Selecciona tu región...</option>
+                        <option value="arica">Región de Arica y Parinacota</option>
+                        <option value="tarapaca">Región de Tarapacá</option>
+                        <option value="antofagasta">Región de Antofagasta</option>
+                        <option value="atacama">Región de Atacama</option>
+                        <option value="coquimbo">Región de Coquimbo</option>
+                        <option value="valparaiso">Región de Valparaíso</option>
+                        <option value="metropolitana">Región Metropolitana de Santiago</option>
+                        <option value="ohiggins">Región del Libertador Gral. B. O'Higgins</option>
+                        <option value="maule">Región del Maule</option>
+                        <option value="nuble">Región de Ñuble</option>
+                        <option value="biobio">Región del Biobío</option>
+                        <option value="araucania">Región de La Araucanía</option>
+                        <option value="rios">Región de Los Ríos</option>
+                        <option value="lagos">Región de Los Lagos</option>
+                        <option value="aysen">Región de Aysén del Gral. Carlos Ibáñez</option>
+                        <option value="magallanes">Región de Magallanes y de la Antártica</option>
                     </select>
                 </div>
+
                 <div class="form-group">
-                    <label for="loan-term">Plazo del crédito (años):</label>
-                    <select id="loan-term" required>
-                        <option value="10">10 años</option>
-                        <option value="15">15 años</option>
-                        <option value="20">20 años</option>
-                        <option value="25" selected>25 años</option>
-                        <option value="30">30 años</option>
+                    <label for="integrantes-extra">¿Cuántas personas conforman tu núcleo familiar? (SIN contarte a ti)</label>
+                    <input type="number" id="integrantes-extra" min="0" value="0" required>
+                    <small style="color: #ff8a65; font-size: 0.85em;">Ej: Si postulas tú y tu pareja, escribe 1.</small>
+                </div>   
+
+                <div class="form-group">
+                    <label for="menores-5">De ese núcleo, ¿cuántos niños tienen hasta 5 años?</label>
+                    <input type="number" id="menores-5" min="0" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="menores-18">¿Cuántos menores tienen entre 6 y 18 años?</label>
+                    <input type="number" id="menores-18" min="0" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="adultos-mayores">¿Cuántos integrantes (excluyéndote) tienen 60 años o más?</label>
+                    <input type="number" id="adultos-mayores" min="0" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="discapacidad">¿Cuántas personas del núcleo están inscritas en el Registro Nacional de Discapacidad?</label>
+                    <input type="number" id="discapacidad" min="0" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="postulante-mayor">¿Tú (el postulante) tienes 60 años o más?</label>
+                    <select id="postulante-mayor" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí</option>
                     </select>
                 </div>
+
                 <div class="form-group">
-                    <label for="bank">Banco donde solicitarías el crédito:</label>
-                    <select id="bank" required>
-                        <option value="">Selecciona un banco</option>
-                        <option value="BancoEstado">BancoEstado</option>
-                        <option value="Santander">Santander</option>
-                        <option value="Coopeuch">Coopeuch</option>
-                        <option value="Internacional">Banco Internacional</option>
-                        <option value="Falabella">Banco Falabella</option>
-                        <option value="Chile">Banco de Chile</option>
-                        <option value="BICE">Banco BICE</option>
-                        <option value="Itau">Banco Itaú</option>
-                        <option value="BCI">Banco BCI</option>
+                    <label for="monoparental">¿Eres padre/madre soltero, divorciado o viudo con hijos menores de 24 años a cargo?</label>
+                    <select id="monoparental" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí</option>
                     </select>
                 </div>
+
                 <div class="form-group">
-                    <label for="uf-value">Valor actual de la UF (CLP):</label>
-                    <input type="number" id="uf-value" step="0.01" readonly>
+                    <label for="victima-politica">¿Tú o tu cónyuge invocan condición de Valech, Rettig o Detenido Desaparecido?</label>
+                    <select id="victima-politica" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí</option>
+                    </select>
                 </div>
-                <button type="submit">Calcular</button>
+
+                <div class="form-group">
+                    <label for="bombero">¿Algún integrante del grupo familiar es Bombero voluntario activo?</label>
+                    <select id="bombero" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="gendarmeria">¿El postulante, cónyuge o conviviente civil es funcionario activo de Gendarmería?</label>
+                    <select id="gendarmeria" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí (Suma 40 puntos)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="servicio-militar">¿Cuántos integrantes del núcleo familiar acreditan Servicio Militar?</label>
+                    <input type="number" id="servicio-militar" min="0" value="0" required>
+                    <small style="color: #ff8a65; font-size: 0.85em;">Suma 20 puntos por cada uno. (Ojo: Si alguien ya recibe puntaje como Gendarme en la pregunta anterior, no lo cuentes de nuevo aquí).</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="vivienda-destruida">¿Tú o tu cónyuge fueron propietarios de una vivienda destruida/inhabitable?</label>
+                    <select id="vivienda-destruida" required>
+                        <option value="no">No</option>
+                        <option value="si">Sí (Debe acreditar certificado)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dormitorios">¿Cuántos dormitorios tiene la vivienda donde habitas actualmente?</label>
+                    <input type="number" id="dormitorios" min="1" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="postulaciones-fallidas">¿Cuántas veces has postulado antes al DS1 o DS49 sin ser seleccionado?</label>
+                    <input type="number" id="postulaciones-fallidas" min="0" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="meses-ds52">Si tienes Subsidio de Arriendo (DS52), ¿cuántos meses has pagado tu copago al día?</label>
+                    <input type="number" id="meses-ds52" min="0" value="0" placeholder="0 si no tienes">
+                </div>
+
+                <div class="form-group">
+                    <label for="constancia-ahorro">Sobre tu ahorro para la vivienda, ¿cómo ha sido tu constancia?</label>
+                    <select id="constancia-ahorro" required>
+                        <option value="0">Tengo el dinero hace muy poco (o lo pondré todo ahora)</option>
+                        <option value="25">Tengo un buen saldo constante hace 1 semestre</option>
+                        <option value="50">Tengo un buen saldo constante hace 2 semestres</option>
+                        <option value="75">Tengo un buen saldo constante hace 3 semestres</option>
+                        <option value="100">Mi dinero lleva guardado de forma constante hace 4 semestres o más</option>
+                    </select>
+                </div>
+
+                <input type="hidden" id="uf-value" value="">
+                
+                <button type="submit">Calcular Mi Ahorro Seguro</button>
             </form>
         </section>
-        <section id="results" class="results-container"></section>
+        
+        <section id="results" class="results-container" style="display: none;">
+            </section>
     </main>
     <footer>
         <button onclick="window.location.href='../percentile.html'">Volver</button>
-            <p style="text-align:center">© 2026 SubsiMatch</p>
-
+        <p style="text-align:center">© 2026 SubsiMatch</p>
     </footer>
-    <script src="../../assets/js/percentile/ds1t1.js"></script>
+    <script src="../../assets/js/percentile/ds1t1-ahorro.js"></script>
 </body>
 </html>
