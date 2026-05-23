@@ -161,11 +161,26 @@ export default function DS1Tramo1Page() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Institución Financiera:</label>
-                <select required className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" value={bank} onChange={(e) => setBank(e.target.value)}>
+                <select 
+                  required 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" 
+                  value={bank} 
+                  onChange={(e) => setBank(e.target.value)}
+                >
                     <option value="">Selecciona un banco...</option>
-                    {Object.keys(BANKS).map(key => (
-                      <option key={key} value={key}>{BANKS[key].name}</option>
-                    ))}
+                    {BANKS && typeof BANKS === 'object' && Object.keys(BANKS).map(key => {
+                      const banco = BANKS[key];
+                      // Determinamos qué texto mostrar en los paréntesis
+                      const textoTasa = banco?.tasaBase 
+                        ? `${(banco.tasaBase * 100).toFixed(2)}%` 
+                        : 'Tasa Dinámica';
+                        
+                      return (
+                        <option key={key} value={key}>
+                          {banco?.name || key} ({textoTasa})
+                        </option>
+                      );
+                    })}
                 </select>
               </div>
               <div>
@@ -181,21 +196,10 @@ export default function DS1Tramo1Page() {
             </div>
 
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 space-y-3">
-              <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 text-[#6b9ac4] rounded" checked={isNewHome} onChange={(e) => setIsNewHome(e.target.checked)} /> 
-                ¿La vivienda es nueva? (Aplica rebaja a la tasa de interés)
-              </label>
-              
               <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer pt-2 border-t border-slate-200">
                 <input type="checkbox" className="w-4 h-4 text-[#6b9ac4] rounded" checked={isYoungSingle} onChange={(e) => setIsYoungSingle(e.target.checked)} /> 
                 ¿Eres joven soltero menor de 35 años?
               </label>
-
-              <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100 mt-2">
-                <p className="text-[11px] text-blue-800 leading-relaxed">
-                  <strong>Nota sobre DS15:</strong> La normativa vigente establece que el aumento de +150 UF del beneficio DS15 es aplicable exclusivamente para los Tramos 2 y 3.
-                </p>
-              </div>
             </div>
 
             <button type="submit" className="w-full bg-[#87c0a3] text-slate-950 font-bold p-3.5 rounded-xl hover:bg-[#76b092] transition-colors shadow-sm">
@@ -263,14 +267,14 @@ export default function DS1Tramo1Page() {
                   <span className="text-xs font-bold text-slate-500 block uppercase tracking-wide">Dividendo Mensual:</span>
                   <span className="text-xl md:text-2xl font-extrabold text-slate-900">{results.dividendoUF.toFixed(2)} UF</span>
                   <span className="text-sm font-semibold text-blue-600 block">
-                    ≈ ${(results.dividendoUF * ufValue).toLocaleString("es-CL")} / mes
+                    ≈ ${Math.round(results.dividendoUF * ufValue).toLocaleString("es-CL")} / mes
                   </span>
                 </div>
                 <div className="md:border-l md:pl-4 border-slate-200">
                   <span className="text-xs font-bold text-slate-500 block uppercase tracking-wide">Renta Mínima ({results.multiplicadorRenta}x):</span>
                   <span className="text-lg md:text-xl font-bold text-slate-800">{results.rentaMinimaUF.toFixed(2)} UF</span>
                   <span className="text-sm font-bold text-slate-700 block">
-                    ≈ ${(results.rentaMinimaUF * ufValue).toLocaleString("es-CL")}
+                    ≈ ${Math.round(results.rentaMinimaUF * ufValue).toLocaleString("es-CL")}
                   </span>
                 </div>
               </div>

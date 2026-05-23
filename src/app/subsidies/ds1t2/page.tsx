@@ -191,11 +191,26 @@ export default function DS1Tramo2Page() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Institución Financiera:</label>
-                <select required className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" value={bank} onChange={(e) => setBank(e.target.value)}>
+                <select 
+                  required 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" 
+                  value={bank} 
+                  onChange={(e) => setBank(e.target.value)}
+                >
                     <option value="">Selecciona un banco...</option>
-                    {Object.keys(BANKS).map(key => (
-                      <option key={key} value={key}>{BANKS[key].name}</option>
-                    ))}
+                    {BANKS && typeof BANKS === 'object' && Object.keys(BANKS).map(key => {
+                      const banco = BANKS[key];
+                      // Determinamos qué texto mostrar en los paréntesis
+                      const textoTasa = banco?.tasaBase 
+                        ? `${(banco.tasaBase * 100).toFixed(2)}%` 
+                        : 'Tasa Dinámica';
+                        
+                      return (
+                        <option key={key} value={key}>
+                          {banco?.name || key} ({textoTasa})
+                        </option>
+                      );
+                    })}
                 </select>
               </div>
               <div>
@@ -298,14 +313,14 @@ export default function DS1Tramo2Page() {
                   <span className="text-xs font-bold text-slate-500 block uppercase tracking-wide">Dividendo Neto Estimado:</span>
                   <span className="text-xl md:text-2xl font-extrabold text-slate-900">{results.dividendoUF.toFixed(2)} UF</span>
                   <span className="text-sm font-semibold text-blue-600 block">
-                    ≈ ${(results.dividendoUF * ufValue).toLocaleString("es-CL")} / mes
+                    ≈ ${Math.round(results.dividendoUF * ufValue).toLocaleString("es-CL")} / mes
                   </span>
                 </div>
                 <div className="md:border-l md:pl-4 border-slate-200">
                   <span className="text-xs font-bold text-slate-500 block uppercase tracking-wide">Renta Mínima Exigida ({results.multiplicadorRenta}x):</span>
                   <span className="text-lg md:text-xl font-bold text-slate-800">{results.rentaMinimaUF.toFixed(2)} UF</span>
                   <span className="text-sm font-bold text-slate-700 block">
-                    ≈ ${(results.rentaMinimaUF * ufValue).toLocaleString("es-CL")}
+                    ≈ ${Math.round(results.rentaMinimaUF * ufValue).toLocaleString("es-CL")}
                   </span>
                 </div>
               </div>

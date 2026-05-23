@@ -89,16 +89,20 @@ export default function FormularioPage() {
   if (status === "success") {
     return (
       <div className="bg-slate-100 min-h-screen flex items-center justify-center p-6">
-        <div className="bg-white max-w-lg w-full rounded-2xl p-10 text-center shadow-lg border border-slate-200 animate-fade-in">
-          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+        <div className="bg-white max-w-lg w-full rounded-3xl p-10 text-center shadow-lg border border-slate-200 animate-fade-in">
+          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
             ✓
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-3">¡Solicitud Recibida!</h2>
-          <p className="text-slate-600 mb-8 leading-relaxed">
-            Hemos registrado tu perfil exitosamente. Nuestro equipo analizará tus datos (Sueldo, Ahorro y Subsidio) y un ejecutivo se pondrá en contacto contigo pronto con los proyectos ideales para ti.
+          <h2 className="text-2xl font-bold text-slate-900 mb-3">¡Perfil Pre-evaluado!</h2>
+          <p className="text-slate-600 mb-6 text-sm leading-relaxed">
+            Hemos registrado tus datos financieros de forma segura. En base a tu sueldo, ahorro y subsidio, nuestro motor inteligente hará el match definitivo con bancos e inmobiliarias asociadas sin dar rodeos ni vueltas matemáticas.
           </p>
-          <Link href="/" className="inline-block bg-slate-900 text-white font-medium px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors">
-            Volver a la Portada
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-left text-xs mb-8 space-y-2">
+            <p className="font-bold text-slate-700">🔒 Compromiso de Privacidad:</p>
+            <p className="text-slate-500">Tus datos están protegidos y solo se utilizarán con el fin exclusivo de contactarte para concretar la compra de tu propiedad. No compartimos tu información con terceros no autorizados.</p>
+          </div>
+          <Link href="/" className="inline-block bg-slate-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors text-sm shadow-sm">
+            Volver al Menú Principal
           </Link>
         </div>
       </div>
@@ -108,24 +112,45 @@ export default function FormularioPage() {
   return (
     <div className="bg-slate-100 min-h-screen text-slate-800 font-sans pb-16">
       
-      {/* Header Institucional */}
+      {/* Header Institucional con Enfoque SaaS / B2C */}
       <header className="bg-gradient-to-r from-[#6b9ac4] to-[#87c0a3] text-white px-6 py-12 border-b-4 border-white shadow-sm text-center">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-            Te Ayudamos a Comprar tu Vivienda
+            Conexión Inmobiliaria y Bancaria Directa
           </h1>
-          <p className="text-blue-50 text-sm md:text-base opacity-95">
-            Ingresa tus datos y te conectaremos con las mejores opciones de inmobiliarias y bancos según tu perfil financiero. Servicio 100% gratuito.
+          <p className="text-blue-50 text-xs md:text-sm opacity-95 max-w-xl mx-auto">
+            Evita rodeos y cálculos complejos. Evaluamos tu perfil financiero y te conectamos directamente con inmobiliarias, corredoras y bancos asociados de forma 100% gratuita para acelerar el sueño de tu casa propia.
           </p>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 -mt-6">
+        
+        {/* Banner Informativo de Conexión Rápida y Protección de Datos */}
+        <section className="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-6 mb-6 shadow-md border border-slate-800">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest block mb-1">
+                ¿Por qué usar SubsiMatch para enviar tus datos?
+              </span>
+              <h3 className="text-base font-bold">Respuesta Definitiva sin Complicaciones</h3>
+              <p className="text-slate-300 text-xs mt-1 leading-relaxed">
+                Calculamos al instante qué propiedades de proyectos inmobiliarios (DS19, DS1 o créditos puros) y qué opciones hipotecarias aplican exactamente a tu perfil. Protegemos tus datos de forma estricta y transparente para acercarte a tu hogar ideal.
+              </p>
+            </div>
+            <span className="text-xs bg-[#87c0a3] text-slate-950 px-3 py-1.5 rounded-full font-bold whitespace-nowrap">
+              100% Gratis
+            </span>
+          </div>
+        </section>
+
         <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-md">
           
           <div className="mb-8 pb-4 border-b border-slate-100 flex justify-between items-center">
-            <h2 className="text-lg font-bold text-slate-800">Formulario de Pre-evaluación</h2>
-            <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-3 py-1 rounded-full">Datos Seguros</span>
+            <h2 className="text-lg font-bold text-slate-800">Formulario de Pre-evaluación Inteligente</h2>
+            <span className="text-[11px] font-bold bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center gap-1">
+              🔒 Datos Protegidos
+            </span>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -136,23 +161,28 @@ export default function FormularioPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">Nombre</label>
-                  <input type="text" name="nombre" required value={formData.nombre} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="Ej: Juan Pérez" />
+                  <input type="text" name="nombre" required value={formData.nombre} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="Ej: Juan" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">RUT</label>
-                  <input type="text" name="rut" required value={formData.rut} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="12.345.678-9" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Apellidos</label>
+                  <input type="text" name="apellidos" required value={formData.apellidos} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="Ej: Pérez" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Correo Electrónico</label>
-                  <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="correo@ejemplo.com" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">RUT</label>
+                  <input type="text" name="rut" required value={formData.rut} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="12.345.678-9" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">Teléfono Móvil</label>
                   <input type="tel" name="telefono" required value={formData.telefono} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="+56 9 1234 5678" />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Correo Electrónico</label>
+                <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] focus:ring-1 focus:ring-[#6b9ac4]/30 text-sm transition-all" placeholder="correo@ejemplo.com" />
               </div>
             </div>
 
@@ -216,11 +246,12 @@ export default function FormularioPage() {
                     : "bg-[#87c0a3] text-slate-950 hover:bg-[#76b092] hover:shadow-md"
                 }`}
               >
-                {status === "loading" ? "Enviando perfil al sistema..." : "Enviar mis datos para evaluación"}
+                {status === "loading" ? "Enviando perfil financiero..." : "Enviar mi perfil a Bancos e Inmobiliarias"}
               </button>
-              <p className="text-center text-[11px] text-slate-400 mt-3">
-                Al enviar este formulario, aceptas que usemos tus datos exclusivamente para contactarte con fines de asesoría habitacional.
-              </p>
+              <div className="mt-4 p-3.5 bg-slate-50 border border-slate-100 rounded-xl text-[11px] text-slate-500 leading-relaxed text-left">
+                <p className="font-semibold text-slate-700 mb-1">🛡️ Tu Privacidad es nuestro Compromiso</p>
+                Te protegemos realmente porque queremos que cumplas tu sueño. Tu información confidencial de sueldo, ahorro y contacto se encripta y se utiliza únicamente para el perfilamiento hipotecario y habitacional. Nos contactaremos de forma ágil para presentarte alternativas reales sin rodeos matemáticos.
+              </div>
             </div>
 
           </form>

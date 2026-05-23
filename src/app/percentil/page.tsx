@@ -197,7 +197,7 @@ export default function PercentilPage() {
                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Sectores Medios</span>
                   <h4 className="text-base font-bold text-slate-900 mb-1">Subsidio DS1 — Tramo 1</h4>
                   <p className="text-xs text-slate-500 leading-relaxed mb-4">Para la compra de viviendas nuevas o usadas de hasta un valor máximo de 1.100 UF.</p>
-                  <Link href="/subsidios/ds1t1" className="text-xs text-blue-600 font-bold hover:underline">Simular ahorro seguro →</Link>
+                  <Link href="/percentil/ds1t1" className="text-xs text-blue-600 font-bold hover:underline">Simular ahorro seguro →</Link>
                 </article>
               )}
 
@@ -207,7 +207,7 @@ export default function PercentilPage() {
                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Sectores Medios</span>
                   <h4 className="text-base font-bold text-slate-900 mb-1">Subsidio DS1 — Tramo 2</h4>
                   <p className="text-xs text-slate-500 leading-relaxed mb-4">Permite la compra de propiedades de hasta 1.600 UF complementando con crédito hipotecario opcional.</p>
-                  <Link href="/subsidios/ds1t2" className="text-xs text-blue-600 font-bold hover:underline">Simular ahorro seguro →</Link>
+                  <Link href="/percentil/ds1t2" className="text-xs text-blue-600 font-bold hover:underline">Simular ahorro seguro →</Link>
                 </article>
               )}
 
@@ -217,7 +217,7 @@ export default function PercentilPage() {
                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Sectores Medios</span>
                   <h4 className="text-base font-bold text-slate-900 mb-1">Subsidio DS1 — Tramo 3</h4>
                   <p className="text-xs text-slate-500 leading-relaxed mb-4">Para la compra de viviendas de hasta 2.200 UF. Requiere capacidad de crédito hipotecario bancario obligatorio.</p>
-                  <Link href="/subsidios/ds1t3" className="text-xs text-blue-600 font-bold hover:underline">Simular ahorro seguro →</Link>
+                  <Link href="/percentil/ds1t3" className="text-xs text-blue-600 font-bold hover:underline">Simular ahorro seguro →</Link>
                 </article>
               )}
 
