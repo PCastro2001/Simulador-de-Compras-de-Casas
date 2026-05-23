@@ -212,12 +212,22 @@ export default function PercentilPage() {
               )}
 
               {/* Lógica DS1 Tramo 3 */}
-              {result.percentile <= 100 && (
+              {result.percentile <= 100 && !(parseInt(householdSize) === 1 && parseFloat(income) > 1500000) && (
                 <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-[#6b9ac4] transition-all">
                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Sectores Medios</span>
                   <h4 className="text-base font-bold text-slate-900 mb-1">Subsidio DS1 — Tramo 3</h4>
                   <p className="text-xs text-slate-500 leading-relaxed mb-4">Para la compra de viviendas de hasta 2.200 UF. Requiere capacidad de crédito hipotecario bancario obligatorio.</p>
-                  <Link href="/percentil/ds1t3" className="text-xs text-blue-600 font-bold hover:underline">Simular ahorro seguro →</Link>
+                  <Link href="/percentil/ds1t3" className="text-xs text-blue-600 font-bold hover:underline">Simular Ahorro Seguro →</Link>
+                </article>
+              )}
+
+              {/* Lógica DS1 Tramo 4 */}
+              {result.percentile <= 100 && !(parseInt(householdSize) === 1 && parseFloat(income) > 2300000) && (
+                <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-[#6b9ac4] transition-all">
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Sectores Medios</span>
+                  <h4 className="text-base font-bold text-slate-900 mb-1">Subsidio DS1 — Tramo 4</h4>
+                  <p className="text-xs text-slate-500 leading-relaxed mb-4">Para compra de viviendas nuevas o usadas de hasta 4.000 UF. Exige ahorro mínimo de 200 UF y otorga subsidio de 400 UF.</p>
+                  <Link href="/valor-maximo/ds1t4" className="text-xs text-blue-600 font-bold hover:underline">Simular Valor Máximo →</Link>
                 </article>
               )}
 

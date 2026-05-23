@@ -5,11 +5,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchUFValue } from "@/utils/api";
 import { BANKS } from "@/data/banks";
+import { REGION_MAP } from "@/data/regions";
 
 export default function MaxValueDS1T3Page() {
   const [incomeCLP, setIncomeCLP] = useState("");
   const [savingsUF, setSavingsUF] = useState("");
-  const [location, setLocation] = useState("none");
   const [bank, setBank] = useState("");
   const [loanTerm, setLoanTerm] = useState("25");
   const [isNewHome, setIsNewHome] = useState(false);
@@ -17,6 +17,22 @@ export default function MaxValueDS1T3Page() {
   const [isYoungSingle, setIsYoungSingle] = useState(false);
   const [ufValue, setUfValue] = useState(39200);
   const [results, setResults] = useState<any>(null);
+
+  const [region, setRegion] = useState("metropolitana");
+  const [propertyType, setPropertyType] = useState("ambos"); // 'casa', 'depto', 'ambos'
+
+  // Mapear la región seleccionada a la zona de topes del DS1
+  const getDS1Zone = (reg: string) => {
+    if (["arica-y-parinacota", "tarapaca", "antofagasta", "atacama"].includes(reg)) {
+      return "north";
+    }
+    if (["aysen", "magallanes"].includes(reg)) {
+      return "south";
+    }
+    return "none";
+  };
+
+  const location = getDS1Zone(region);
 
   useEffect(() => {
     async function init() {
@@ -162,13 +178,31 @@ export default function MaxValueDS1T3Page() {
                         );
                     })}
                 </select>
-                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Ubicación:</label>
-                <select className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" value={location} onChange={(e) => setLocation(e.target.value)}>
-                    <option value="none">Zona Regular</option>
-                    <option value="north">Extremo Norte</option>
-                    <option value="south">Extremo Sur</option>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Región de búsqueda:</label>
+                <select 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" 
+                  value={region} 
+                  onChange={(e) => setRegion(e.target.value)}
+                >
+                  {Object.keys(REGION_MAP).map((key) => (
+                    <option key={key} value={key}>{REGION_MAP[key].label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Tipo de Propiedad:</label>
+                <select 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" 
+                  value={propertyType} 
+                  onChange={(e) => setPropertyType(e.target.value)}
+                >
+                  <option value="ambos">Casas y Departamentos</option>
+                  <option value="casa">Solo Casas</option>
+                  <option value="depto">Solo Departamentos</option>
                 </select>
               </div>
             </div>
@@ -243,7 +277,7 @@ export default function MaxValueDS1T3Page() {
 
             <div className="text-center pt-4">
               <Link 
-                href={`/ofertas-inmobiliarias?maxPrice=${Math.round(results.maxHouseUF * ufValue)}&maxUF=${Math.round(results.maxHouseUF)}&credit=${Math.round(results.loanUF)}&origin=ds1t3`}
+                href={`/ofertas-inmobiliarias?maxPrice=${Math.round(results.maxHouseUF * ufValue)}&maxUF=${Math.round(results.maxHouseUF)}&credit=${Math.round(results.loanUF)}&origin=ds1t3&region=${region}&propertyType=${propertyType === "depto" ? "departamento" : propertyType}`}
                 className="inline-block bg-[#87c0a3] text-slate-950 font-bold py-3.5 px-6 rounded-xl hover:bg-[#76b092] transition-colors shadow-sm text-sm"
               >
                 Buscar Ofertas Inmobiliarias →

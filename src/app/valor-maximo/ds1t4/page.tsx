@@ -1,4 +1,4 @@
-// src/app/valor-maximo/ds1t2/page.tsx
+// src/app/valor-maximo/ds1t4/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,32 +7,18 @@ import { fetchUFValue } from "@/utils/api";
 import { BANKS } from "@/data/banks";
 import { REGION_MAP } from "@/data/regions";
 
-export default function MaxValueDS1T2Page() {
+export default function MaxValueDS1T4Page() {
   const [incomeCLP, setIncomeCLP] = useState("");
   const [savingsUF, setSavingsUF] = useState("");
   const [bank, setBank] = useState("");
   const [loanTerm, setLoanTerm] = useState("25");
   const [isNewHome, setIsNewHome] = useState(false);
-  const [isDS15, setIsDS15] = useState(false);
   const [isYoungSingle, setIsYoungSingle] = useState(false);
   const [ufValue, setUfValue] = useState(39200);
   const [results, setResults] = useState<any>(null);
 
   const [region, setRegion] = useState("metropolitana");
   const [propertyType, setPropertyType] = useState("ambos"); // 'casa', 'depto', 'ambos'
-
-  // Mapear la región seleccionada a la zona de topes del DS1
-  const getDS1Zone = (reg: string) => {
-    if (["arica-y-parinacota", "tarapaca", "antofagasta", "atacama"].includes(reg)) {
-      return "north";
-    }
-    if (["aysen", "magallanes"].includes(reg)) {
-      return "south";
-    }
-    return "none";
-  };
-
-  const location = getDS1Zone(region);
 
   useEffect(() => {
     async function init() {
@@ -52,73 +38,47 @@ export default function MaxValueDS1T2Page() {
       alert("Por favor, selecciona un banco válido.");
       return;
     }
-    if (savings < 40) {
-      alert("El ahorro debe ser de al menos 40 UF.");
-      return;
-    }
-    if (isDS15 && (!isNewHome || savings < 80)) {
-      alert("Para el DS15 necesitas vivienda nueva y mínimo 80 UF de ahorro.");
+    if (savings < 200) {
+      alert("El ahorro mínimo para el Tramo 4 (Tramo 4000) es de 200 UF.");
       return;
     }
 
     // 1. Capacidad Máxima de Pago
+    // Si es joven soltero menor de 35 años, el dividendo puede representar hasta el 33% de la renta (divisor 3).
+    // En caso contrario, el límite estándar es 25% (divisor 4).
     const incomeMultiplier = isYoungSingle ? 3 : 4;
     const maxMonthlyPaymentUF = (income / ufValue) / incomeMultiplier;
 
     // 2. Extraer Tasa de Interés y calcular Crédito Máximo
     const bankData = BANKS[bank];
-    // Estimación: asume un crédito de 1000 UF para sacar la tasa si es dinámica
     const tasaOriginal = bankData.calcularTasa ? bankData.calcularTasa(1000, term) : (bankData.tasaBase || 0.05);
-    const tasaAplicada = isNewHome ? (tasaOriginal - (bankData.descuentoDS15 || 0)) : tasaOriginal;
+    const tasaAplicada = tasaOriginal;
 
     const monthlyRate = tasaAplicada / 12;
     const totalPayments = term * 12;
     const maxLoanUF = maxMonthlyPaymentUF * ((1 - Math.pow(1 + monthlyRate, -totalPayments)) / monthlyRate);
 
-    // 3. Resolución de la Referencia Circular del Subsidio Variable
-    let baseCapacity = maxLoanUF + savings + (isDS15 ? 150 : 0);
-    let maxPropertyValue = 0;
-    let finalSubsidyBase = 0;
+    // 3. Subsidio Fijo Tramo 4 = 400 UF
+    const subsidyUF = 400;
 
-    // Lógica Matemática de Ingenería Inversa (Basada en tu Legacy 1.375)
-    if (location === 'none') {
-      // Regular: Max 550, Min 250. Rango: 800 - 1600. Pendiente = 0.375
-      const projected = (baseCapacity + 550 + (0.375 * 800)) / 1.375;
-      if (projected <= 800) { maxPropertyValue = baseCapacity + 550; finalSubsidyBase = 550; }
-      else if (projected <= 1600) { maxPropertyValue = projected; finalSubsidyBase = 550 - ((projected - 800) * 0.375); }
-      else { maxPropertyValue = baseCapacity + 250; finalSubsidyBase = 250; }
-    } else if (location === 'north') {
-      // Norte: Max 650, Min 350. Pendiente = 0.375
-      const projected = (baseCapacity + 650 + (0.375 * 800)) / 1.375;
-      if (projected <= 800) { maxPropertyValue = baseCapacity + 650; finalSubsidyBase = 650; }
-      else if (projected <= 1600) { maxPropertyValue = projected; finalSubsidyBase = 650 - ((projected - 800) * 0.375); }
-      else { maxPropertyValue = baseCapacity + 350; finalSubsidyBase = 350; }
-    } else {
-      // Sur: Max 700, Min 400. Pendiente = 0.375
-      const projected = (baseCapacity + 700 + (0.375 * 800)) / 1.375;
-      if (projected <= 800) { maxPropertyValue = baseCapacity + 700; finalSubsidyBase = 700; }
-      else if (projected <= 1600) { maxPropertyValue = projected; finalSubsidyBase = 700 - ((projected - 800) * 0.375); }
-      else { maxPropertyValue = baseCapacity + 400; finalSubsidyBase = 400; }
-    }
+    // 4. Presupuesto Máximo de Compra (Crédito + Ahorro + Subsidio Fijo)
+    let maxPropertyValue = maxLoanUF + savings + subsidyUF;
 
-    // 4. Aplicar los Topes Legales Duros
-    const legalMaxCap = (isNewHome && isDS15) ? 3000 : 1600;
+    // 5. Aplicar el Tope Legal de 4.000 UF
+    const legalMaxCap = 4000;
     if (maxPropertyValue > legalMaxCap) {
       maxPropertyValue = legalMaxCap;
     }
-
-    const totalFinalSubsidy = finalSubsidyBase + (isDS15 ? 150 : 0);
 
     setResults({
       maxHouseUF: maxPropertyValue,
       loanUF: maxLoanUF,
       savingsUF: savings,
-      subsidyUF: totalFinalSubsidy,
+      subsidyUF: subsidyUF,
       maxDividendUF: maxMonthlyPaymentUF,
       bank: bankData.name,
       tasaOriginal,
       tasaAplicada,
-      aplicaLey: isNewHome && (bankData.descuentoDS15 || 0) > 0,
       legalMaxCap
     });
   };
@@ -128,13 +88,13 @@ export default function MaxValueDS1T2Page() {
       <header className="bg-gradient-to-r from-[#6b9ac4] to-[#87c0a3] text-white px-6 py-10 border-b-4 border-white shadow-sm">
         <div className="max-w-3xl mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Valor Máximo: DS1 Tramo 2</h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Valor Máximo: DS1 Tramo 4 (4000 UF)</h1>
             <p className="text-blue-50 text-xs md:text-sm opacity-90 mt-1">
-              Ingresa tu sueldo y descubre la casa más cara que puedes comprar.
+              Ingresa tus datos para calcular el presupuesto máximo de compra bajo este nuevo subsidio.
             </p>
           </div>
           <Link href="/valor-maximo" className="text-xs font-bold bg-white/20 text-white px-3 py-2 rounded-lg hover:bg-white/30 transition-all">
-            ← Volver al Menú
+            ← Menú
           </Link>
         </div>
       </header>
@@ -144,12 +104,28 @@ export default function MaxValueDS1T2Page() {
           <form onSubmit={handleCalculate} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Renta Líquida Mensual ($ CLP):</label>
-                <input type="number" min="0" required className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#6b9ac4]" value={incomeCLP} onChange={(e) => setIncomeCLP(e.target.value)} />
+                <label className="block text-sm font-bold text-slate-700 mb-1">Renta Líquida Familiar Mensual ($ CLP):</label>
+                <input 
+                  type="number" 
+                  min="0" 
+                  required 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#6b9ac4]" 
+                  value={incomeCLP} 
+                  onChange={(e) => setIncomeCLP(e.target.value)} 
+                />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Ahorro Actual (UF):</label>
-                <input type="number" min="40" step="1" required className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#6b9ac4]" value={savingsUF} onChange={(e) => setSavingsUF(e.target.value)} />
+                <input 
+                  type="number" 
+                  min="200" 
+                  step="1" 
+                  required 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#6b9ac4]" 
+                  value={savingsUF} 
+                  placeholder="Min 200 UF"
+                  onChange={(e) => setSavingsUF(e.target.value)} 
+                />
               </div>
             </div>
 
@@ -165,7 +141,6 @@ export default function MaxValueDS1T2Page() {
                     <option value="">Selecciona un banco...</option>
                     {BANKS && typeof BANKS === 'object' && Object.keys(BANKS).map(key => {
                         const banco = BANKS[key];
-                        // Determinamos qué texto mostrar en los paréntesis
                         const textoTasa = banco?.tasaBase 
                         ? `${(banco.tasaBase * 100).toFixed(2)}%` 
                         : 'Tasa Dinámica';
@@ -179,7 +154,21 @@ export default function MaxValueDS1T2Page() {
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Plazo del Crédito:</label>
+                <select 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" 
+                  value={loanTerm} 
+                  onChange={(e) => setLoanTerm(e.target.value)}
+                >
+                  <option value="15">15 años</option>
+                  <option value="20">20 años</option>
+                  <option value="25">25 años</option>
+                  <option value="30">30 años</option>
+                </select>
+              </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Región de búsqueda:</label>
                 <select 
@@ -209,14 +198,8 @@ export default function MaxValueDS1T2Page() {
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 space-y-3">
               <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer">
                 <input type="checkbox" className="w-4 h-4 text-[#6b9ac4] rounded" checked={isNewHome} onChange={(e) => setIsNewHome(e.target.checked)} /> 
-                ¿Buscas vivienda nueva? (Aplica rebaja de tasa de interés)
+                ¿Buscas vivienda nueva?
               </label>
-              <div className="pl-6">
-                <label className="flex items-center gap-2 text-sm font-bold text-blue-700 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded" checked={isDS15} onChange={(e) => setIsDS15(e.target.checked)} disabled={!isNewHome} /> 
-                  Activar beneficio DS15 (+150 UF, exige 80 UF de ahorro)
-                </label>
-              </div>
               <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer pt-2 border-t border-slate-200">
                 <input type="checkbox" className="w-4 h-4 text-[#6b9ac4] rounded" checked={isYoungSingle} onChange={(e) => setIsYoungSingle(e.target.checked)} /> 
                 ¿Eres joven soltero menor de 35 años? (Permite endeudamiento al 33%)
@@ -237,7 +220,7 @@ export default function MaxValueDS1T2Page() {
                 {results.maxHouseUF.toFixed(0)} UF
               </h2>
               <p className="text-lg font-semibold text-[#6b9ac4] mt-2">
-                ≈ ${(results.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
+                ≈ ${(Math.round(results.maxHouseUF * ufValue)).toLocaleString("es-CL")} CLP
               </p>
             </div>
 
@@ -263,20 +246,22 @@ export default function MaxValueDS1T2Page() {
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mt-4">
                  <div className="flex justify-between items-center">
                     <span className="text-xs font-bold text-slate-500 uppercase">Tope Dividendo:</span>
-                    <span className="font-extrabold text-slate-900">{results.maxDividendUF.toFixed(2)} UF <span className="text-xs font-normal text-slate-400">(${(results.maxDividendUF * ufValue).toLocaleString("es-CL")})</span></span>
+                    <span className="font-extrabold text-slate-900">
+                      {results.maxDividendUF.toFixed(2)} UF <span className="text-xs font-normal text-slate-400">(${Math.round(results.maxDividendUF * ufValue).toLocaleString("es-CL")})</span>
+                    </span>
                  </div>
               </div>
             </div>
 
             {results.maxHouseUF >= results.legalMaxCap && (
               <div className="bg-amber-50 border-2 border-amber-200 text-amber-900 p-4 rounded-xl shadow-sm text-xs">
-                ⚠️ Tu capacidad financiera es mayor, pero el resultado ha sido limitado a <strong>{results.legalMaxCap} UF</strong>, que es el tope máximo que permite la ley para este tramo y modalidad.
+                ⚠️ Tu capacidad financiera es mayor, pero el resultado ha sido limitado a <strong>{results.legalMaxCap} UF</strong>, que es el tope máximo que permite el subsidio DS1 Tramo 4.
               </div>
             )}
 
             <div className="text-center pt-4">
               <Link 
-                href={`/ofertas-inmobiliarias?maxPrice=${Math.round(results.maxHouseUF * ufValue)}&maxUF=${Math.round(results.maxHouseUF)}&credit=${Math.round(results.loanUF)}&origin=ds1t2&region=${region}&propertyType=${propertyType === "depto" ? "departamento" : propertyType}`}
+                href={`/ofertas-inmobiliarias?maxPrice=${Math.round(results.maxHouseUF * ufValue)}&maxUF=${Math.round(results.maxHouseUF)}&credit=${Math.round(results.loanUF)}&origin=ds1t4&region=${region}&propertyType=${propertyType === "depto" ? "departamento" : propertyType}`}
                 className="inline-block bg-[#87c0a3] text-slate-950 font-bold py-3.5 px-6 rounded-xl hover:bg-[#76b092] transition-colors shadow-sm text-sm"
               >
                 Buscar Ofertas Inmobiliarias →

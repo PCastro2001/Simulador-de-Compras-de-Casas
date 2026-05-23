@@ -10,6 +10,7 @@ export default function SubsidiesMenuPage() {
     { href: "/subsidies/ds1t1", titulo: "Subsidio DS1 Tramo 1", descripcion: "Para personas en el 60% más vulnerable." },
     { href: "/subsidies/ds1t2", titulo: "Subsidio DS1 Tramo 2", descripcion: "Viviendas hasta 1.600 UF (hasta 80% de vulnerabilidad)." },
     { href: "/subsidies/ds1t3", titulo: "Subsidio DS1 Tramo 3", descripcion: "Para compra de viviendas hasta 2.200 UF." },
+    { href: "/subsidies/ds1t4", titulo: "Subsidio DS1 Tramo 4", descripcion: "Compra de viviendas hasta 4.000 UF (ahorro mínimo 200 UF y subsidio de 400 UF)." },
     { href: "/subsidies/ds19", titulo: "Subsidio DS19", descripcion: "Integración Social (Proyectos inmobiliarios)." },
   ];
 

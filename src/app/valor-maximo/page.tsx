@@ -8,6 +8,8 @@ export default function ValorMaximoMenuPage() {
     { href: "/valor-maximo/ds1t1", titulo: "Subsidio DS1 Tramo 1", descripcion: "Para personas en el 60% más vulnerable." },
     { href: "/valor-maximo/ds1t2", titulo: "Subsidio DS1 Tramo 2", descripcion: "Compra de viviendas hasta 1.600 UF (hasta 80% de vulnerabilidad)." },
     { href: "/valor-maximo/ds1t3", titulo: "Subsidio DS1 Tramo 3", descripcion: "Compra de viviendas hasta 2.200 UF." },
+    { href: "/valor-maximo/ds1t4", titulo: "Subsidio DS1 Tramo 4", descripcion: "Compra de viviendas hasta 4.000 UF (ahorro mínimo 200 UF y subsidio de 400 UF)." },
+    { href: "/valor-maximo/ds19", titulo: "Subsidio DS19", descripcion: "Integración Social (compra de vivienda nueva en proyectos seleccionados)." },
     { href: "/valor-maximo/sin-subsidio", titulo: "Sin Subsidio / Libre", descripcion: "Calcula el valor máximo de una vivienda sin aplicar aportes del Estado." },
   ];
 

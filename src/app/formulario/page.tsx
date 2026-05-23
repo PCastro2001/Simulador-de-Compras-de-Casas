@@ -212,6 +212,7 @@ export default function FormularioPage() {
                     <option value="ds1t1">Subsidio DS1 - Tramo 1</option>
                     <option value="ds1t2">Subsidio DS1 - Tramo 2</option>
                     <option value="ds1t3">Subsidio DS1 - Tramo 3</option>
+                    <option value="ds1t4">Subsidio DS1 - Tramo 4</option>
                     <option value="ds49">Fondo Solidario (DS49)</option>
                   </select>
                 </div>
