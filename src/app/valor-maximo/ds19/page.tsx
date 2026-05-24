@@ -22,6 +22,7 @@ export default function MaxValueDS19Page() {
   const [results, setResults] = useState<any>(null);
 
   const [region, setRegion] = useState("metropolitana");
+  const [isMetroPeripheral, setIsMetroPeripheral] = useState(false);
 
   // Determinar si el subsidio es variable (Cupo Sectores Medios 2)
   const isVariable =
@@ -29,10 +30,13 @@ export default function MaxValueDS19Page() {
     subsidyType === "ds1t3" ||
     (subsidyType === "none" && cupoType === "urban_media");
 
-  // Obtener la zona geográfica DS19 basada en la región
-  const getDS19LocationZone = (reg: string, isVar: boolean) => {
+  // Obtener la zona geográfica DS19 basada en la región y si es comuna periférica
+  const getDS19LocationZone = (reg: string, isVar: boolean, isPeripheral: boolean) => {
     if (["aysen", "magallanes"].includes(reg)) {
       return "sur_islas";
+    }
+    if (reg === "metropolitana" && isPeripheral) {
+      return "regular";
     }
     const urbanRegions = isVar 
       ? ["arica-y-parinacota", "tarapaca", "antofagasta", "atacama", "metropolitana", "valparaiso", "biobio"]
@@ -44,14 +48,14 @@ export default function MaxValueDS19Page() {
     return "regular";
   };
 
-  const location = getDS19LocationZone(region, isVariable);
+  const location = getDS19LocationZone(region, isVariable, isMetroPeripheral);
 
   // Sincronizar el Tipo de Cupo por defecto al cambiar el subsidio previo
   useEffect(() => {
     if (subsidyType === "ds49") setCupoType("vulnerable");
     if (subsidyType === "ds1t3") setCupoType("medios2");
-    if (subsidyType === "ds1t1") setCupoType("vulnerable");
-    if (subsidyType === "ds1t2") setCupoType("medios1");
+    if (subsidyType === "ds1t1") setCupoType("medios1");
+    if (subsidyType === "ds1t2") setCupoType("medios2");
     if (subsidyType === "none") setCupoType("urban_media");
     setResults(null);
   }, [subsidyType]);
@@ -332,7 +336,12 @@ export default function MaxValueDS19Page() {
                 <select 
                   className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#6b9ac4]" 
                   value={region} 
-                  onChange={(e) => setRegion(e.target.value)}
+                  onChange={(e) => {
+                    setRegion(e.target.value);
+                    if (e.target.value !== "metropolitana") {
+                      setIsMetroPeripheral(false);
+                    }
+                  }}
                 >
                   {Object.keys(REGION_MAP).map((key) => (
                     <option key={key} value={key}>{REGION_MAP[key].label}</option>
@@ -353,6 +362,24 @@ export default function MaxValueDS19Page() {
                 </select>
               </div>
             </div>
+
+            {/* SELECCIÓN DE COMUNA PARA REGIÓN METROPOLITANA */}
+            {region === "metropolitana" && (
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl animate-fade-in space-y-2">
+                <label className="block text-xs font-bold text-slate-700">Comuna / Sector en Región Metropolitana:</label>
+                <select
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-white text-sm focus:outline-none text-blue-700 font-bold"
+                  value={isMetroPeripheral ? "peripheral" : "urban"}
+                  onChange={(e) => setIsMetroPeripheral(e.target.value === "peripheral")}
+                >
+                  <option value="urban">Gran Santiago / Provincia Urbana (Hasta 1900 o 2800 UF)</option>
+                  <option value="peripheral">Melipilla, Padre Hurtado, El Monte, Lampa, Colina, Batuco (Otras Comunas - Hasta 1800 o 2600 UF)</option>
+                </select>
+                <span className="text-[10px] text-slate-500 block">
+                  El DS19 asigna distintas zonas geográficas con topes diferenciados para comunas fuera del Gran Santiago.
+                </span>
+              </div>
+            )}
 
             {/* SUBSIDIO ESPECÍFICO (SOLO PARA TRASLAPES CON SUBSIDIOS VARIABLES) */}
             {isVariable && (
@@ -533,7 +560,7 @@ export default function MaxValueDS19Page() {
 
             <div className="text-center pt-4">
               <Link 
-                href={`/ofertas-inmobiliarias?maxPrice=${Math.round(results.maxHouseUF * ufValue)}&maxUF=${Math.round(results.maxHouseUF)}&credit=${Math.round(results.loanUF)}&origin=ds19&region=${region}&propertyType=${propertyType === "depto" ? "departamento" : propertyType}`}
+                href={`/ofertas-inmobiliarias?maxPrice=${Math.round(results.maxHouseUF * ufValue)}&maxUF=${Math.round(results.maxHouseUF)}&credit=${Math.round(results.loanUF)}&origin=ds19&region=${region}&propertyType=${propertyType === "depto" ? "departamento" : propertyType === "casa" ? "casa" : "ambos"}&subsidyType=${subsidyType}&cupoType=${cupoType}&isPeripheral=${isMetroPeripheral}`}
                 className="inline-block bg-[#87c0a3] text-slate-950 font-bold py-3.5 px-6 rounded-xl hover:bg-[#76b092] transition-colors shadow-sm text-sm"
               >
                 Buscar Proyectos Nuevos DS19 →

@@ -107,6 +107,427 @@ const TOCTOC_PARAMS: Record<string, { text: string; viewport: string; polygon: n
   }
 };
 
+interface DS19Commune {
+  key: string;
+  label: string;
+  enlaceSlug?: string;
+  portalSlug?: string;
+  toctoc?: {
+    texto: string;
+    viewport: string;
+    idPoligono: number;
+    toctocPath?: string;
+  };
+}
+
+const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
+  "arica-y-parinacota": [
+    { 
+      key: "arica", 
+      label: "Arica",
+      enlaceSlug: "arica",
+      portalSlug: "arica-arica-y-parinacota",
+      toctoc: {
+        texto: "Arica",
+        viewport: "-18.90360048067751,-70.50737293356137,-18.0480701365271,-69.36344706877978",
+        idPoligono: 1,
+        toctocPath: "arica-y-parinacota/arica"
+      }
+    }
+  ],
+  "tarapaca": [
+    { 
+      key: "iquique", 
+      label: "Iquique (Zona Urbana)",
+      enlaceSlug: "iquique",
+      portalSlug: "iquique-tarapaca",
+      toctoc: {
+        texto: "Iquique",
+        viewport: "-21.438898383954196,-70.48222209685363,-20.063320015607474,-69.5501677048932",
+        idPoligono: 341,
+        toctocPath: ""
+      }
+    },
+    { 
+      key: "alto-hospicio", 
+      label: "Alto Hospicio (Otras Comunas)",
+      enlaceSlug: "alto-hospicio",
+      portalSlug: "alto-hospicio-tarapaca",
+      toctoc: {
+        texto: "Alto Hospicio",
+        viewport: "-20.320494,-70.12613,-20.231268,-70.021074",
+        idPoligono: 2251
+      }
+    }
+  ],
+  "antofagasta": [
+    { 
+      key: "antofagasta", 
+      label: "Antofagasta (Zona Urbana)",
+      enlaceSlug: "antofagasta",
+      portalSlug: "antofagasta-antofagasta",
+      toctoc: {
+        texto: "Antofagasta",
+        viewport: "-23.73887,-70.43575,-23.55171,-70.36434",
+        idPoligono: 2250
+      }
+    },
+    { 
+      key: "calama", 
+      label: "Calama (Zona Urbana)",
+      enlaceSlug: "calama",
+      portalSlug: "calama-antofagasta",
+      toctoc: {
+        texto: "Calama",
+        viewport: "-22.52264,-68.97129,-22.42211,-68.85765",
+        idPoligono: 2250
+      }
+    }
+  ],
+  "atacama": [
+    { 
+      key: "copiapo", 
+      label: "Copiapó (Zona Urbana)",
+      enlaceSlug: "copiapo",
+      portalSlug: "copiapo-atacama",
+      toctoc: {
+        texto: "Copiapó",
+        viewport: "-27.42416,-70.39864,-27.32422,-70.28189",
+        idPoligono: 2249
+      }
+    }
+  ],
+  "coquimbo": [
+    { 
+      key: "la-serena", 
+      label: "La Serena (Otras Comunas)",
+      enlaceSlug: "la-serena",
+      portalSlug: "la-serena-coquimbo",
+      toctoc: {
+        texto: "La Serena",
+        viewport: "-29.98135,-71.32626,-29.87326,-71.20524",
+        idPoligono: 2248
+      }
+    },
+    { 
+      key: "ovalle", 
+      label: "Ovalle (Otras Comunas)",
+      enlaceSlug: "ovalle",
+      portalSlug: "ovalle-coquimbo",
+      toctoc: {
+        texto: "Ovalle",
+        viewport: "-30.63854,-71.26526,-30.56586,-71.16246",
+        idPoligono: 2248
+      }
+    }
+  ],
+  "valparaiso": [
+    { 
+      key: "valparaiso", 
+      label: "Valparaíso (Zona Urbana)",
+      enlaceSlug: "valparaiso",
+      portalSlug: "valparaiso-valparaiso",
+      toctoc: {
+        texto: "Valparaíso",
+        viewport: "-33.09015,-71.66265,-33.01358,-71.55835",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "vina-del-mar", 
+      label: "Viña del Mar (Zona Urbana)",
+      enlaceSlug: "vina-del-mar",
+      portalSlug: "vina-del-mar-valparaiso",
+      toctoc: {
+        texto: "Viña del Mar",
+        viewport: "-33.04874,-71.58354,-32.98135,-71.49265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "quilpue", 
+      label: "Quilpué (Otras Comunas)",
+      enlaceSlug: "quilpue",
+      portalSlug: "quilpue-valparaiso",
+      toctoc: {
+        texto: "Quilpué",
+        viewport: "-33.07265,-71.46265,-33.03154,-71.40265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "quillota", 
+      label: "Quillota (Otras Comunas)",
+      enlaceSlug: "quillota",
+      portalSlug: "quillota-valparaiso",
+      toctoc: {
+        texto: "Quillota",
+        viewport: "-32.91135,-71.30265,-32.85135,-71.22265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "casablanca", 
+      label: "Casablanca (Otras Comunas)",
+      enlaceSlug: "casablanca",
+      portalSlug: "casablanca-valparaiso",
+      toctoc: {
+        texto: "Casablanca",
+        viewport: "-33.25135,-71.45265,-33.19135,-71.37265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "villa-alemana", 
+      label: "Villa Alemana (Otras Comunas)",
+      enlaceSlug: "villa-alemana",
+      portalSlug: "villa-alemana-valparaiso",
+      toctoc: {
+        texto: "Villa Alemana",
+        viewport: "-33.09265,-71.40135,-33.05135,-71.34265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "san-felipe", 
+      label: "San Felipe (Otras Comunas)",
+      enlaceSlug: "san-felipe",
+      portalSlug: "san-felipe-valparaiso",
+      toctoc: {
+        texto: "San Felipe",
+        viewport: "-32.76135,-70.76265,-32.71135,-70.70265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "limache", 
+      label: "Limache (Otras Comunas)",
+      enlaceSlug: "limache",
+      portalSlug: "limache-valparaiso",
+      toctoc: {
+        texto: "Limache",
+        viewport: "-33.03135,-71.29265,-32.98135,-71.21265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "la-ligua", 
+      label: "La Ligua (Otras Comunas)",
+      enlaceSlug: "la-ligua",
+      portalSlug: "la-ligua-valparaiso",
+      toctoc: {
+        texto: "La Ligua",
+        viewport: "-32.47135,-71.26265,-32.42135,-71.20265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "los-andes", 
+      label: "Los Andes (Otras Comunas)",
+      enlaceSlug: "los-andes",
+      portalSlug: "los-andes-valparaiso",
+      toctoc: {
+        texto: "Los Andes",
+        viewport: "-32.85135,-70.63265,-32.80135,-70.57265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "cartagena", 
+      label: "Cartagena (Otras Comunas)",
+      enlaceSlug: "cartagena",
+      portalSlug: "cartagena-valparaiso",
+      toctoc: {
+        texto: "Cartagena",
+        viewport: "-33.56135,-71.63265,-33.51135,-71.57265",
+        idPoligono: 2247
+      }
+    },
+    { 
+      key: "el-tabo", 
+      label: "El Tabo (Otras Comunas)",
+      enlaceSlug: "el-tabo",
+      portalSlug: "el-tabo-valparaiso",
+      toctoc: {
+        texto: "El Tabo",
+        viewport: "-33.48135,-71.69265,-33.43135,-71.63265",
+        idPoligono: 2247
+      }
+    }
+  ],
+  "metropolitana": [
+    { 
+      key: "santiago", 
+      label: "Gran Santiago (Provincia Urbana)",
+      enlaceSlug: "",
+      portalSlug: "santiago-metropolitana",
+      toctoc: {
+        texto: "Santiago",
+        viewport: "-33.65,-70.85,-33.35,-70.45",
+        idPoligono: 2240
+      }
+    },
+    { 
+      key: "melipilla", 
+      label: "Melipilla (Otras Comunas)",
+      enlaceSlug: "melipilla",
+      portalSlug: "melipilla-metropolitana",
+      toctoc: {
+        texto: "Melipilla",
+        viewport: "-33.72,-71.25,-33.65,-71.18",
+        idPoligono: 2240
+      }
+    },
+    { 
+      key: "padre-hurtado", 
+      label: "Padre Hurtado (Otras Comunas)",
+      enlaceSlug: "padre-hurtado",
+      portalSlug: "padre-hurtado-metropolitana",
+      toctoc: {
+        texto: "Padre Hurtado",
+        viewport: "-33.61,-70.83,-33.55,-70.78",
+        idPoligono: 2240
+      }
+    },
+    { 
+      key: "el-monte", 
+      label: "El Monte (Otras Comunas)",
+      enlaceSlug: "el-monte",
+      portalSlug: "el-monte-metropolitana",
+      toctoc: {
+        texto: "El Monte",
+        viewport: "-33.69,-71.01,-33.65,-70.96",
+        idPoligono: 2240
+      }
+    },
+    { 
+      key: "lampa", 
+      label: "Lampa (Otras Comunas)",
+      enlaceSlug: "lampa",
+      portalSlug: "lampa-metropolitana",
+      toctoc: {
+        texto: "Lampa",
+        viewport: "-33.32,-70.93,-33.22,-70.83",
+        idPoligono: 2240
+      }
+    },
+    { 
+      key: "colina", 
+      label: "Colina (Otras Comunas)",
+      enlaceSlug: "colina",
+      portalSlug: "colina-metropolitana",
+      toctoc: {
+        texto: "Colina",
+        viewport: "-33.25,-70.71,-33.15,-70.61",
+        idPoligono: 2240
+      }
+    },
+    { 
+      key: "batuco", 
+      label: "Batuco (Otras Comunas)",
+      enlaceSlug: "lampa",
+      portalSlug: "batuco-lampa-metropolitana",
+      toctoc: {
+        texto: "Batuco",
+        viewport: "-33.25,-70.85,-33.18,-70.78",
+        idPoligono: 2240
+      }
+    }
+  ],
+  "biobio": [
+    { 
+      key: "concepcion", 
+      label: "Concepción (Zona Urbana)",
+      enlaceSlug: "concepcion",
+      portalSlug: "concepcion-biobio",
+      toctoc: {
+        texto: "Concepción",
+        viewport: "-36.85135,-73.08265,-36.80135,-73.00265",
+        idPoligono: 2252
+      }
+    },
+    { 
+      key: "los-angeles", 
+      label: "Los Ángeles (Zona Urbana)",
+      enlaceSlug: "los-angeles",
+      portalSlug: "los-angeles-biobio",
+      toctoc: {
+        texto: "Los Ángeles",
+        viewport: "-37.49135,-72.38265,-37.44135,-72.30265",
+        idPoligono: 2252
+      }
+    },
+    { 
+      key: "penco", 
+      label: "Penco (Otras Comunas)",
+      enlaceSlug: "penco",
+      portalSlug: "penco-biobio",
+      toctoc: {
+        texto: "Penco",
+        viewport: "-36.75135,-73.00135,-36.71135,-72.95265",
+        idPoligono: 2252
+      }
+    },
+    { 
+      key: "san-pedro-de-la-paz", 
+      label: "San Pedro de la Paz (Otras Comunas)",
+      enlaceSlug: "san-pedro-de-la-paz",
+      portalSlug: "san-pedro-de-la-paz-biobio",
+      toctoc: {
+        texto: "San Pedro de la Paz",
+        viewport: "-36.89135,-73.13265,-36.83135,-73.07265",
+        idPoligono: 2252
+      }
+    },
+    { 
+      key: "chiguayante", 
+      label: "Chiguayante (Otras Comunas)",
+      enlaceSlug: "chiguayante",
+      portalSlug: "chiguayante-biobio",
+      toctoc: {
+        texto: "Chiguayante",
+        viewport: "-36.95135,-73.05135,-36.89135,-73.00265",
+        idPoligono: 2252
+      }
+    },
+    { 
+      key: "curanilahue", 
+      label: "Curanilahue (Otras Comunas)",
+      enlaceSlug: "curanilahue",
+      portalSlug: "curanilahue-biobio",
+      toctoc: {
+        texto: "Curanilahue",
+        viewport: "-37.50135,-73.10265,-37.45135,-73.05265",
+        idPoligono: 2252
+      }
+    },
+    { 
+      key: "talcahuano", 
+      label: "Talcahuano (Otras Comunas)",
+      enlaceSlug: "talcahuano",
+      portalSlug: "talcahuano-biobio",
+      toctoc: {
+        texto: "Talcahuano",
+        viewport: "-36.75135,-73.15265,-36.70135,-73.08265",
+        idPoligono: 2252
+      }
+    }
+  ],
+  "los-lagos": [
+    { 
+      key: "castro", 
+      label: "Chiloé - Castro (Zona Urbana)",
+      enlaceSlug: "castro",
+      portalSlug: "castro-los-lagos",
+      toctoc: {
+        texto: "Castro, Chiloé",
+        viewport: "-42.49265,-73.79135,-42.45135,-73.74265",
+        idPoligono: 2243
+      }
+    }
+  ]
+};
+
 function OffersContent() {
   const searchParams = useSearchParams();
 
@@ -117,6 +538,7 @@ function OffersContent() {
   const originParam = searchParams.get("origin") || "";
   const regionParam = searchParams.get("region") || "";
   const propertyTypeParam = searchParams.get("propertyType") || "";
+  const isPeripheralParam = searchParams.get("isPeripheral") === "true";
 
   // Locks de origen
   const isLocked = originParam === "ds19" || originParam === "ds1t2" || originParam === "ds1t3" || originParam === "ds1t4";
@@ -137,15 +559,31 @@ function OffersContent() {
         : "ambos"
   );
 
+  // Comunas disponibles para DS19
+  const availableCommunes = DS19_COMMUNES_BY_REGION[region] || [];
+  const [selectedCommuneKey, setSelectedCommuneKey] = useState("");
+
+  // Sincronizar comuna al cambiar región o el flag de periférico de la simulación
+  useEffect(() => {
+    if (availableCommunes.length > 0) {
+      const defaultComm = region === "metropolitana"
+        ? (isPeripheralParam ? "melipilla" : "santiago")
+        : availableCommunes[0].key;
+      setSelectedCommuneKey(defaultComm);
+    } else {
+      setSelectedCommuneKey("");
+    }
+  }, [region, isPeripheralParam]);
+
   // Links generados
   const [links, setLinks] = useState<any>(null);
 
-  // Ejecutar generación automática al cargar con los parámetros de la URL
+  // Ejecutar generación automática al cargar con los parámetros de la URL o al cambiar comuna
   useEffect(() => {
     if (maxPriceParam > 0) {
       generateLinks();
     }
-  }, [maxPriceParam]);
+  }, [maxPriceParam, selectedCommuneKey]);
 
   const handleGenerate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,8 +609,29 @@ function OffersContent() {
 
     const bedroomSlug = bedroomOptions.join("-") + "-dormitorios";
 
-    const { tt, pi } = REGION_MAP[region];
-    const { text, viewport, polygon } = TOCTOC_PARAMS[region] || TOCTOC_PARAMS["metropolitana"];
+    // Variables por defecto de la región
+    let { tt, pi } = REGION_MAP[region];
+    let { text, viewport, polygon } = TOCTOC_PARAMS[region] || TOCTOC_PARAMS["metropolitana"];
+    let activeEnlaceBase = ENLACE_MAP[region];
+    let toctocCustomPath: string | undefined = undefined;
+
+    // Si es DS19 y hay una comuna específica seleccionada, sobreescribimos los valores de búsqueda
+    const selectedCommune = availableCommunes.find(c => c.key === selectedCommuneKey);
+    if (originParam === "ds19" && selectedCommune) {
+      if (selectedCommune.toctoc) {
+        text = selectedCommune.toctoc.texto;
+        viewport = selectedCommune.toctoc.viewport;
+        polygon = selectedCommune.toctoc.idPoligono;
+        toctocCustomPath = selectedCommune.toctoc.toctocPath;
+      }
+      if (selectedCommune.portalSlug) {
+        pi = selectedCommune.portalSlug;
+      }
+      if (selectedCommune.enlaceSlug && ENLACE_MAP[region]) {
+        // Para enlace inmobiliario, agregamos la comuna al final del path regional
+        activeEnlaceBase = `${ENLACE_MAP[region]}/${selectedCommune.enlaceSlug}`;
+      }
+    }
 
     // 1. URL TOC TOC
     const ttState = propertyCondition === "nuevas" ? "&estado=1" : propertyCondition === "usadas" ? "&estado=0" : "&estado=2";
@@ -180,7 +639,16 @@ function OffersContent() {
     const ttMoneda = maxUFParam > 0 ? "2" : "1";
     const ttPrecioHasta = maxUFParam > 0 ? maxUFParam : maxPriceParam;
     const ttPrecioDesde = maxUFParam > 0 ? "0" : "25000000";
-    const toctocUrl = `https://www.toctoc.com/resultados/mapa/compra/${ttPropType}/${tt}/?moneda=${ttMoneda}&precioDesde=${ttPrecioDesde}&precioHasta=${ttPrecioHasta}&dormitoriosDesde=${bedrooms}&banosDesde=1${ttState}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`;
+
+    // Construcción del path de toctoc personalizado si aplica
+    let ttPath = tt;
+    if (toctocCustomPath !== undefined) {
+      ttPath = toctocCustomPath;
+    }
+
+    const toctocUrl = ttPath 
+      ? `https://www.toctoc.com/resultados/mapa/compra/${ttPropType}/${ttPath}/?moneda=${ttMoneda}&precioDesde=${ttPrecioDesde}&precioHasta=${ttPrecioHasta}&dormitoriosDesde=${bedrooms}&banosDesde=1${ttState}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`
+      : `https://www.toctoc.com/resultados/mapa/compra/${ttPropType}/?moneda=${ttMoneda}&precioDesde=${ttPrecioDesde}&precioHasta=${ttPrecioHasta}&dormitoriosDesde=${bedrooms}&banosDesde=1${ttState}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`;
 
     // 2. URL Portal Inmobiliario
     const conditionPath = propertyCondition === "nuevas" ? "/proyectos" : propertyCondition === "usadas" ? "/propiedades-usadas" : "";
@@ -190,10 +658,9 @@ function OffersContent() {
     // 3. URL Enlace Inmobiliario
     let enlaceUrlNuevas = "";
     let enlaceUrlUsadas = "";
-    if (ENLACE_MAP[region]) {
-      const base = ENLACE_MAP[region];
+    if (activeEnlaceBase) {
       const uf = maxUFParam || 2200;
-      const propTypeSegment = propertyType === "ambos" ? "todas" : propertyType;
+      const propTypeSegment = propertyType === "ambos" ? "todas" : propertyType === "casa" ? "casa" : "departamento";
 
       let subsidySegment = "";
       if (originParam === "ds1t2") {
@@ -213,20 +680,19 @@ function OffersContent() {
       }
 
       if (originParam === "ds1t4") {
-        enlaceUrlNuevas = `https://www.enlaceinmobiliario.cl/${base}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/banos/entrega/disponibilidad/nuevos/`;
+        enlaceUrlNuevas = `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/banos/entrega/disponibilidad/nuevos/`;
       } else if (subsidySegment) {
-        enlaceUrlNuevas = `https://www.enlaceinmobiliario.cl/${base}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/${subsidySegment}/banos/entrega/disponibilidad/nuevos/`;
+        enlaceUrlNuevas = `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/${subsidySegment}/banos/entrega/disponibilidad/nuevos/`;
       }
 
-      enlaceUrlUsadas = `https://www.enlaceinmobiliario.cl/${base}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/banos/entrega/disponibilidad/usados/`;
+      enlaceUrlUsadas = `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/banos/entrega/disponibilidad/usados/`;
     }
 
     let ds19Url = "";
-    if (ENLACE_MAP[region]) {
-      const base = ENLACE_MAP[region];
-      const propTypeSegment = propertyType === "ambos" ? "todas" : propertyType;
+    if (activeEnlaceBase) {
+      const propTypeSegment = propertyType === "ambos" ? "todas" : propertyType === "casa" ? "casa" : "departamento";
       const ufCap = maxUFParam > 0 ? maxUFParam : 2200;
-      ds19Url = `https://www.enlaceinmobiliario.cl/${base}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${ufCap}/${bedroomSlug}/subsidio-ds19/banos/entrega/disponibilidad/nuevos/`;
+      ds19Url = `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${ufCap}/${bedroomSlug}/subsidio-ds19/banos/entrega/disponibilidad/nuevos/`;
     }
 
     setLinks({
@@ -284,6 +750,25 @@ function OffersContent() {
               </select>
             </div>
           </div>
+
+          {/* Selector de Comuna para DS19 */}
+          {originParam === "ds19" && availableCommunes.length > 0 && (
+            <div className="p-4 bg-blue-50/50 border border-blue-200 rounded-xl animate-fade-in space-y-2">
+              <label className="block text-xs font-bold text-blue-900">Comuna / Ciudad con Proyectos DS19:</label>
+              <select
+                className="w-full p-2.5 border border-blue-200 rounded-xl bg-white text-sm focus:outline-none text-blue-700 font-bold"
+                value={selectedCommuneKey}
+                onChange={(e) => setSelectedCommuneKey(e.target.value)}
+              >
+                {availableCommunes.map((comm) => (
+                  <option key={comm.key} value={comm.key}>{comm.label}</option>
+                ))}
+              </select>
+              <span className="text-[10px] text-blue-700 block">
+                Los enlaces de búsqueda de portales se enfocarán en la comuna seleccionada.
+              </span>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>

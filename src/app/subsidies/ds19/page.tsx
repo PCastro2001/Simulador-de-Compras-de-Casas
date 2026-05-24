@@ -422,6 +422,19 @@ export default function DS19Page() {
                   </span>
                 </div>
               </div>
+
+              <div className="text-center pt-4">
+                <Link 
+                  href={`/ofertas-inmobiliarias?maxPrice=${Math.round(results.valorViviendaUF * ufValue)}&maxUF=${Math.round(results.valorViviendaUF)}&credit=${Math.round(results.creditoUF)}&origin=ds19&region=${
+                    location === "sur_islas" ? "aysen" : 
+                    location === "urbana_norte_stgo" ? "metropolitana" : 
+                    "valparaiso"
+                  }&propertyType=${propertyType === "depto" ? "departamento" : "casa"}&subsidyType=${subsidyType}&cupoType=${cupoType}`}
+                  className="inline-block w-full bg-[#87c0a3] text-slate-950 font-bold py-3.5 px-6 rounded-xl hover:bg-[#76b092] transition-colors shadow-sm text-sm"
+                >
+                  Buscar Proyectos Nuevos DS19 →
+                </Link>
+              </div>
             </div>
           </section>
         )}
