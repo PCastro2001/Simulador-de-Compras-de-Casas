@@ -60,21 +60,18 @@ export default function DS1Tramo4Page() {
       return;
     }
 
-    // Regla de Ahorro Mínimo Estándar para Tramo 4 (200 UF)
-    if (sUF < 200) {
-      alert("El Subsidio DS1 Tramo 4 exige un ahorro mínimo de 200 UF.");
-      return;
-    }
-
     if (pUF > maxLimit) {
       alert(`Para el Tramo 4, el valor máximo de la vivienda es de ${maxLimit} UF.`);
       return;
     }
 
+    // Regla de Ahorro Mínimo Estándar para Tramo 4 (200 UF)
+    const effectiveSavings = sUF < 200 ? 200 : sUF;
+
     // Subsidio Fijo Tramo 4 = 400 UF
     const totalSubsidy = 400;
     
-    const loanAmount = pUF - sUF - totalSubsidy;
+    const loanAmount = pUF - effectiveSavings - totalSubsidy;
 
     if (loanAmount < 0) {
       alert("El subsidio acumulado y tu ahorro cubren la totalidad de la vivienda. ¡No requieres un crédito!");
@@ -93,8 +90,9 @@ export default function DS1Tramo4Page() {
 
     setResults({
       valorViviendaUF: pUF,
-      pieUF: sUF,
-      piePorcentajeReal: (sUF / pUF) * 100,
+      pieUF: effectiveSavings,
+      piePorcentajeReal: (effectiveSavings / pUF) * 100,
+      userSavingsUF: sUF,
       creditoUF: loanAmount,
       banco: bankData.name,
       tasaOriginal: tasaOriginal,
@@ -140,8 +138,8 @@ export default function DS1Tramo4Page() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Ahorro depositado (UF):</label>
-                <input type="number" required min="200" step="1" className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#6b9ac4]" value={savings} onChange={(e) => setSavings(e.target.value)} />
-                <span className="text-[10px] text-slate-400 mt-1 block">Mínimo 200 UF para postular.</span>
+                 <input type="number" required min="0" step="1" className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#6b9ac4]" value={savings} onChange={(e) => setSavings(e.target.value)} />
+                 <span className="text-[10px] text-slate-400 mt-1 block">Mínimo 200 UF para postular. Si ingresas menos, simularemos con 200 UF.</span>
               </div>
                <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Institución Financiera:</label>
@@ -210,6 +208,12 @@ export default function DS1Tramo4Page() {
                 </span>
               </div>
             </div>
+
+            {results.userSavingsUF < 200 && (
+              <div className="bg-amber-50 border-2 border-amber-300 text-amber-950 p-4 rounded-xl shadow-sm text-xs leading-relaxed">
+                ⚠️ <strong>Ahorro insuficiente para postular:</strong> Tu ahorro actual es de <strong>{results.userSavingsUF.toFixed(0)} UF</strong>, pero el subsidio DS1 Tramo 4 exige un ahorro mínimo de <strong>200 UF</strong>. Hemos calculado tu capacidad asumiendo que alcanzarás la meta de ahorro (te faltan <strong>{(200 - results.userSavingsUF).toFixed(0)} UF</strong>, aprox. <strong>${Math.round((200 - results.userSavingsUF) * ufValue).toLocaleString("es-CL")} CLP</strong>).
+              </div>
+            )}
 
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider pb-2 border-b border-slate-100">

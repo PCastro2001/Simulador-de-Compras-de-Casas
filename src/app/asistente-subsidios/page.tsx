@@ -183,9 +183,9 @@ export default function AsistenteSubsidiosPage() {
     let maxPropertyValue = 0;
     let subsidy = 0;
     if (location === 'none') {
-      const projected = (baseCapacity + 400 + 125) / 1.125;
-      if (projected <= 1000) { maxPropertyValue = baseCapacity + 400; subsidy = 400; }
-      else if (projected <= 2200) { maxPropertyValue = projected; subsidy = 400 - ((projected - 1000) * 0.125); }
+      const projected = (baseCapacity + 850) / 1.375;
+      if (projected <= 1200) { maxPropertyValue = baseCapacity + 400; subsidy = 400; }
+      else if (projected <= 1600) { maxPropertyValue = projected; subsidy = 850 - (0.375 * projected); }
       else { maxPropertyValue = baseCapacity + 250; subsidy = 250; }
     } else if (location === 'north') {
       const projected = (baseCapacity + 500 + (1200 * (1/7))) / (8/7);
@@ -354,10 +354,12 @@ export default function AsistenteSubsidiosPage() {
     } else {
       // RSH > 90% -> Recomendar DS1 Tramo 4
       const minAhorro = 200;
+      // Si el ahorro es menor a 200 UF, hacemos los cálculos asumiendo que tiene los 200 UF
+      const effectiveSavings = savings < minAhorro ? minAhorro : savings;
       const cap = 4000;
       const sub = 400;
-      const valMax = Math.min(maxLoanUF + savings + sub, cap);
-      const creditReal = Math.max(0, valMax - savings - sub);
+      const valMax = Math.min(maxLoanUF + effectiveSavings + sub, cap);
+      const creditReal = Math.max(0, valMax - effectiveSavings - sub);
       cards.push({
         id: "ds1t4",
         subsidyKey: "ds1t4",
@@ -366,7 +368,7 @@ export default function AsistenteSubsidiosPage() {
         description: "Diseñado para viviendas de sectores medios de hasta 4.000 UF con un ahorro alto. El subsidio estatal es un apoyo fijo directo al crédito hipotecario.",
         maxHouseUF: valMax,
         loanUF: creditReal,
-        savingsUF: savings,
+        savingsUF: effectiveSavings,
         subsidyUF: sub,
         minAhorro,
         linkSim: "/subsidies/ds1t4"
@@ -455,7 +457,8 @@ export default function AsistenteSubsidiosPage() {
       case "ds1t4":
         subsidyUF = 400;
         legalMaxCap = 4000;
-        maxHouseUF = Math.min(maxLoanUF + savings + subsidyUF, legalMaxCap);
+        const effectiveSavingsB = savings < 200 ? 200 : savings;
+        maxHouseUF = Math.min(maxLoanUF + effectiveSavingsB + subsidyUF, legalMaxCap);
         subsidyName = "DS1 Tramo 4";
         break;
       case "ds19":
@@ -471,12 +474,14 @@ export default function AsistenteSubsidiosPage() {
         subsidyName = "Sin Subsidio Habitacional";
     }
 
-    const finalLoan = selectedSubsidyB === "ds49" ? 0 : Math.max(0, maxHouseUF - savings - subsidyUF);
+    const finalSavingsB = (selectedSubsidyB === "ds1t4" && savings < 200) ? 200 : savings;
+    const finalLoan = selectedSubsidyB === "ds49" ? 0 : Math.max(0, maxHouseUF - finalSavingsB - subsidyUF);
 
     setResultsB({
       maxHouseUF,
       loanUF: finalLoan,
-      savingsUF: savings,
+      savingsUF: finalSavingsB,
+      originalSavingsUF: savings,
       subsidyUF,
       maxDividendUF: selectedSubsidyB === "ds49" ? 0 : (finalLoan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)),
       bank: bankData.name,
@@ -1193,6 +1198,12 @@ export default function AsistenteSubsidiosPage() {
                       ≈ ${Math.round(resultsB.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
                     </p>
                   </div>
+
+                  {selectedSubsidyB === "ds1t4" && resultsB.originalSavingsUF < 200 && (
+                    <div className="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-xl text-xs leading-relaxed">
+                      <strong>⚠️ Ahorro Insuficiente:</strong> Tu ahorro ingresado es de <strong>{resultsB.originalSavingsUF.toFixed(0)} UF</strong>, pero el subsidio DS1 Tramo 4 exige un ahorro mínimo de <strong>200 UF</strong>. Hemos calculado tu capacidad asumiendo que alcanzarás la meta de ahorro (te falta ahorrar <strong>{(200 - resultsB.originalSavingsUF).toFixed(0)} UF</strong>, aprox. <strong>${Math.round((200 - resultsB.originalSavingsUF) * ufValue).toLocaleString("es-CL")} CLP</strong>).
+                    </div>
+                  )}
 
                   {/* Desglose */}
                   <div className="py-6 space-y-4 text-xs md:text-sm">

@@ -79,13 +79,19 @@ export default function MaxValueDS1T3Page() {
     let maxPropertyValue = 0;
     let finalSubsidyBase = 0;
 
-    // Para Tramo 3 Regular: Rango 1000 a 2200, Max 400, Min 250. Pendiente = 150/1200 = 0.125
-    // Ecuación derivada: Precio = (Base + 400 + (1000 * 0.125)) / 1.125
+    // Para Tramo 3 Regular
     if (location === 'none') {
-      const projected = (baseCapacity + 400 + 125) / 1.125;
-      if (projected <= 1000) { maxPropertyValue = baseCapacity + 400; finalSubsidyBase = 400; }
-      else if (projected <= 2200) { maxPropertyValue = projected; finalSubsidyBase = 400 - ((projected - 1000) * 0.125); }
-      else { maxPropertyValue = baseCapacity + 250; finalSubsidyBase = 250; }
+      const projected = (baseCapacity + 850) / 1.375;
+      if (projected <= 1200) { 
+        maxPropertyValue = baseCapacity + 400; 
+        finalSubsidyBase = 400; 
+      } else if (projected <= 1600) { 
+        maxPropertyValue = projected; 
+        finalSubsidyBase = 850 - (0.375 * projected); 
+      } else { 
+        maxPropertyValue = baseCapacity + 250; 
+        finalSubsidyBase = 250; 
+      }
     } 
     // Para Norte/Sur: Rango 1200 a 2600. Pendiente = 200/1400 = 1/7 (~0.142857) -> Divisor: 8/7 = 1.142857
     else if (location === 'north') {

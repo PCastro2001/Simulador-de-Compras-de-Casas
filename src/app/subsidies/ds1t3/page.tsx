@@ -93,7 +93,13 @@ export default function DS1Tramo3Page() {
     } else if (location === "south") {
       subsidy = pUF <= 1200 ? 550 : 550 - ((pUF - 1200) * (200 / 1000));
     } else {
-      subsidy = pUF <= 1000 ? 400 : 400 - ((pUF - 1000) * (150 / 1200));
+      if (pUF < 1200) {
+        subsidy = 400;
+      } else if (pUF > 1600) {
+        subsidy = 250;
+      } else {
+        subsidy = 850 - (0.375 * pUF);
+      }
     }
 
     // Si excede el tope estándar por ampliación DS15, se fija en el mínimo del tramo
