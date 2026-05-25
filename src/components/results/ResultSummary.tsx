@@ -8,8 +8,8 @@ type ResultSummaryProps = {
 
 const viabilityStyles = {
   alta: "bg-emerald-50 text-emerald-900 border-emerald-200",
-  media: "bg-amber-50 text-amber-900 border-amber-200",
-  preparacion: "bg-sky-50 text-sky-900 border-sky-200",
+  media: "bg-sky-50 text-sky-900 border-sky-200",
+  preparacion: "bg-amber-50 text-amber-900 border-amber-200",
 };
 
 export function ResultSummary({ result, ufValue }: ResultSummaryProps) {
@@ -17,7 +17,7 @@ export function ResultSummary({ result, ufValue }: ResultSummaryProps) {
 
   return (
     <section className="space-y-5" aria-label="Resultado de orientacion">
-      <div className={`rounded-lg border p-4 ${viabilityStyles[result.viability]}`}>
+      <div className={`rounded-2xl border p-5 shadow-sm ${viabilityStyles[result.viability]}`}>
         <p className="text-xs font-bold uppercase tracking-[0.18em]">Nivel de viabilidad</p>
         <h3 className="mt-2 text-xl font-bold text-balance">{result.viabilityLabel}</h3>
         <p className="mt-2 text-sm leading-6 opacity-85">{result.viabilityDetail}</p>
@@ -32,28 +32,38 @@ export function ResultSummary({ result, ufValue }: ResultSummaryProps) {
 
       <div>
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-stone-500">Apoyos compatibles</h3>
-          <span className="text-xs font-semibold text-stone-500">{result.compatibleSubsidies.length} opciones</span>
+          <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-slate-500">Tu perfil de subsidio</h3>
+          <span className="text-xs font-semibold text-slate-500">{result.profileSubsidies.length} opciones</span>
         </div>
         <div className="grid gap-3">
-          {result.compatibleSubsidies.map((program) => (
-            <article key={program.id} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+          {result.profileSubsidies.map((option) => (
+            <article key={option.program.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h4 className="font-bold text-stone-950">{program.friendlyName}</h4>
-                  <p className="mt-1 text-sm leading-6 text-stone-600">{program.description}</p>
+                  <h4 className="font-bold text-slate-950">{option.program.name}</h4>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{option.program.friendlyName}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-stone-100 px-3 py-1 text-xs font-bold text-stone-700">
-                  {program.name}
+                <span className="shrink-0 rounded-full bg-[#e9f5ef] px-3 py-1 text-xs font-bold text-[#2f7a58]">
+                  {formatUF(option.maxHomeUf)}
                 </span>
               </div>
-              <p className="mt-3 text-xs font-medium text-stone-500">{program.rshHint}</p>
+              <div className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3 text-xs">
+                <div>
+                  <span className="block font-bold uppercase tracking-wide text-slate-400">Casa maxima</span>
+                  <strong className="mt-1 block text-base text-slate-900">{formatUF(option.maxHomeUf)}</strong>
+                </div>
+                <div>
+                  <span className="block font-bold uppercase tracking-wide text-slate-400">Dividendo aprox.</span>
+                  <strong className="mt-1 block text-base text-slate-900">{formatCLP(option.estimatedDividendClp)}</strong>
+                </div>
+              </div>
+              <p className="mt-3 text-xs font-medium leading-5 text-slate-500">{option.reason}</p>
             </article>
           ))}
         </div>
       </div>
 
-      <div className="rounded-lg bg-stone-950 p-5 text-white">
+      <div className="rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 p-5 text-white shadow-md">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Siguiente paso</p>
         <p className="mt-2 text-base font-semibold leading-6">{result.nextAction}</p>
       </div>
@@ -63,10 +73,10 @@ export function ResultSummary({ result, ufValue }: ResultSummaryProps) {
 
 function Metric({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (
-    <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">{label}</p>
-      <p className="mt-2 text-xl font-bold text-stone-950">{value}</p>
-      <p className="mt-1 text-xs text-stone-500">{detail}</p>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="mt-2 text-xl font-bold text-slate-950">{value}</p>
+      <p className="mt-1 text-xs text-slate-500">{detail}</p>
     </div>
   );
 }

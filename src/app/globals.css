@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: light;
-  background: #fafaf9;
+  background: #f1f5f9;
 }
 
 * {
@@ -32,6 +32,6 @@ a {
 }
 
 ::selection {
-  background: #a7f3d0;
+  background: #bfdbfe;
   color: #0c0a09;
 }

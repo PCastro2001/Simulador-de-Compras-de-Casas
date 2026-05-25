@@ -14,9 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className="min-h-screen bg-stone-50 text-stone-900 antialiased">
+      <body className="min-h-screen bg-slate-100 text-slate-900 antialiased">
         {children}
-        <footer className="border-t border-stone-200 bg-white px-5 py-6 text-center text-xs font-medium text-stone-500">
+        <footer className="border-t border-slate-200 bg-[#4a4a4a] px-5 py-6 text-center text-xs font-medium text-white">
           SubsiMatch 2026. Orientacion referencial para compra de vivienda en Chile.
         </footer>
       </body>
