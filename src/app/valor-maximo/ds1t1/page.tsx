@@ -11,7 +11,7 @@ export default function MaxValueDS1T1Page() {
   const [savingsUF, setSavingsUF] = useState("");
   const [location, setLocation] = useState("none");
   const [bank, setBank] = useState("");
-  const [loanTerm, setLoanTerm] = useState("25");
+  const [loanTerm, setLoanTerm] = useState("15");
   const [isNewHome, setIsNewHome] = useState(false);
   const [isYoungSingle, setIsYoungSingle] = useState(false);
   const [ufValue, setUfValue] = useState(39200);
@@ -109,7 +109,7 @@ export default function MaxValueDS1T1Page() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Institución Financiera:</label>
                 <select 
@@ -140,6 +140,18 @@ export default function MaxValueDS1T1Page() {
                     <option value="none">Zona Regular (Tope 1.100 UF)</option>
                     <option value="north">Extremo Norte (Tope 1.200 UF)</option>
                     <option value="south">Extremo Sur (Tope 1.250 UF)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Plazo del Crédito:</label>
+                <select 
+                  className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" 
+                  value={loanTerm} 
+                  onChange={(e) => setLoanTerm(e.target.value)}
+                >
+                  <option value="5">5 años</option>
+                  <option value="10">10 años</option>
+                  <option value="15">15 años</option>
                 </select>
               </div>
             </div>
