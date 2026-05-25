@@ -15,3 +15,11 @@ export function formatCLP(value: number): string {
     maximumFractionDigits: 0,
   }).format(Math.round(value));
 }
+
+export function formatUF(value: number): string {
+  if (Number.isNaN(value) || value === null) return "0 UF";
+
+  return `${new Intl.NumberFormat("es-CL", {
+    maximumFractionDigits: value >= 100 ? 0 : 1,
+  }).format(value)} UF`;
+}
