@@ -1,4 +1,4 @@
-export type SubsidyId = "ds1-t1" | "ds1-t2" | "ds1-t3" | "ds19" | "sin-subsidio";
+export type SubsidyId = "ds49" | "ds1-t1" | "ds1-t2" | "ds1-t3" | "ds1-t4" | "ds19" | "sin-subsidio";
 
 export type SubsidyProgram = {
   id: SubsidyId;
@@ -22,6 +22,16 @@ export const LEGAL_ASSUMPTIONS = {
 } as const;
 
 export const SUBSIDY_PROGRAMS: SubsidyProgram[] = [
+  {
+    id: "ds49",
+    name: "DS49",
+    friendlyName: "Compra sin credito hipotecario",
+    description: "Fondo solidario para hogares vulnerables, con foco en cubrir la vivienda con ahorro y subsidio.",
+    maxHomeUf: 1300,
+    minSavingsUf: 10,
+    estimatedSupportUf: 900,
+    rshHint: "Calza principalmente con hogares hasta el 40% RSH.",
+  },
   {
     id: "ds1-t1",
     name: "DS1 Tramo 1",
@@ -51,6 +61,16 @@ export const SUBSIDY_PROGRAMS: SubsidyProgram[] = [
     minSavingsUf: 80,
     estimatedSupportUf: 300,
     rshHint: "Puede calzar con hogares hasta el 90% RSH.",
+  },
+  {
+    id: "ds1-t4",
+    name: "DS1 Tramo 4",
+    friendlyName: "Viviendas de hasta 4.000 UF",
+    description: "Nueva ruta para perfiles con mayor ahorro y capacidad hipotecaria.",
+    maxHomeUf: 4000,
+    minSavingsUf: 200,
+    estimatedSupportUf: 400,
+    rshHint: "Requiere ahorro alto y credito hipotecario.",
   },
   {
     id: "ds19",

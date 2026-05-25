@@ -7,5 +7,8 @@ export const INITIAL_ORIENTATION_INPUT: HouseholdInput = {
   householdSize: 3,
   subsidyStatus: "none",
   wonSubsidyId: "ds19",
-  rshSegment: "unknown",
+  region: "metropolitana",
+  bankId: "BancoEstado",
+  propertyType: "ambos",
+  zoneType: "urban",
 };

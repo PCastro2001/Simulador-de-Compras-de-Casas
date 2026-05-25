@@ -7,7 +7,10 @@ export type HouseholdInput = {
   householdSize: number;
   subsidyStatus: "none" | "won";
   wonSubsidyId: SubsidyId;
-  rshSegment: "unknown" | "40" | "60" | "80" | "90" | "over90";
+  region: string;
+  bankId: string;
+  propertyType: "casa" | "depto" | "ambos";
+  zoneType: "urban" | "rural";
 };
 
 export type MortgageCapacity = {
@@ -21,6 +24,7 @@ export type MortgageCapacity = {
 
 export type HousingOrientationResult = {
   savingsUf: number;
+  rshPercentile: number;
   compatibleSubsidies: SubsidyProgram[];
   profileSubsidies: SubsidyProfileOption[];
   mortgage: MortgageCapacity;
@@ -37,5 +41,17 @@ export type SubsidyProfileOption = {
   estimatedDividendClp: number;
   estimatedDividendUf: number;
   requiredSavingsUf: number;
+  missingSavingsUf: number;
+  loanUf: number;
+  subsidyUf: number;
+  isReady: boolean;
+  termScenarios: TermScenario[];
   reason: string;
+};
+
+export type TermScenario = {
+  years: 20 | 25 | 30;
+  maxHomeUf: number;
+  dividendUf: number;
+  dividendClp: number;
 };

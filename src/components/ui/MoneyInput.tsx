@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 type MoneyInputProps = {
   id: string;
   label: string;
@@ -10,6 +12,13 @@ type MoneyInputProps = {
 };
 
 export function MoneyInput({ id, label, helper, value, min = 0, max, step = 50000, onChange }: MoneyInputProps) {
+  const [draft, setDraft] = useState(value > 0 ? String(value) : "");
+
+  useEffect(() => {
+    const nextValue = value > 0 ? String(Math.round(value)) : "";
+    setDraft(nextValue);
+  }, [value]);
+
   return (
     <label htmlFor={id} className="block">
       <span className="text-sm font-bold text-slate-800">{label}</span>
@@ -23,8 +32,12 @@ export function MoneyInput({ id, label, helper, value, min = 0, max, step = 5000
           min={min}
           max={max}
           step={step}
-          value={value}
-          onChange={(event) => onChange(Number(event.target.value))}
+          value={draft}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            setDraft(nextValue);
+            onChange(nextValue === "" ? 0 : Number(nextValue));
+          }}
           className="min-h-12 w-full border-0 bg-transparent px-2 text-base font-semibold text-slate-950 outline-none"
         />
       </div>

@@ -1,23 +1,37 @@
 import Link from "next/link";
 import { FirstHomeOnboarding } from "@/components/onboarding/FirstHomeOnboarding";
-import { ProjectMatches } from "@/components/results/ProjectMatches";
 import { getUfValue } from "@/services/uf";
 
 const secondaryTools = [
   {
     href: "/percentil",
-    title: "Descubre tu tramo RSH",
-    description: "Una guia rapida para estimar tu punto de partida social.",
+    title: "Calcular percentil RSH",
+    description: "Revisa el calculo detallado del tramo segun sueldo y hogar.",
   },
   {
     href: "/asistente-subsidios",
-    title: "Encuentra apoyos estatales",
-    description: "Responde pocas preguntas y entiende que subsidio mirar.",
+    title: "Asistente de subsidios",
+    description: "Descarta opciones con preguntas guiadas.",
+  },
+  {
+    href: "/subsidies",
+    title: "Simuladores por subsidio",
+    description: "DS49, DS1 y DS19 con sus reglas especificas.",
   },
   {
     href: "/sin-subsidio",
-    title: "Compra directa con banco",
-    description: "Calcula un credito tradicional si no usaras subsidio.",
+    title: "Compra sin subsidio",
+    description: "Evalua credito hipotecario tradicional.",
+  },
+  {
+    href: "/valor-maximo",
+    title: "Valor maximo de casa",
+    description: "Calcula tu presupuesto por tramo y region.",
+  },
+  {
+    href: "/ofertas-inmobiliarias",
+    title: "Ofertas inmobiliarias",
+    description: "Genera filtros reales con tu presupuesto.",
   },
 ];
 
@@ -55,12 +69,12 @@ export default async function HomePage() {
           <div className="mx-auto grid max-w-6xl gap-5 px-5 py-10 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6b9ac4]">Herramientas de apoyo</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Calculadoras cuando quieras profundizar</h2>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Modulos originales de SubsiMatch</h2>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                El registro arma tu perfil primero. Despues puedes entrar a modulos mas especificos si quieres revisar detalles.
+                Mantengo tus herramientas como apoyo para quien quiera revisar cada calculo con mas detalle.
               </p>
             </div>
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {secondaryTools.map((tool) => (
                 <Link
                   key={tool.href}
@@ -74,10 +88,6 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
-
-        <div className="mx-auto max-w-6xl px-5 py-10 lg:px-8">
-          <ProjectMatches />
-        </div>
 
         <section className="bg-gradient-to-r from-slate-900 to-indigo-950 text-white">
           <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-8">
