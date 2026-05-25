@@ -1,130 +1,102 @@
-// src/app/page.tsx
 import Link from "next/link";
+import { FirstHomeOnboarding } from "@/components/onboarding/FirstHomeOnboarding";
+import { ProjectMatches } from "@/components/results/ProjectMatches";
+import { getUfValue } from "@/services/uf";
 
-export default function SubsidiesMenuPage() {
-  const herramientas = [
-    {
-      href: "/percentil",
-      categoria: "Paso 1: Diagnóstico Social",
-      titulo: "Calcula tu percentil",
-      descripcion: "Evalúa tus ingresos mensuales según tu núcleo familiar para saber exactamente en qué tramo del RSH estás."
-    },
-    {
-      href: "/asistente-subsidios",
-      categoria: "Orientación Guiada",
-      titulo: "Asistente de Subsidios",
-      descripcion: "Responde preguntas interactivas para descartar opciones y descubrir el beneficio que te corresponde."
-    },
-    {
-      href: "/subsidies",
-      categoria: "Simulación de Compra",
-      titulo: "Simulador de Subsidios",
-      descripcion: "Calcula el dividendo mensual estimado aplicando los montos de subsidio de los decretos DS1, DS49 o DS19."
-    },
-    {
-      href: "/sin-subsidio",
-      categoria: "Crédito Bancario Puro",
-      titulo: "Compra sin Subsidio",
-      descripcion: "Simula un crédito hipotecario tradicional e integra automáticamente la rebaja de tasa de la nueva Ley 21.748."
-    },
-    {
-      href: "/valor-maximo",
-      categoria: "Capacidad de Endeudamiento",
-      titulo: "Valor Máximo de Casa",
-      descripcion: "Calcula el precio límite de la propiedad que puedes comprar según tu sueldo líquido y el plazo del crédito."
-    },
-    {
-      href: "/creditos",
-      categoria: "Información General",
-      titulo: "Créditos y Alianzas",
-      descripcion: "Conoce los objetivos comerciales de SubsiMatch, al equipo de desarrollo y canales de contacto."
-    }
-  ];
+const secondaryTools = [
+  {
+    href: "/percentil",
+    title: "Descubre tu tramo RSH",
+    description: "Una guia rapida para estimar tu punto de partida social.",
+  },
+  {
+    href: "/asistente-subsidios",
+    title: "Encuentra apoyos estatales",
+    description: "Responde pocas preguntas y entiende que subsidio mirar.",
+  },
+  {
+    href: "/sin-subsidio",
+    title: "Compra directa con banco",
+    description: "Calcula un credito tradicional si no usaras subsidio.",
+  },
+];
+
+export default async function HomePage() {
+  const ufValue = await getUfValue();
 
   return (
-    // Fondo base del sitio en un gris/azul claro limpio que hace resaltar las tarjetas blancas
-    <div className="bg-slate-100 min-h-screen text-slate-800 flex flex-col justify-between">
-      
-      <div>
-        {/* Encabezado con tu degradado identitario original, pero en un bloque limpio y nítido */}
-        <header className="bg-gradient-to-r from-[#6b9ac4] to-[#87c0a3] text-white px-6 py-14 border-b-4 border-white shadow-sm">
-          <div className="max-w-5xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight drop-shadow-sm">
-              SubsiMatch
-            </h1>
-            <p className="text-blue-50 mt-2 max-w-xl text-sm md:text-base font-medium opacity-90">
-              Simulador independiente de subsidios habitacionales y créditos hipotecarios. Calcula tu capacidad de compra real de forma clara y directa.
-            </p>
-          </div>
-        </header>
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f7f5ef_0%,#ffffff_42%,#f7f5ef_100%)] text-stone-900">
+      <header className="border-b border-stone-200/80 bg-white/85 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
+          <Link href="/" className="text-lg font-bold tracking-tight text-stone-950" aria-label="SubsiMatch inicio">
+            SubsiMatch
+          </Link>
+          <nav className="hidden items-center gap-6 text-sm font-semibold text-stone-600 sm:flex" aria-label="Navegacion principal">
+            <Link href="/ofertas-inmobiliarias" className="transition hover:text-emerald-700">
+              Proyectos
+            </Link>
+            <Link href="/formulario" className="transition hover:text-emerald-700">
+              Orientacion
+            </Link>
+          </nav>
+          <Link
+            href="/formulario"
+            className="inline-flex min-h-10 items-center justify-center rounded-lg bg-stone-950 px-4 text-sm font-bold text-white transition hover:bg-stone-800"
+          >
+            Pedir ayuda
+          </Link>
+        </div>
+      </header>
 
-        {/* Contenedor del contenido con padding adaptado */}
-        <main className="max-w-5xl mx-auto px-6 py-10">
-          
-          {/* Bloque 1: El gancho comercial (Tu formulario de Leads) */}
-          <section className="mb-10">
-            <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-md border border-slate-800">
-              <div className="max-w-2xl">
-                <span className="text-xs font-bold tracking-wider uppercase text-sky-400 block mb-1">
-                  Evaluación de Perfil Comercial
-                </span>
-                <h2 className="text-xl md:text-2xl font-bold">
-                  ¿Quieres que busquemos proyectos por ti?
-                </h2>
-                <p className="text-slate-300 text-xs md:text-sm mt-1.5 leading-relaxed">
-                  Ingresa tus datos financieros en nuestra calculadora avanzada. Analizamos tu capacidad de crédito para conectarte con constructoras, inmobiliarias (DS19 o venta directa) y ejecutivos bancarios.
-                </p>
-              </div>
-              <Link 
-                href="/formulario" 
-                className="w-full md:w-auto inline-flex justify-center items-center px-6 py-3.5 bg-[#87c0a3] text-slate-950 font-bold text-sm rounded-xl hover:bg-[#76b092] transition-all duration-200 shadow-sm whitespace-nowrap"
-              >
-                Evaluar mi capacidad gratis
-              </Link>
+      <main>
+        <FirstHomeOnboarding ufValue={ufValue} />
+
+        <section className="border-y border-stone-200 bg-white">
+          <div className="mx-auto grid max-w-6xl gap-5 px-5 py-10 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Sin ruido tecnico</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-950">Herramientas cuando quieras profundizar</h2>
+              <p className="mt-3 text-sm leading-6 text-stone-600">
+                El flujo principal te da una orientacion clara. Estas calculadoras quedan como apoyo, no como la puerta de entrada.
+              </p>
             </div>
-          </section>
-
-          {/* Bloque 2: Indicador de sección para organizar el flujo */}
-          <div className="flex items-center gap-4 mb-6">
-            <h3 className="text-xs font-bold tracking-widest text-slate-500 uppercase whitespace-nowrap">
-              Módulos de Simulación Individual
-            </h3>
-            <div className="h-px bg-slate-300 w-full"></div>
-          </div>
-
-          {/* Bloque 3: Grilla de calculadoras con contraste limpio */}
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {herramientas.map((opcion, index) => (
-              <article 
-                key={index}
-                className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:border-[#6b9ac4] group"
-              >
-                <Link href={opcion.href} className="block h-full flex flex-col justify-between">
-                  <div>
-                    {/* El color de la categoría le da ritmo visual a la tarjeta */}
-                    <span className="text-[11px] font-bold tracking-wider uppercase text-[#6b9ac4] block mb-2 group-hover:text-[#87c0a3] transition-colors duration-200">
-                      {opcion.categoria}
-                    </span>
-                    <h4 className="text-base font-bold text-slate-900 mb-2">
-                      {opcion.titulo}
-                    </h4>
-                    <p className="text-xs md:text-sm text-slate-500 leading-relaxed font-normal">
-                      {opcion.descripcion}
-                    </p>
-                  </div>
-                  
-                  {/* Link inferior que reacciona de forma interactiva */}
-                  <div className="text-blue-600 text-xs font-semibold flex items-center gap-1 mt-6 pt-3 border-t border-slate-100 group-hover:text-slate-900 transition-colors duration-200">
-                    Ingresar al simulador →
-                  </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              {secondaryTools.map((tool) => (
+                <Link
+                  key={tool.href}
+                  href={tool.href}
+                  className="rounded-lg border border-stone-200 bg-stone-50 p-5 transition hover:border-emerald-600 hover:bg-white hover:shadow-sm"
+                >
+                  <h3 className="text-base font-bold text-stone-950">{tool.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-stone-600">{tool.description}</p>
                 </Link>
-              </article>
-            ))}
-          </section>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        </main>
-      </div>
+        <div className="mx-auto max-w-6xl px-5 py-10 lg:px-8">
+          <ProjectMatches />
+        </div>
 
+        <section className="bg-stone-950 text-white">
+          <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Acompanamiento humano</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight">Ordena tu plan de compra con alguien al lado.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-300">
+                Si tu resultado calza, podemos ayudarte a preparar el perfil para bancos, inmobiliarias y proyectos compatibles.
+              </p>
+            </div>
+            <Link
+              href="/formulario"
+              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-emerald-500 px-5 text-sm font-bold text-stone-950 transition hover:bg-emerald-400"
+            >
+              Quiero orientacion
+            </Link>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
