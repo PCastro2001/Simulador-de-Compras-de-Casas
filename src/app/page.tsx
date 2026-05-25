@@ -61,6 +61,131 @@ export default function SubsidiesMenuPage() {
         {/* Contenedor del contenido con padding adaptado */}
         <main className="max-w-5xl mx-auto px-6 py-10">
           
+          {/* Bloque 0: Selección de Perfil (Onboarding) */}
+          <section className="mb-10">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+                ¿Cómo quieres comenzar tu simulación?
+              </h2>
+              <p className="text-slate-500 text-xs md:text-sm mt-2 max-w-2xl mx-auto">
+                Selecciona la opción que mejor se adapte a tu situación actual para guiarte en el proceso.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Tarjeta Perfil A: Descubrimiento Total */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-lg hover:border-[#6b9ac4] hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                  <div className="w-12 h-12 bg-blue-50 text-[#6b9ac4] rounded-xl flex items-center justify-center font-bold text-xl mb-4 group-hover:bg-[#6b9ac4] group-hover:text-white transition-colors duration-300">
+                    👤
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    Primera vez buscando casa / No sé por dónde empezar
+                  </h3>
+                  <p className="text-xs md:text-sm text-slate-500 leading-relaxed mb-6">
+                    Te guiaremos paso a paso para identificar el subsidio estatal que te corresponde según tu ficha social RSH e ingresos familiares.
+                  </p>
+                  
+                  {/* Timeline visual */}
+                  <div className="space-y-4 mb-8">
+                    <div className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 text-[#6b9ac4] text-xs font-bold flex items-center justify-center">1</div>
+                        <div className="w-0.5 h-6 bg-slate-200"></div>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-800">Diagnóstico Social</h4>
+                        <p className="text-[11px] text-slate-400">Estimamos tu tramo de vulnerabilidad (Ficha RSH).</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 text-[#6b9ac4] text-xs font-bold flex items-center justify-center">2</div>
+                        <div className="w-0.5 h-6 bg-slate-200"></div>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-800">Descarte Inteligente</h4>
+                        <p className="text-[11px] text-slate-400">Filtramos y sugerimos el subsidio ideal según tu ahorro.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 text-[#6b9ac4] text-xs font-bold flex items-center justify-center">3</div>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-800">Simulación Automática</h4>
+                        <p className="text-[11px] text-slate-400">Calculamos el valor máximo de propiedad y dividendos.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <Link 
+                  href="/asistente-subsidios?profile=A" 
+                  className="w-full text-center py-3.5 px-4 bg-[#6b9ac4] text-white hover:bg-[#5a86ae] font-bold text-sm rounded-xl transition-all shadow-sm"
+                >
+                  Descubrir mi Subsidio Ideal →
+                </Link>
+              </div>
+
+              {/* Tarjeta Perfil B: Simulación Avanzada */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-lg hover:border-[#87c0a3] hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                  <div className="w-12 h-12 bg-emerald-50 text-[#87c0a3] rounded-xl flex items-center justify-center font-bold text-xl mb-4 group-hover:bg-[#87c0a3] group-hover:text-slate-950 transition-colors duration-300">
+                    📊
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    Ya tengo un subsidio ganado o compraré sin subsidio
+                  </h3>
+                  <p className="text-xs md:text-sm text-slate-500 leading-relaxed mb-6">
+                    Accede directamente a nuestras herramientas financieras de simulación profunda para planificar tu compra de inmediato.
+                  </p>
+
+                  {/* Filtros rápidos / Accesos directos */}
+                  <div className="space-y-3 mb-8">
+                    <Link 
+                      href="/subsidies"
+                      className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-[#87c0a3] hover:bg-slate-50 transition-all text-xs font-medium text-slate-700 hover:text-slate-900 group/item"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-[#87c0a3]">✔</span>
+                        Simulador de Subsidios (DS1, DS49, DS19)
+                      </span>
+                      <span className="text-slate-300 group-hover/item:text-[#87c0a3] transition-colors font-bold">→</span>
+                    </Link>
+                    <Link 
+                      href="/valor-maximo"
+                      className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-[#87c0a3] hover:bg-slate-50 transition-all text-xs font-medium text-slate-700 hover:text-slate-900 group/item"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-[#87c0a3]">✔</span>
+                        Calcular Capacidad de Compra (Sueldo Líquido)
+                      </span>
+                      <span className="text-slate-300 group-hover/item:text-[#87c0a3] transition-colors font-bold">→</span>
+                    </Link>
+                    <Link 
+                      href="/sin-subsidio"
+                      className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-[#87c0a3] hover:bg-slate-50 transition-all text-xs font-medium text-slate-700 hover:text-slate-900 group/item"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-[#87c0a3]">✔</span>
+                        Compra sin Subsidio (Hipotecario con Ley de Tasas)
+                      </span>
+                      <span className="text-slate-300 group-hover/item:text-[#87c0a3] transition-colors font-bold">→</span>
+                    </Link>
+                  </div>
+                </div>
+
+                <Link 
+                  href="/asistente-subsidios?profile=B" 
+                  className="w-full text-center py-3.5 px-4 bg-[#87c0a3] text-slate-950 hover:bg-[#76b092] font-bold text-sm rounded-xl transition-all shadow-sm"
+                >
+                  Simulación Rápida de Presupuesto →
+                </Link>
+              </div>
+            </div>
+          </section>
+
           {/* Bloque 1: El gancho comercial (Tu formulario de Leads) */}
           <section className="mb-10">
             <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-md border border-slate-800">
