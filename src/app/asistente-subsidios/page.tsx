@@ -7,6 +7,63 @@ import { fetchUFValue } from "@/utils/api";
 import { BANKS } from "@/data/banks";
 import { REGION_MAP } from "@/data/regions";
 
+const DS19_COMMUNES_PERIPHERAL: Record<string, { key: string; label: string; isPeripheral: boolean }[]> = {
+  "arica-y-parinacota": [
+    { key: "arica", label: "Arica", isPeripheral: false }
+  ],
+  "tarapaca": [
+    { key: "iquique", label: "Iquique (Zona Urbana)", isPeripheral: false },
+    { key: "alto-hospicio", label: "Alto Hospicio (Otras Comunas)", isPeripheral: true }
+  ],
+  "antofagasta": [
+    { key: "antofagasta", label: "Antofagasta (Zona Urbana)", isPeripheral: false },
+    { key: "calama", label: "Calama (Zona Urbana)", isPeripheral: false }
+  ],
+  "atacama": [
+    { key: "copiapo", label: "Copiapó (Zona Urbana)", isPeripheral: false }
+  ],
+  "coquimbo": [
+    { key: "la-serena", label: "La Serena (Otras Comunas)", isPeripheral: true },
+    { key: "coquimbo", label: "Coquimbo (Zona Urbana)", isPeripheral: false },
+    { key: "ovalle", label: "Ovalle (Otras Comunas)", isPeripheral: true }
+  ],
+  "valparaiso": [
+    { key: "valparaiso", label: "Valparaíso (Zona Urbana)", isPeripheral: false },
+    { key: "vina-del-mar", label: "Viña del Mar (Zona Urbana)", isPeripheral: false },
+    { key: "quilpue", label: "Quilpué (Otras Comunas)", isPeripheral: true },
+    { key: "quillota", label: "Quillota (Otras Comunas)", isPeripheral: true },
+    { key: "casablanca", label: "Casablanca (Otras Comunas)", isPeripheral: true },
+    { key: "villa-alemana", label: "Villa Alemana (Otras Comunas)", isPeripheral: true },
+    { key: "san-felipe", label: "San Felipe (Otras Comunas)", isPeripheral: true },
+    { key: "limache", label: "Limache (Otras Comunas)", isPeripheral: true },
+    { key: "la-ligua", label: "La Ligua (Otras Comunas)", isPeripheral: true },
+    { key: "los-andes", label: "Los Andes (Otras Comunas)", isPeripheral: true },
+    { key: "cartagena", label: "Cartagena (Otras Comunas)", isPeripheral: true },
+    { key: "el-tabo", label: "El Tabo (Otras Comunas)", isPeripheral: true }
+  ],
+  "metropolitana": [
+    { key: "santiago", label: "Gran Santiago (Provincia Urbana)", isPeripheral: false },
+    { key: "melipilla", label: "Melipilla (Otras Comunas)", isPeripheral: true },
+    { key: "padre-hurtado", label: "Padre Hurtado (Otras Comunas)", isPeripheral: true },
+    { key: "el-monte", label: "El Monte (Otras Comunas)", isPeripheral: true },
+    { key: "lampa", label: "Lampa (Otras Comunas)", isPeripheral: true },
+    { key: "colina", label: "Colina (Otras Comunas)", isPeripheral: true },
+    { key: "batuco", label: "Batuco (Otras Comunas)", isPeripheral: true }
+  ],
+  "biobio": [
+    { key: "concepcion", label: "Concepción (Zona Urbana)", isPeripheral: false },
+    { key: "los-angeles", label: "Los Ángeles (Zona Urbana)", isPeripheral: false },
+    { key: "penco", label: "Penco (Otras Comunas)", isPeripheral: true },
+    { key: "san-pedro-de-la-paz", label: "San Pedro de la Paz (Otras Comunas)", isPeripheral: true },
+    { key: "chiguayante", label: "Chiguayante (Otras Comunas)", isPeripheral: true },
+    { key: "curanilahue", label: "Curanilahue (Otras Comunas)", isPeripheral: true },
+    { key: "talcahuano", label: "Talcahuano (Otras Comunas)", isPeripheral: true }
+  ],
+  "los-lagos": [
+    { key: "castro", label: "Chiloé - Castro (Zona Urbana)", isPeripheral: false }
+  ]
+};
+
 export default function AsistenteSubsidiosPage() {
   // Estado para el perfil: "A" (Descubrimiento), "B" (Simulación Rápida) o null (Sin seleccionar)
   const [profile, setProfile] = useState<"A" | "B" | null>(null);
@@ -20,12 +77,12 @@ export default function AsistenteSubsidiosPage() {
   // --- Estados de Perfil A (Descubrimiento) ---
   const [familyType, setFamilyType] = useState<"familia" | "solo" | "">("");
   const [knowsRSH, setKnowsRSH] = useState<"si" | "no" | "">("");
-  const [rshTramo, setRshTramo] = useState<"40" | "60" | "90" | "100" | "">("");
+  const [rshTramo, setRshTramo] = useState<"40" | "60" | "80" | "90" | "100" | "">("");
   
   // Mini-calculadora RSH
   const [rshMembers, setRshMembers] = useState<string>("3");
   const [rshIncome, setRshIncome] = useState<string>("");
-  const [calculatedRsh, setCalculatedRsh] = useState<"40" | "60" | "90" | "100" | "">("");
+  const [calculatedRsh, setCalculatedRsh] = useState<"40" | "60" | "80" | "90" | "100" | "">("");
 
   // Región e Ingreso para Perfil A
   const [regionA, setRegionA] = useState<string>("metropolitana");
@@ -43,11 +100,15 @@ export default function AsistenteSubsidiosPage() {
   // --- Estados de Perfil B (Simulación Avanzada) ---
   const [incomeCLPB, setIncomeCLPB] = useState<string>("");
   const [savingsUFB, setSavingsUFB] = useState<string>("");
+  const [savingsCLPB, setSavingsCLPB] = useState<string>("");
+  const [propertyTypeB, setPropertyTypeB] = useState<"casa" | "depto" | "ambos">("ambos");
+  const [isUrbanB, setIsUrbanB] = useState<boolean>(true);
   const [selectedSubsidyB, setSelectedSubsidyB] = useState<string>("none");
   const [loanTermB, setLoanTermB] = useState<string>("25");
   const [isYoungSingleB, setIsYoungSingleB] = useState<boolean>(false);
   const [selectedBankB, setSelectedBankB] = useState<string>("");
-  const [locationB, setLocationB] = useState<string>("none");
+  const [locationB, setLocationB] = useState<string>("metropolitana");
+  const [selectedCommuneB, setSelectedCommuneB] = useState<string>("");
   const [resultsB, setResultsB] = useState<any>(null);
 
   // Inicializar la UF y detectar perfil desde la URL
@@ -73,6 +134,16 @@ export default function AsistenteSubsidiosPage() {
     setIncomeCLPA(rshIncome);
   }, [rshIncome]);
 
+  // Sincronizar comuna al cambiar de región en Perfil B
+  useEffect(() => {
+    const list = DS19_COMMUNES_PERIPHERAL[locationB];
+    if (list && list.length > 0) {
+      setSelectedCommuneB(list[0].key);
+    } else {
+      setSelectedCommuneB("");
+    }
+  }, [locationB]);
+
   useEffect(() => {
     setRshTramo(calculatedRsh);
   }, [calculatedRsh]);
@@ -83,11 +154,13 @@ export default function AsistenteSubsidiosPage() {
     const membersVal = parseInt(rshMembers);
     if (!isNaN(incomeVal) && !isNaN(membersVal) && membersVal > 0) {
       const perCapita = incomeVal / membersVal;
-      if (perCapita <= 250000) {
+      if (perCapita < 246960) {
         setCalculatedRsh("40");
-      } else if (perCapita <= 500000) {
+      } else if (perCapita < 398493) {
         setCalculatedRsh("60");
-      } else if (perCapita <= 850000) {
+      } else if (perCapita < 699720) {
+        setCalculatedRsh("80");
+      } else if (perCapita < 1151624) {
         setCalculatedRsh("90");
       } else {
         setCalculatedRsh("100");
@@ -115,11 +188,14 @@ export default function AsistenteSubsidiosPage() {
     setSelectedBankA("BancoEstado");
     setIncomeCLPB("");
     setSavingsUFB("");
+    setSavingsCLPB("");
+    setPropertyTypeB("ambos");
+    setIsUrbanB(true);
     setSelectedSubsidyB("none");
     setLoanTermB("25");
     setIsYoungSingleB(false);
     setSelectedBankB("");
-    setLocationB("none");
+    setLocationB("metropolitana");
     setResultsB(null);
   };
 
@@ -277,6 +353,24 @@ export default function AsistenteSubsidiosPage() {
     }
   };
 
+  const handleSavingsUFBChange = (val: string) => {
+    setSavingsUFB(val);
+    const uf = parseFloat(val);
+    if (!isNaN(uf) && ufValue > 0) {
+      setSavingsCLPB((uf * ufValue).toFixed(0));
+    } else {
+      setSavingsCLPB("");
+    }
+  };
+
+  const handleSavingsCLPBChange = (val: string) => {
+    setSavingsCLPB(val);
+    const clp = parseFloat(val);
+    if (!isNaN(clp) && ufValue > 0) {
+      setSavingsUFB((clp / ufValue).toFixed(2));
+    }
+  };
+
   // --- CÁLCULO DINÁMICO DE MULTI-RECOMENDACIONES PERFIL A ---
   const getDynamicRecommendationsA = () => {
     const savings = parseFloat(savingsUF) || 0;
@@ -330,222 +424,43 @@ export default function AsistenteSubsidiosPage() {
 
     const cards: any[] = [];
 
-    // --- OPCIÓN 1: DS19 (Proyecto de Integración - Vivienda Nueva Directa) ---
-    const isVulnerableEligible = rshTramo === "40" || rshTramo === "60";
-    const isClaseMediaEligible = rshTramo === "40" || rshTramo === "60" || rshTramo === "90" || (rshTramo === "100" && meetsDS1T3Limit);
+    // --- PARÁMETROS GEOGRÁFICOS DS19 ---
+    const capVul = ds19Zone === "sur_islas" ? 2000 : 1550;
+    const subVul = ds19Zone === "sur_islas" ? 1700 : (ds19Zone === "urbana_norte_stgo" ? 1250 : 1150);
 
-    if (isVulnerableEligible) {
-      // Cupo Vulnerable DS19 (Sin Crédito)
-      const minAhorro = 10;
-      const sub = ds19Zone === "sur_islas" ? 1700 : (ds19Zone === "urbana_norte_stgo" ? 1250 : 1150);
-      const cap = ds19Zone === "sur_islas" ? 2000 : 1550;
-      const valMax = Math.min(savings + sub, cap);
-      cards.push({
-        id: "ds19-vulnerable",
-        subsidyKey: "ds19",
-        cupoType: "vulnerable",
-        badge: "Vivienda Nueva - Convenio Inmobiliaria",
-        title: "Subsidio DS19 (Cupo Vulnerable)",
-        description: "Adquiere una vivienda nueva en proyectos con convenio sin deuda hipotecaria bancaria. El financiamiento es cubierto por el Estado y tu ahorro.",
-        maxHouseUF: valMax,
-        loanUF: 0,
-        savingsUF: savings,
-        subsidyUF: sub,
-        minAhorro,
-        hasDS15Option: false
-      });
-    }
+    const capRural = ds19Zone === "sur_islas" ? 2400 : (ds19Zone === "urbana_norte_stgo" ? 1900 : 1800);
+    const subRural = (ds19Zone === "sur_islas" ? 537.5 : (ds19Zone === "urbana_norte_stgo" ? 487.5 : 425)) + 100;
 
-    if (isClaseMediaEligible) {
-      // Sectores Medios DS19 (Con Crédito)
-      const minAhorroNormal = 40;
-      const capMedio = ds19Zone === "sur_islas" ? 3000 : (ds19Zone === "urbana_norte_stgo" ? 2800 : 2600);
-      const valMaxNormal = Math.min(maxLoanUFNormal + savings + 350, capMedio);
-      const creditRealNormal = Math.max(0, valMaxNormal - savings - 350);
+    const capUrban = ds19Zone === "sur_islas" ? 3000 : (ds19Zone === "urbana_norte_stgo" ? 2800 : 2600);
+    const subUrban = (ds19Zone === "sur_islas" ? 500 : 350) + 100;
 
-      const valMaxDS15 = Math.min(maxLoanUFDS15 + savings + 450, capMedio);
-      const creditRealDS15 = Math.max(0, valMaxDS15 - savings - 450);
-
-      cards.push({
-        id: "ds19-clase-media",
-        subsidyKey: "ds19",
-        cupoType: "urban_media",
-        badge: "Vivienda Nueva - Convenio Inmobiliaria",
-        title: "Subsidio DS19 (Sectores Medios)",
-        description: "Permite comprar vivienda nueva en proyectos integrados. Combina tu ahorro, subsidio estatal y crédito hipotecario gestionándose directamente con la inmobiliaria.",
-        hasDS15Option: true,
-        normalInfo: {
-          maxHouseUF: valMaxNormal,
-          loanUF: creditRealNormal,
-          subsidyUF: 350,
-          minAhorro: minAhorroNormal
-        },
-        ds15Info: {
-          maxHouseUF: valMaxDS15,
-          loanUF: creditRealDS15,
-          subsidyUF: 450,
-          minAhorro: 80
-        }
-      });
-    }
-
-    // --- OPCIÓN 2: DS1 o DS49 (Postulación Individual MINVU - Nueva/Usada/Construcción) ---
-    if (familyType === "familia" && rshTramo === "40") {
-      // Recomendar DS49 (Fondo Solidario)
-      const minAhorro = 10;
-      const sub = 1100;
-      const valMax = Math.min(savings + sub, 1100);
-      cards.push({
-        id: "ds49",
-        subsidyKey: "ds49",
-        badge: "Vivienda Nueva o Usada - Postulación MINVU",
-        title: "Subsidio DS49 (Fondo Solidario)",
-        description: "Postulación para comprar casa sin crédito hipotecario. Orientado a familias del 40% RSH. Puedes postular en llamados individuales o comités de vivienda.",
-        maxHouseUF: valMax,
-        loanUF: 0,
-        savingsUF: savings,
-        subsidyUF: sub,
-        minAhorro,
-        hasDS15Option: false
-      });
-    } else if (rshTramo === "40" || rshTramo === "60") {
-      // Recomendar DS1 Tramo 1
-      const minAhorro = 30;
-      const cap = ds1Zone === "north" ? 1200 : (ds1Zone === "south" ? 1250 : 1100);
-      const sub = ds1Zone === "north" ? 700 : (ds1Zone === "south" ? 750 : 600);
-      const valMax = Math.min(maxLoanUFNormal + savings + sub, cap);
-      const creditReal = Math.max(0, valMax - savings - sub);
-      cards.push({
-        id: "ds1t1",
-        subsidyKey: "ds1t1",
-        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
-        title: "Subsidio DS1 Tramo 1",
-        description: "Para familias hasta el 60% RSH. Otorga un subsidio estatal alto y fijo, requiriendo un crédito bancario pequeño o pago al contado de la diferencia.",
-        maxHouseUF: valMax,
-        loanUF: creditReal,
-        savingsUF: savings,
-        subsidyUF: sub,
-        minAhorro,
-        hasDS15Option: false
-      });
-    } else if (rshTramo === "90" || (rshTramo === "100" && meetsDS1T3Limit)) {
-      // Recomendar DS1 Tramo 2 o Tramo 3 según ahorro
-      if (savings >= 80) {
-        // Tramo 3
-        const resNormal = calculateDS1T3Max(maxLoanUFNormal, savings, ds1Zone);
-        const creditRealNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
-
-        const resDS15 = calculateDS1T3MaxWithDS15(maxLoanUFDS15, savings, ds1Zone);
-        const creditRealDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
-
-        cards.push({
-          id: "ds1t3",
-          subsidyKey: "ds1t3",
-          badge: "Vivienda Nueva/Usada o Construcción - MINVU",
-          title: "Subsidio DS1 Tramo 3",
-          description: "Para la compra de viviendas de hasta 2.200 UF (o 3.000 UF con beneficio DS15). Requiere capacidad de crédito hipotecario bancario obligatorio.",
-          hasDS15Option: true,
-          normalInfo: {
-            maxHouseUF: resNormal.maxHouseUF,
-            loanUF: creditRealNormal,
-            subsidyUF: resNormal.subsidyUF,
-            minAhorro: 80
-          },
-          ds15Info: {
-            maxHouseUF: resDS15.maxHouseUF,
-            loanUF: creditRealDS15,
-            subsidyUF: resDS15.subsidyUF,
-            minAhorro: 160
-          }
-        });
-      } else {
-        // Tramo 2
-        const resNormal = calculateDS1T2Max(maxLoanUFNormal, savings, ds1Zone);
-        const creditRealNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
-
-        const resDS15 = calculateDS1T2MaxWithDS15(maxLoanUFDS15, savings, ds1Zone);
-        const creditRealDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
-
-        cards.push({
-          id: "ds1t2",
-          subsidyKey: "ds1t2",
-          badge: "Vivienda Nueva/Usada o Construcción - MINVU",
-          title: "Subsidio DS1 Tramo 2",
-          description: "Ofrece un subsidio intermedio variable para comprar viviendas de hasta 1.600 UF (o 3.000 UF con beneficio DS15) con financiamiento bancario complementario.",
-          hasDS15Option: true,
-          normalInfo: {
-            maxHouseUF: resNormal.maxHouseUF,
-            loanUF: creditRealNormal,
-            subsidyUF: resNormal.subsidyUF,
-            minAhorro: 40
-          },
-          ds15Info: {
-            maxHouseUF: resDS15.maxHouseUF,
-            loanUF: creditRealDS15,
-            subsidyUF: resDS15.subsidyUF,
-            minAhorro: 80
-          }
-        });
-      }
-    }
-
-    if (rshTramo === "100" && meetsDS1T4Limit) {
-      // Recomendar DS1 Tramo 4
-      const minAhorro = 200;
-      const effectiveSavings = savings < minAhorro ? minAhorro : savings;
-      const cap = 4000;
-      const sub = 400;
-      const valMax = Math.min(maxLoanUFNormal + effectiveSavings + sub, cap);
-      const creditReal = Math.max(0, valMax - effectiveSavings - sub);
-      cards.push({
-        id: "ds1t4",
-        subsidyKey: "ds1t4",
-        badge: "Vivienda Nueva/Usada - MINVU",
-        title: "Subsidio DS1 Tramo 4",
-        description: "Diseñado para viviendas de sectores medios de hasta 4.000 UF con un ahorro alto. El subsidio estatal es un apoyo fijo directo al crédito hipotecario.",
-        maxHouseUF: valMax,
-        loanUF: creditReal,
-        savingsUF: effectiveSavings,
-        subsidyUF: sub,
-        minAhorro,
-        hasDS15Option: false
-      });
-    }
-
-    // --- OPCIÓN 3: COMPRA SIN SUBSIDIO (Financiamiento Privado Puro) ---
-    // Opción A: Vivienda Nueva (Con FOGAES + Subsidio Dividendo)
+    // --- OPCIÓN FALLBACK: SIN SUBSIDIO ---
     const maxHouseFogaesWithDiscount = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
     const maxHouseFogaesNormal = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
     const maxHouseFogaes = Math.max(maxHouseFogaesWithDiscount, maxHouseFogaesNormal);
     const loanFogaes = Math.max(0, maxHouseFogaes - savings);
     const aplicaLeyFogaes = maxHouseFogaes < 4000;
     
-    // Aviso de optimización para FOGAES
-    const maxLoanFogaes = aplicaLeyFogaes ? maxLoanUFDS15 : maxLoanUFNormal;
-    const maxHouseFogaesByIncome = maxLoanFogaes / 0.9;
+    const maxLoanFogaesLimit = aplicaLeyFogaes ? maxLoanUFDS15 : maxLoanUFNormal;
+    const maxHouseFogaesByIncome = maxLoanFogaesLimit / 0.9;
     let avisoFogaes = "";
     if (maxHouseFogaes < Math.min(4500, maxHouseFogaesByIncome)) {
       const targetUF = Math.min(4500, maxHouseFogaesByIncome);
       const neededSavings = targetUF * 0.10;
-      const missing = neededSavings - savings;
-      avisoFogaes = `💡 Con un pie adicional de ${missing.toFixed(0)} UF (aprox. $${Math.round(missing * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad nueva de hasta ${targetUF.toFixed(0)} UF.`;
+      avisoFogaes = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad nueva de hasta ${targetUF.toFixed(0)} UF.`;
     }
 
-    // Opción B: Vivienda Usada (Sin FOGAES ni Subsidio Dividendo - Pie 20%)
     const maxHouseUsada = Math.min(savings / 0.20, maxLoanUFNormal + savings);
     const loanUsada = Math.max(0, maxHouseUsada - savings);
-    
-    // Aviso de optimización para Usada
     const maxHouseUsadaByIncome = maxLoanUFNormal / 0.8;
     let avisoUsada = "";
     if (maxHouseUsada < maxHouseUsadaByIncome) {
       const targetUF = maxHouseUsadaByIncome;
       const neededSavings = targetUF * 0.20;
-      const missing = neededSavings - savings;
-      avisoUsada = `💡 Con un pie adicional de ${missing.toFixed(0)} UF (aprox. $${Math.round(missing * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad usada de hasta ${targetUF.toFixed(0)} UF.`;
+      avisoUsada = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad usada de hasta ${targetUF.toFixed(0)} UF.`;
     }
 
-    cards.push({
+    const cardSinSubsidio = {
       id: "sin-subsidio",
       subsidyKey: "none",
       badge: "Compra Directa - Financiamiento Privado",
@@ -563,10 +478,308 @@ export default function AsistenteSubsidiosPage() {
         maxHouseUF: maxHouseUsada,
         loanUF: loanUsada,
         piePercentage: 20,
-        aplicaLey: false, // Usadas no tienen ley
+        aplicaLey: false,
         aviso: avisoUsada
       }
-    });
+    };
+
+    // --- LÓGICA DE RECOMMENDACIONES POR TRAMOS ---
+
+    // 1. RHS < 40% (tramo "40")
+    if (rshTramo === "40") {
+      // DS49 (Usadas)
+      const extraAhorro = savings - 10;
+      const incentive = savings >= 60 ? 250 : (extraAhorro > 0 ? 5 * extraAhorro : 0);
+      const subsidyDS49 = 800 + 100 + incentive; // Asumimos urbano por defecto en Perfil A
+      const maxHouseDS49 = Math.min(savings + subsidyDS49, 1300);
+      cards.push({
+        id: "ds49",
+        subsidyKey: "ds49",
+        badge: "Vivienda Nueva o Usada - Postulación MINVU",
+        title: "Subsidio DS49 (Fondo Solidario)",
+        description: "Postulación para comprar casa sin crédito hipotecario. Orientado a familias del 40% RSH.",
+        maxHouseUF: maxHouseDS49,
+        loanUF: 0,
+        savingsUF: savings,
+        subsidyUF: subsidyDS49,
+        minAhorro: 10,
+        hasDS15Option: false
+      });
+
+      // DS19 Homologado en DS49 para nuevas
+      const maxHouseDS19 = Math.min(savings + subVul, capVul);
+      cards.push({
+        id: "ds19-vulnerable",
+        subsidyKey: "ds19",
+        cupoType: "vulnerable",
+        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
+        title: "Subsidio DS19 (Cupo Vulnerable - Homologado)",
+        description: "Permite comprar sin crédito hipotecario una vivienda nueva en proyectos con convenio DS19.",
+        maxHouseUF: maxHouseDS19,
+        loanUF: 0,
+        savingsUF: savings,
+        subsidyUF: subVul,
+        minAhorro: 40,
+        hasDS15Option: false
+      });
+
+      // Sin Subsidio
+      cards.push(cardSinSubsidio);
+    }
+
+    // 2. RHS 40 - 60% (tramo "60")
+    else if (rshTramo === "60") {
+      // DS1 T1 (Usados)
+      const capT1 = ds1Zone === "north" ? 1200 : (ds1Zone === "south" ? 1250 : 1100);
+      const subT1 = ds1Zone === "north" ? 700 : (ds1Zone === "south" ? 750 : 600);
+      const maxHouseT1 = Math.min(maxLoanUFNormal + savings + subT1, capT1);
+      const loanT1 = Math.max(0, maxHouseT1 - savings - subT1);
+      cards.push({
+        id: "ds1t1",
+        subsidyKey: "ds1t1",
+        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
+        title: "Subsidio DS1 Tramo 1",
+        description: "Para familias hasta el 60% RSH. Requiere un crédito bancario pequeño o pago al contado.",
+        maxHouseUF: maxHouseT1,
+        loanUF: loanT1,
+        savingsUF: savings,
+        subsidyUF: subT1,
+        minAhorro: 30,
+        hasDS15Option: false
+      });
+
+      // DS19 Homologado en DS1 T1 para nuevos
+      const maxHouseRural = Math.min(maxLoanUFDS15 + savings + subRural, capRural);
+      const loanRural = Math.max(0, maxHouseRural - savings - subRural);
+
+      const maxHouseVul = Math.min(savings + subVul, capVul);
+
+      cards.push({
+        id: "ds19-homologado-t1",
+        subsidyKey: "ds19",
+        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
+        title: "Homologación a DS19 (Tramo 1)",
+        description: "Opciones para aplicar tu subsidio Tramo 1 en proyectos DS19 homologados.",
+        hasDS15Option: true,
+        normalInfo: {
+          maxHouseUF: maxHouseVul,
+          loanUF: 0,
+          subsidyUF: subVul,
+          minAhorro: 40,
+          label: "Cupo Vulnerable (Sin Deuda)",
+          cupoType: "vulnerable"
+        },
+        ds15Info: {
+          maxHouseUF: maxHouseRural,
+          loanUF: loanRural,
+          subsidyUF: subRural,
+          minAhorro: 80,
+          label: "Cupo Rural / Medios 1 (Con Crédito)",
+          cupoType: "vulnerable_rural"
+        }
+      });
+
+      // Sin Subsidio
+      cards.push(cardSinSubsidio);
+    }
+
+    // 3. RHS 70 - 80% (tramo "80")
+    else if (rshTramo === "80") {
+      // DS1 T2 (Con y sin DS15)
+      const resNormal = calculateDS1T2Max(maxLoanUFNormal, savings, ds1Zone);
+      const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
+
+      const resDS15 = calculateDS1T2MaxWithDS15(maxLoanUFDS15, savings, ds1Zone);
+      const loanDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
+
+      cards.push({
+        id: "ds1t2",
+        subsidyKey: "ds1t2",
+        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
+        title: "Subsidio DS1 Tramo 2",
+        description: "Subsidio variable para tramos medios del RSH. Complementa con crédito bancario.",
+        hasDS15Option: true,
+        normalInfo: {
+          maxHouseUF: resNormal.maxHouseUF,
+          loanUF: loanNormal,
+          subsidyUF: resNormal.subsidyUF,
+          minAhorro: 40,
+          label: "Opción Sin Beneficio DS15 (Usada/Nueva)"
+        },
+        ds15Info: {
+          maxHouseUF: resDS15.maxHouseUF,
+          loanUF: loanDS15,
+          subsidyUF: resDS15.subsidyUF,
+          minAhorro: 80,
+          label: "Opción Con Beneficio DS15 (Solo Nueva)"
+        }
+      });
+
+      // DS19 (Homologado en DS1 T2)
+      const maxHouseDS19Urban = Math.min(maxLoanUFDS15 + savings + subUrban, capUrban);
+      const loanDS19Urban = Math.max(0, maxHouseDS19Urban - savings - subUrban);
+
+      const maxHouseDS19Rural = Math.min(maxLoanUFDS15 + savings + subRural, capRural);
+      const loanDS19Rural = Math.max(0, maxHouseDS19Rural - savings - subRural);
+
+      cards.push({
+        id: "ds19-homologado-t2",
+        subsidyKey: "ds19",
+        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
+        title: "Homologación a DS19 (Tramo 2)",
+        description: "Aplica tu subsidio DS1 Tramo 2 de forma automática en proyectos integrados con convenio.",
+        hasDS15Option: true,
+        normalInfo: {
+          maxHouseUF: maxHouseDS19Urban,
+          loanUF: loanDS19Urban,
+          subsidyUF: subUrban,
+          minAhorro: 80,
+          label: "Cupo Urbano / Medios 2 (Urbano)",
+          cupoType: "urban_media"
+        },
+        ds15Info: {
+          maxHouseUF: maxHouseDS19Rural,
+          loanUF: loanDS19Rural,
+          subsidyUF: subRural,
+          minAhorro: 80,
+          label: "Cupo Rural / Medios 1 (Rural)",
+          cupoType: "vulnerable_rural"
+        }
+      });
+
+      // DS19 (Postulacion directa en Sector Vulnerable/Rural)
+      const maxHouseVul = Math.min(savings + subVul, capVul);
+
+      cards.push({
+        id: "ds19-directo-vul-rural",
+        subsidyKey: "ds19",
+        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
+        title: "DS19 Directo (Vulnerable / Rural)",
+        description: "Postulación directa al proyecto inmobiliario sin requerir subsidio MINVU adjudicado previamente.",
+        hasDS15Option: true,
+        normalInfo: {
+          maxHouseUF: maxHouseVul,
+          loanUF: 0,
+          subsidyUF: subVul,
+          minAhorro: 40,
+          label: "Cupo Vulnerable (Sin Deuda)",
+          cupoType: "vulnerable"
+        },
+        ds15Info: {
+          maxHouseUF: maxHouseDS19Rural,
+          loanUF: loanDS19Rural,
+          subsidyUF: subRural,
+          minAhorro: 80,
+          label: "Cupo Rural / Medios 1 (Con Deuda)",
+          cupoType: "vulnerable_rural"
+        }
+      });
+
+      // Sin Subsidio
+      cards.push(cardSinSubsidio);
+    }
+
+    // 4. RHS 90% (tramo "90")
+    else if (rshTramo === "90") {
+      // DS1 T3 (Con y sin DS15)
+      const resNormal = calculateDS1T3Max(maxLoanUFNormal, savings, ds1Zone);
+      const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
+
+      const resDS15 = calculateDS1T3MaxWithDS15(maxLoanUFDS15, savings, ds1Zone);
+      const loanDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
+
+      cards.push({
+        id: "ds1t3",
+        subsidyKey: "ds1t3",
+        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
+        title: "Subsidio DS1 Tramo 3",
+        description: "Tope de compra ampliado con crédito hipotecario bancario obligatorio.",
+        hasDS15Option: true,
+        normalInfo: {
+          maxHouseUF: resNormal.maxHouseUF,
+          loanUF: loanNormal,
+          subsidyUF: resNormal.subsidyUF,
+          minAhorro: 80,
+          label: "Opción Sin Beneficio DS15 (Usada/Nueva)"
+        },
+        ds15Info: {
+          maxHouseUF: resDS15.maxHouseUF,
+          loanUF: loanDS15,
+          subsidyUF: resDS15.subsidyUF,
+          minAhorro: 160,
+          label: "Opción Con Beneficio DS15 (Solo Nueva)"
+        }
+      });
+
+      // DS19 (Homologado en DS1 T3)
+      const maxHouseDS19Urban = Math.min(maxLoanUFDS15 + savings + subUrban, capUrban);
+      const loanDS19Urban = Math.max(0, maxHouseDS19Urban - savings - subUrban);
+
+      cards.push({
+        id: "ds19-homologado-t3",
+        subsidyKey: "ds19",
+        cupoType: "urban_media",
+        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
+        title: "Homologación a DS19 (Tramo 3)",
+        description: "Homologa tu subsidio Tramo 3 en proyectos urbanos con convenio DS15 preferencial.",
+        maxHouseUF: maxHouseDS19Urban,
+        loanUF: loanDS19Urban,
+        savingsUF: savings,
+        subsidyUF: subUrban,
+        minAhorro: 80,
+        hasDS15Option: false
+      });
+
+      // DS19 (Postulación Directa en sector urbano/medio)
+      cards.push({
+        id: "ds19-directo-urban",
+        subsidyKey: "ds19",
+        cupoType: "urban_media",
+        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
+        title: "DS19 Directo (Sectores Medios)",
+        description: "Postula directamente a un proyecto DS19 urbano de integración social.",
+        maxHouseUF: maxHouseDS19Urban,
+        loanUF: loanDS19Urban,
+        savingsUF: savings,
+        subsidyUF: subUrban,
+        minAhorro: 80,
+        hasDS15Option: false
+      });
+
+      // Sin Subsidio
+      cards.push(cardSinSubsidio);
+    }
+
+    // 5. RHS > 90% dentro del límite de DS1 T4
+    else if (rshTramo === "100" && meetsDS1T4Limit) {
+      const minAhorro = 200;
+      const effectiveSavings = savings < minAhorro ? minAhorro : savings;
+      const cap = 4000;
+      const sub = 400;
+      const valMax = Math.min(maxLoanUFNormal + effectiveSavings + sub, cap);
+      const creditReal = Math.max(0, valMax - effectiveSavings - sub);
+
+      cards.push({
+        id: "ds1t4",
+        subsidyKey: "ds1t4",
+        badge: "Vivienda Nueva/Usada - MINVU",
+        title: "Subsidio DS1 Tramo 4",
+        description: "Diseñado para viviendas de hasta 4.000 UF. Apoyo estatal directo de 400 UF.",
+        maxHouseUF: valMax,
+        loanUF: creditReal,
+        savingsUF: effectiveSavings,
+        subsidyUF: sub,
+        minAhorro,
+        hasDS15Option: false
+      });
+
+      cards.push(cardSinSubsidio);
+    }
+
+    // 6. RHS > 90% supera límite de DS1 T4
+    else {
+      cards.push(cardSinSubsidio);
+    }
 
     return cards;
   };
@@ -576,100 +789,614 @@ export default function AsistenteSubsidiosPage() {
   // --- CÁLCULO DE PERFIL B (SIMULACIÓN AVANZADA) ---
   const handleCalculateB = (e: React.FormEvent) => {
     e.preventDefault();
-    const income = parseFloat(incomeCLPB);
-    const savings = parseFloat(savingsUFB);
-    const term = parseInt(loanTermB);
+    const income = parseFloat(incomeCLPB) || 0;
+    const savings = parseFloat(savingsUFB) || 0;
+    const term = parseInt(loanTermB) || 25;
 
-    if (!selectedBankB || !BANKS[selectedBankB]) {
+    if (selectedSubsidyB !== "ds49" && (!selectedBankB || !BANKS[selectedBankB])) {
       alert("Por favor, selecciona una institución financiera para la tasa de interés.");
       return;
     }
 
-    const bankData = BANKS[selectedBankB];
+    const bankKey = selectedBankB || "BancoEstado";
+    const bankData = BANKS[bankKey] || BANKS["BancoEstado"];
     const incomeMultiplier = isYoungSingleB ? 3 : 4;
     const maxMonthlyPaymentUF = (income / ufValue) / incomeMultiplier;
 
     const tasaOriginal = bankData.calcularTasa ? bankData.calcularTasa(1000, term) : (bankData.tasaBase || 0.045);
-    const tasaAplicada = tasaOriginal - (bankData.descuentoDS15 || 0);
+    const descuento = bankData.descuentoDS15 || 0.009;
+    const tasaDS15 = tasaOriginal - descuento;
 
-    const monthlyRate = tasaAplicada / 12;
+    const monthlyRateNormal = tasaOriginal / 12;
+    const monthlyRateDS15 = tasaDS15 / 12;
     const totalPayments = term * 12;
-    const maxLoanUF = monthlyRate > 0 
-      ? maxMonthlyPaymentUF * ((1 - Math.pow(1 + monthlyRate, -totalPayments)) / monthlyRate)
+
+    const maxLoanUFNormal = monthlyRateNormal > 0 
+      ? maxMonthlyPaymentUF * ((1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) / monthlyRateNormal)
       : 0;
 
-    let maxHouseUF = 0;
-    let subsidyUF = 0;
-    let legalMaxCap = 0;
-    let subsidyName = "";
+    const maxLoanUFDS15 = monthlyRateDS15 > 0 
+      ? maxMonthlyPaymentUF * ((1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) / monthlyRateDS15)
+      : 0;
 
-    switch (selectedSubsidyB) {
-      case "ds49":
-        subsidyUF = 1100;
-        legalMaxCap = 1100;
-        maxHouseUF = savings + subsidyUF;
-        subsidyName = "Subsidio DS49 (Fondo Solidario)";
-        break;
-      case "ds1t1":
-        subsidyUF = locationB === "north" ? 700 : locationB === "south" ? 750 : 600;
-        legalMaxCap = locationB === "north" ? 1200 : locationB === "south" ? 1250 : 1100;
-        maxHouseUF = Math.min(maxLoanUF + savings + subsidyUF, legalMaxCap);
-        subsidyName = "DS1 Tramo 1";
-        break;
-      case "ds1t2":
-        legalMaxCap = 1600;
-        subsidyName = "DS1 Tramo 2";
-        const t2Res = calculateDS1T2Max(maxLoanUF, savings, locationB);
-        maxHouseUF = t2Res.maxHouseUF;
-        subsidyUF = t2Res.subsidyUF;
-        break;
-      case "ds1t3":
-        legalMaxCap = locationB === "none" ? 2200 : 2600;
-        subsidyName = "DS1 Tramo 3";
-        const t3Res = calculateDS1T3Max(maxLoanUF, savings, locationB);
-        maxHouseUF = t3Res.maxHouseUF;
-        subsidyUF = t3Res.subsidyUF;
-        break;
-      case "ds1t4":
-        subsidyUF = 400;
-        legalMaxCap = 4000;
-        const effectiveSavingsB = savings < 200 ? 200 : savings;
-        maxHouseUF = Math.min(maxLoanUF + effectiveSavingsB + subsidyUF, legalMaxCap);
-        subsidyName = "DS1 Tramo 4";
-        break;
-      case "ds19":
-        subsidyUF = 350;
-        legalMaxCap = 2600;
-        maxHouseUF = Math.min(maxLoanUF + savings + subsidyUF, legalMaxCap);
-        subsidyName = "Integración Social DS19";
-        break;
-      default:
-        subsidyUF = 0;
-        legalMaxCap = 99999;
-        maxHouseUF = maxLoanUF + savings;
-        subsidyName = "Sin Subsidio Habitacional";
+    const ds1ZoneB = getDS1Zone(locationB);
+    
+    const activeCommunes = DS19_COMMUNES_PERIPHERAL[locationB] || [];
+    const currentCommune = activeCommunes.find(c => c.key === selectedCommuneB);
+    const isPeripheral = currentCommune ? currentCommune.isPeripheral : false;
+
+    const getDS19LocationZoneB = (reg: string, isVar: boolean, isPerip: boolean) => {
+      if (["aysen", "magallanes"].includes(reg)) {
+        return "sur_islas";
+      }
+      if (isPerip) {
+        return "regular";
+      }
+      const urbanRegions = isVar 
+        ? ["arica-y-parinacota", "tarapaca", "antofagasta", "atacama", "metropolitana", "valparaiso", "biobio"]
+        : ["arica-y-parinacota", "tarapaca", "antofagasta", "atacama", "metropolitana"];
+      if (urbanRegions.includes(reg)) {
+        return "urbana_norte_stgo";
+      }
+      return "regular";
+    };
+
+    const options: any[] = [];
+
+    if (selectedSubsidyB === "none") {
+      // Opción A: Vivienda Nueva (Con FOGAES + Subsidio Dividendo)
+      const maxHouseFogaesWithDiscount = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
+      const maxHouseFogaesNormal = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
+      const maxHouseFogaes = Math.max(maxHouseFogaesWithDiscount, maxHouseFogaesNormal);
+      const loanFogaes = Math.max(0, maxHouseFogaes - savings);
+      const aplicaLeyFogaes = maxHouseFogaes < 4000;
+      const rateFogaes = aplicaLeyFogaes ? monthlyRateDS15 : monthlyRateNormal;
+      const maxDividendFogaes = loanFogaes > 0 ? (loanFogaes * rateFogaes) / (1 - Math.pow(1 + rateFogaes, -totalPayments)) : 0;
+      
+      const maxLoanFogaesLimit = aplicaLeyFogaes ? maxLoanUFDS15 : maxLoanUFNormal;
+      const maxHouseFogaesByIncome = maxLoanFogaesLimit / 0.9;
+      let warningFogaes = "";
+      if (maxHouseFogaes < Math.min(4500, maxHouseFogaesByIncome)) {
+        const targetUF = Math.min(4500, maxHouseFogaesByIncome);
+        const neededSavings = targetUF * 0.10;
+        warningFogaes = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad nueva de hasta ${targetUF.toFixed(0)} UF.`;
+      }
+
+      options.push({
+        id: "fogaes-nueva",
+        badge: "Vivienda Nueva - Crédito Hipotecario",
+        title: `Vivienda Nueva (Con FOGAES${aplicaLeyFogaes ? " + Subsidio Dividendo" : ""})`,
+        description: "Financiamiento hasta 90% con aval del Estado (FOGAES). Permite pie mínimo del 10%.",
+        maxHouseUF: maxHouseFogaes,
+        loanUF: loanFogaes,
+        savingsUF: savings,
+        subsidyUF: 0,
+        minAhorro: 0,
+        maxDividendUF: maxDividendFogaes,
+        warning: warningFogaes,
+        linkParams: `maxPrice=${Math.round(maxHouseFogaes * ufValue)}&maxUF=${Math.round(maxHouseFogaes)}&credit=${Math.round(loanFogaes)}&origin=no-subsidy&region=${locationB}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaes ? "true" : "false"}&isNew=true`
+      });
+
+      // Opción B: Vivienda Usada (Sin FOGAES ni Subsidio)
+      const maxHouseUsada = Math.min(savings / 0.20, maxLoanUFNormal + savings);
+      const loanUsada = Math.max(0, maxHouseUsada - savings);
+      const maxDividendUsada = loanUsada > 0 ? (loanUsada * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+      
+      const maxHouseUsadaByIncome = maxLoanUFNormal / 0.8;
+      let warningUsada = "";
+      if (maxHouseUsada < maxHouseUsadaByIncome) {
+        const targetUF = maxHouseUsadaByIncome;
+        const neededSavings = targetUF * 0.20;
+        warningUsada = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad usada de hasta ${targetUF.toFixed(0)} UF.`;
+      }
+
+      options.push({
+        id: "tradicional-usada",
+        badge: "Vivienda Usada - Crédito Hipotecario",
+        title: "Vivienda Usada (Crédito Tradicional)",
+        description: "Financiamiento convencional hasta el 80%. Requiere pie del 20%.",
+        maxHouseUF: maxHouseUsada,
+        loanUF: loanUsada,
+        savingsUF: savings,
+        subsidyUF: 0,
+        minAhorro: 0,
+        maxDividendUF: maxDividendUsada,
+        warning: warningUsada,
+        linkParams: `maxPrice=${Math.round(maxHouseUsada * ufValue)}&maxUF=${Math.round(maxHouseUsada)}&credit=${Math.round(loanUsada)}&origin=no-subsidy&region=${locationB}&applyFogaes=false&applyRateDiscount=false&isNew=false`
+      });
     }
 
-    const finalSavingsB = (selectedSubsidyB === "ds1t4" && savings < 200) ? 200 : savings;
-    const finalLoan = selectedSubsidyB === "ds49" ? 0 : Math.max(0, maxHouseUF - finalSavingsB - subsidyUF);
+    else if (selectedSubsidyB === "ds49") {
+      // Opción 1: Subsidio DS49
+      let extraAhorro = savings - 10;
+      let incentive = 0;
+      if (savings >= 60) {
+        incentive = 250;
+      } else if (extraAhorro > 0) {
+        incentive = 5 * extraAhorro;
+      }
+      const subsidyUF = 800 + (isUrbanB ? 100 : 0) + incentive;
+      const maxHouseUF = Math.min(savings + subsidyUF, 1300);
+      let warningDS49 = "";
+      if (savings < 10) {
+        warningDS49 = `⚠️ Falta Ahorro: El subsidio DS49 exige un ahorro mínimo de 10 UF. Te faltan ${(10 - savings).toFixed(1)} UF (aprox. $${Math.round((10 - savings) * ufValue).toLocaleString("es-CL")} CLP).`;
+      }
+      options.push({
+        id: "ds49-propio",
+        badge: "Vivienda Nueva o Usada - Postulación MINVU",
+        title: "Subsidio DS49 (Fondo Solidario)",
+        description: "Adquisición de vivienda sin crédito hipotecario. Financiado por subsidio y tu ahorro.",
+        maxHouseUF,
+        loanUF: 0,
+        savingsUF: savings,
+        subsidyUF,
+        minAhorro: 10,
+        maxDividendUF: 0,
+        warning: warningDS49,
+        linkParams: `maxPrice=${Math.round(maxHouseUF * ufValue)}&maxUF=${Math.round(maxHouseUF)}&credit=0&origin=ds49&region=${locationB}&isUrban=${isUrbanB}`
+      });
 
-    setResultsB({
-      maxHouseUF,
-      loanUF: finalLoan,
-      savingsUF: finalSavingsB,
-      originalSavingsUF: savings,
-      subsidyUF,
-      maxDividendUF: selectedSubsidyB === "ds49" ? 0 : (finalLoan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)),
-      bank: bankData.name,
-      tasaAplicada,
-      legalMaxCap,
-      subsidyName
-    });
+      // Opción 2: Homologación a DS19 Cupo Vulnerable
+      const zoneVul = getDS19LocationZoneB(locationB, false, isPeripheral);
+      let subDS19 = 0;
+      let capDS19 = 0;
+      if (zoneVul === "sur_islas") {
+        capDS19 = 2000;
+        subDS19 = 1700;
+      } else if (zoneVul === "urbana_norte_stgo") {
+        capDS19 = propertyTypeB === "casa" ? 1500 : 1600;
+        subDS19 = propertyTypeB === "casa" ? 1200 : 1300;
+      } else {
+        capDS19 = propertyTypeB === "casa" ? 1600 : 1500;
+        subDS19 = propertyTypeB === "casa" ? 1100 : 1200;
+      }
+      
+      const maxHouseDS19 = Math.min(savings + subDS19, capDS19);
+      let warningDS19 = "";
+      if (savings < 40) {
+        warningDS19 = `⚠️ Falta Ahorro: Para homologar a DS19 Cupo Vulnerable necesitas mínimo 40 UF. Te faltan ${(40 - savings).toFixed(0)} UF (aprox. $${Math.round((40 - savings) * ufValue).toLocaleString("es-CL")} CLP).`;
+      }
+      options.push({
+        id: "ds49-homologado",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "Homologación a DS19 (Cupo Vulnerable)",
+        description: "Permite comprar sin crédito hipotecario una vivienda nueva en proyectos con convenio DS19.",
+        maxHouseUF: maxHouseDS19,
+        loanUF: 0,
+        savingsUF: savings,
+        subsidyUF: subDS19,
+        minAhorro: 40,
+        maxDividendUF: 0,
+        warning: warningDS19,
+        linkParams: `maxPrice=${Math.round(maxHouseDS19 * ufValue)}&maxUF=${Math.round(maxHouseDS19)}&credit=0&origin=ds19&region=${locationB}&cupoType=vulnerable&propertyType=${propertyTypeB}`
+      });
+    }
+
+    else if (selectedSubsidyB === "ds1t1") {
+      // Opción 1: DS1 Tramo 1 Normal
+      const cap = ds1ZoneB === "north" ? 1200 : (ds1ZoneB === "south" ? 1250 : 1100);
+      const sub = ds1ZoneB === "north" ? 700 : (ds1ZoneB === "south" ? 750 : 600);
+      const maxHouseUF = Math.min(maxLoanUFNormal + savings + sub, cap);
+      const loanUF = Math.max(0, maxHouseUF - savings - sub);
+      const maxDividend = loanUF > 0 ? (loanUF * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+      let warningT1 = "";
+      if (savings < 30) {
+        warningT1 = `⚠️ Falta Ahorro: Se exige mínimo 30 UF para el DS1 Tramo 1. Te faltan ${(30 - savings).toFixed(0)} UF (aprox. $${Math.round((30 - savings) * ufValue).toLocaleString("es-CL")} CLP).`;
+      }
+      options.push({
+        id: "ds1t1-propio",
+        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
+        title: "Subsidio DS1 Tramo 1",
+        description: "Requiere un crédito bancario pequeño o pago al contado de la diferencia. Tope de propiedad de hasta 1.100 UF (o hasta 1.250 UF en zonas extremas).",
+        maxHouseUF,
+        loanUF,
+        savingsUF: savings,
+        subsidyUF: sub,
+        minAhorro: 30,
+        maxDividendUF: maxDividend,
+        warning: warningT1,
+        linkParams: `maxPrice=${Math.round(maxHouseUF * ufValue)}&maxUF=${Math.round(maxHouseUF)}&credit=${Math.round(loanUF)}&origin=ds1t1&region=${locationB}&propertyType=${propertyTypeB}`
+      });
+
+      // Opción 2: Homologación a DS19 Cupo Vulnerable
+      const zoneVul = getDS19LocationZoneB(locationB, false, isPeripheral);
+      let subDS19Vul = 0;
+      let capDS19Vul = 0;
+      if (zoneVul === "sur_islas") {
+        capDS19Vul = 2000;
+        subDS19Vul = 1700;
+      } else if (zoneVul === "urbana_norte_stgo") {
+        capDS19Vul = propertyTypeB === "casa" ? 1500 : 1600;
+        subDS19Vul = propertyTypeB === "casa" ? 1200 : 1300;
+      } else {
+        capDS19Vul = propertyTypeB === "casa" ? 1600 : 1500;
+        subDS19Vul = propertyTypeB === "casa" ? 1100 : 1200;
+      }
+      const maxHouseVul = Math.min(savings + subDS19Vul, capDS19Vul);
+      let warningVul = "";
+      if (savings < 40) {
+        warningVul = `⚠️ Falta Ahorro: Para homologar a DS19 Cupo Vulnerable necesitas mínimo 40 UF. Te faltan ${(40 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds1t1-homologado-vulnerable",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "Homologación a DS19 (Cupo Vulnerable)",
+        description: "Permite comprar sin crédito hipotecario una vivienda nueva en proyectos con convenio DS19.",
+        maxHouseUF: maxHouseVul,
+        loanUF: 0,
+        savingsUF: savings,
+        subsidyUF: subDS19Vul,
+        minAhorro: 40,
+        maxDividendUF: 0,
+        warning: warningVul,
+        linkParams: `maxPrice=${Math.round(maxHouseVul * ufValue)}&maxUF=${Math.round(maxHouseVul)}&credit=0&origin=ds19&region=${locationB}&cupoType=vulnerable&propertyType=${propertyTypeB}`
+      });
+
+      // Opción 3: Homologación a DS19 Cupo Sectores Medios 1 (Rural)
+      const zoneRural = getDS19LocationZoneB(locationB, false, isPeripheral);
+      let subDS19Rural = 0;
+      let capDS19Rural = 0;
+      if (zoneRural === "sur_islas") {
+        capDS19Rural = 2400;
+        subDS19Rural = 537.5 + 100;
+      } else if (zoneRural === "urbana_norte_stgo") {
+        capDS19Rural = 1900;
+        subDS19Rural = 487.5 + 100;
+      } else {
+        capDS19Rural = 1800;
+        subDS19Rural = 425 + 100;
+      }
+      const maxHouseRural = Math.min(maxLoanUFDS15 + savings + subDS19Rural, capDS19Rural);
+      const loanRural = Math.max(0, maxHouseRural - savings - subDS19Rural);
+      const maxDividendRural = loanRural > 0 ? (loanRural * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningRural = "";
+      if (savings < 80) {
+        warningRural = `⚠️ Falta Ahorro: Para el Cupo Rural necesitas un ahorro mínimo de 80 UF. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds1t1-homologado-rural",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "Homologación a DS19 (Cupo Rural / Medios 1)",
+        description: "Adquiere vivienda nueva en proyectos con convenio en sectores rurales o comunas periféricas. Incluye beneficio DS15.",
+        maxHouseUF: maxHouseRural,
+        loanUF: loanRural,
+        savingsUF: savings,
+        subsidyUF: subDS19Rural,
+        minAhorro: 80,
+        maxDividendUF: maxDividendRural,
+        warning: warningRural,
+        linkParams: `maxPrice=${Math.round(maxHouseRural * ufValue)}&maxUF=${Math.round(maxHouseRural)}&credit=${Math.round(loanRural)}&origin=ds19&region=${locationB}&cupoType=vulnerable_rural`
+      });
+    }
+
+    else if (selectedSubsidyB === "ds1t2") {
+      // Opción 1: DS1 Tramo 2 Usada (Sin DS15)
+      const resNormal = calculateDS1T2Max(maxLoanUFNormal, savings, ds1ZoneB);
+      const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
+      const maxDividendNormal = loanNormal > 0 ? (loanNormal * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+      let warningNormal = "";
+      if (savings < 40) {
+        warningNormal = `⚠️ Falta Ahorro: Se exige mínimo 40 UF para el DS1 Tramo 2. Te faltan ${(40 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds1t2-usada",
+        badge: "Vivienda Usada o Nueva - MINVU",
+        title: "DS1 Tramo 2 Usada/Nueva (Sin DS15)",
+        description: "Para compras tradicionales. El subsidio es variable decreciente según el valor de la vivienda.",
+        maxHouseUF: resNormal.maxHouseUF,
+        loanUF: loanNormal,
+        savingsUF: savings,
+        subsidyUF: resNormal.subsidyUF,
+        minAhorro: 40,
+        maxDividendUF: maxDividendNormal,
+        warning: warningNormal,
+        linkParams: `maxPrice=${Math.round(resNormal.maxHouseUF * ufValue)}&maxUF=${Math.round(resNormal.maxHouseUF)}&credit=${Math.round(loanNormal)}&origin=ds1t2&region=${locationB}&isNew=false`
+      });
+
+      // Opción 2: DS1 Tramo 2 Nueva (Con DS15)
+      const resDS15 = calculateDS1T2MaxWithDS15(maxLoanUFDS15, savings, ds1ZoneB);
+      const loanDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
+      const maxDividendDS15 = loanDS15 > 0 ? (loanDS15 * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningDS15 = "";
+      let infoDS15 = "";
+      if (savings < 80) {
+        warningDS15 = `⚠️ Falta Ahorro: Para activar el beneficio DS15 en Tramo 2 necesitas mínimo 80 UF. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+        infoDS15 = `💡 ¡Duplica tu ahorro! Si logras llegar a 80 UF, activarás el beneficio DS15, que añade un bono de 150 UF al subsidio y amplía tu tope de compra a 3.000 UF.`;
+      } else {
+        infoDS15 = `✨ ¡Beneficio DS15 Activo! Se agrega un bono de 150 UF al subsidio y el tope de vivienda sube a 3.000 UF por tener 80 UF o más de ahorro.`;
+      }
+      options.push({
+        id: "ds1t2-nueva-ds15",
+        badge: "Solo Vivienda Nueva - Beneficio DS15",
+        title: "DS1 Tramo 2 Nueva (Con DS15)",
+        description: "Aplica para viviendas nuevas. Ofrece tasa de interés preferencial y un bono adicional al subsidio.",
+        maxHouseUF: resDS15.maxHouseUF,
+        loanUF: loanDS15,
+        savingsUF: savings,
+        subsidyUF: resDS15.subsidyUF,
+        minAhorro: 80,
+        maxDividendUF: maxDividendDS15,
+        warning: warningDS15,
+        info: infoDS15,
+        linkParams: `maxPrice=${Math.round(resDS15.maxHouseUF * ufValue)}&maxUF=${Math.round(resDS15.maxHouseUF)}&credit=${Math.round(loanDS15)}&origin=ds1t2&region=${locationB}&applyRateDiscount=true&isNew=true`
+      });
+
+      // Opción 3: Homologación a DS19 Cupo Sectores Medios 1 (Rural)
+      const zoneRural = getDS19LocationZoneB(locationB, false, isPeripheral);
+      let subRural = 0;
+      let capRural = 0;
+      if (zoneRural === "sur_islas") {
+        capRural = 2400;
+        subRural = 537.5 + 100;
+      } else if (zoneRural === "urbana_norte_stgo") {
+        capRural = 1900;
+        subRural = 487.5 + 100;
+      } else {
+        capRural = 1800;
+        subRural = 425 + 100;
+      }
+      const maxHouseRural = Math.min(maxLoanUFDS15 + savings + subRural, capRural);
+      const loanRural = Math.max(0, maxHouseRural - savings - subRural);
+      const maxDividendRural = loanRural > 0 ? (loanRural * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningRural = "";
+      if (savings < 80) {
+        warningRural = `⚠️ Falta Ahorro: Para el Cupo Rural necesitas un ahorro mínimo de 80 UF. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds1t2-homologado-rural",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "Homologación a DS19 (Cupo Rural / Medios 1)",
+        description: "Adquiere vivienda nueva en proyectos con convenio en sectores rurales o comunas periféricas. Incluye beneficio DS15.",
+        maxHouseUF: maxHouseRural,
+        loanUF: loanRural,
+        savingsUF: savings,
+        subsidyUF: subRural,
+        minAhorro: 80,
+        maxDividendUF: maxDividendRural,
+        warning: warningRural,
+        linkParams: `maxPrice=${Math.round(maxHouseRural * ufValue)}&maxUF=${Math.round(maxHouseRural)}&credit=${Math.round(loanRural)}&origin=ds19&region=${locationB}&cupoType=vulnerable_rural`
+      });
+
+      // Opción 4: Homologación a DS19 Cupo Sectores Medios 2 (Urbano)
+      const zoneUrban = getDS19LocationZoneB(locationB, true, isPeripheral);
+      let subUrban = 0;
+      let capUrban = 0;
+      if (zoneUrban === "sur_islas") {
+        capUrban = 3000;
+        subUrban = 500 + 100;
+      } else if (zoneUrban === "urbana_norte_stgo") {
+        capUrban = 2800;
+        subUrban = 350 + 100;
+      } else {
+        capUrban = 2600;
+        subUrban = 350 + 100;
+      }
+      const maxHouseUrban = Math.min(maxLoanUFDS15 + savings + subUrban, capUrban);
+      const loanUrban = Math.max(0, maxHouseUrban - savings - subUrban);
+      const maxDividendUrban = loanUrban > 0 ? (loanUrban * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningUrban = "";
+      if (savings < 80) {
+        warningUrban = `⚠️ Falta Ahorro: Para el Cupo Urbano necesitas un ahorro mínimo de 80 UF. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds1t2-homologado-urban",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "Homologación a DS19 (Cupo Urbano / Medios 2)",
+        description: "Adquiere vivienda nueva en proyectos integrados urbanos con beneficio DS15 aplicado automáticamente.",
+        maxHouseUF: maxHouseUrban,
+        loanUF: loanUrban,
+        savingsUF: savings,
+        subsidyUF: subUrban,
+        minAhorro: 80,
+        maxDividendUF: maxDividendUrban,
+        warning: warningUrban,
+        linkParams: `maxPrice=${Math.round(maxHouseUrban * ufValue)}&maxUF=${Math.round(maxHouseUrban)}&credit=${Math.round(loanUrban)}&origin=ds19&region=${locationB}&cupoType=urban_media`
+      });
+    }
+
+    else if (selectedSubsidyB === "ds1t3") {
+      // Opción 1: DS1 Tramo 3 Usada (Sin DS15)
+      const resNormal = calculateDS1T3Max(maxLoanUFNormal, savings, ds1ZoneB);
+      const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
+      const maxDividendNormal = loanNormal > 0 ? (loanNormal * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+      let warningNormal = "";
+      if (savings < 80) {
+        warningNormal = `⚠️ Falta Ahorro: Se exige mínimo 80 UF para el DS1 Tramo 3. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds1t3-usada",
+        badge: "Vivienda Usada o Nueva - MINVU",
+        title: "DS1 Tramo 3 Usada/Nueva (Sin DS15)",
+        description: "Para compras convencionales. Tope máximo de compra de hasta 2.200 UF (o 2.600 UF en zonas extremas).",
+        maxHouseUF: resNormal.maxHouseUF,
+        loanUF: loanNormal,
+        savingsUF: savings,
+        subsidyUF: resNormal.subsidyUF,
+        minAhorro: 80,
+        maxDividendUF: maxDividendNormal,
+        warning: warningNormal,
+        linkParams: `maxPrice=${Math.round(resNormal.maxHouseUF * ufValue)}&maxUF=${Math.round(resNormal.maxHouseUF)}&credit=${Math.round(loanNormal)}&origin=ds1t3&region=${locationB}&isNew=false`
+      });
+
+      // Opción 2: DS1 Tramo 3 Nueva (Con DS15)
+      const resDS15 = calculateDS1T3MaxWithDS15(maxLoanUFDS15, savings, ds1ZoneB);
+      const loanDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
+      const maxDividendDS15 = loanDS15 > 0 ? (loanDS15 * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningDS15 = "";
+      let infoDS15 = "";
+      if (savings < 160) {
+        warningDS15 = `⚠️ Falta Ahorro: Para activar el beneficio DS15 en Tramo 3 necesitas mínimo 160 UF. Te faltan ${(160 - savings).toFixed(0)} UF.`;
+        infoDS15 = `💡 ¡Duplica tu ahorro! Si logras llegar a 160 UF, activarás el beneficio DS15, que añade un bono de 150 UF al subsidio y amplía tu tope de compra a 3.000 UF.`;
+      } else {
+        infoDS15 = `✨ ¡Beneficio DS15 Activo! Se añade un bono de 150 UF al subsidio y el tope de vivienda sube a 3.000 UF por tener 160 UF o más de ahorro.`;
+      }
+      options.push({
+        id: "ds1t3-nueva-ds15",
+        badge: "Solo Vivienda Nueva - Beneficio DS15",
+        title: "DS1 Tramo 3 Nueva (Con DS15)",
+        description: "Aplica para viviendas nuevas. Agrega un bono de 150 UF al subsidio y tasa preferencial.",
+        maxHouseUF: resDS15.maxHouseUF,
+        loanUF: loanDS15,
+        savingsUF: savings,
+        subsidyUF: resDS15.subsidyUF,
+        minAhorro: 160,
+        maxDividendUF: maxDividendDS15,
+        warning: warningDS15,
+        info: infoDS15,
+        linkParams: `maxPrice=${Math.round(resDS15.maxHouseUF * ufValue)}&maxUF=${Math.round(resDS15.maxHouseUF)}&credit=${Math.round(loanDS15)}&origin=ds1t3&region=${locationB}&applyRateDiscount=true&isNew=true`
+      });
+
+      // Opción 3: Homologación a DS19 Cupo Sectores Medios 2 (Urbano)
+      const zoneUrban = getDS19LocationZoneB(locationB, true, isPeripheral);
+      let subUrban = 0;
+      let capUrban = 0;
+      if (zoneUrban === "sur_islas") {
+        capUrban = 3000;
+        subUrban = 500 + 100;
+      } else if (zoneUrban === "urbana_norte_stgo") {
+        capUrban = 2800;
+        subUrban = 350 + 100;
+      } else {
+        capUrban = 2600;
+        subUrban = 350 + 100;
+      }
+      const maxHouseUrban = Math.min(maxLoanUFDS15 + savings + subUrban, capUrban);
+      const loanUrban = Math.max(0, maxHouseUrban - savings - subUrban);
+      const maxDividendUrban = loanUrban > 0 ? (loanUrban * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningUrban = "";
+      if (savings < 80) {
+        warningUrban = `⚠️ Falta Ahorro: Para el Cupo Urbano necesitas un ahorro mínimo de 80 UF. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds1t3-homologado-urban",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "Homologación a DS19 (Cupo Urbano / Medios 2)",
+        description: "Adquiere vivienda nueva en proyectos integrados urbanos con beneficio DS15 aplicado automáticamente.",
+        maxHouseUF: maxHouseUrban,
+        loanUF: loanUrban,
+        savingsUF: savings,
+        subsidyUF: subUrban,
+        minAhorro: 80,
+        maxDividendUF: maxDividendUrban,
+        warning: warningUrban,
+        linkParams: `maxPrice=${Math.round(maxHouseUrban * ufValue)}&maxUF=${Math.round(maxHouseUrban)}&credit=${Math.round(loanUrban)}&origin=ds19&region=${locationB}&cupoType=urban_media`
+      });
+    }
+
+    else if (selectedSubsidyB === "ds1t4") {
+      const subsidyUF = 400;
+      const cap = 4000;
+      const effectiveSavingsB = savings < 200 ? 200 : savings;
+      const maxHouseUF = Math.min(maxLoanUFNormal + effectiveSavingsB + subsidyUF, cap);
+      const loanUF = Math.max(0, maxHouseUF - effectiveSavingsB - subsidyUF);
+      const maxDividend = loanUF > 0 ? (loanUF * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+      let warningT4 = "";
+      if (savings < 200) {
+        warningT4 = `⚠️ Falta Ahorro: Se exige mínimo 200 UF para el DS1 Tramo 4. Te faltan ${(200 - savings).toFixed(0)} UF. Hemos simulado asumiendo que alcanzarás la meta de 200 UF.`;
+      }
+      options.push({
+        id: "ds1t4-propio",
+        badge: "Vivienda Nueva/Usada - Postulación MINVU",
+        title: "Subsidio DS1 Tramo 4",
+        description: "Diseñado para viviendas de hasta 4.000 UF en sectores medios. Apoyo estatal directo de 400 UF.",
+        maxHouseUF,
+        loanUF,
+        savingsUF: effectiveSavingsB,
+        subsidyUF,
+        minAhorro: 200,
+        maxDividendUF: maxDividend,
+        warning: warningT4,
+        linkParams: `maxPrice=${Math.round(maxHouseUF * ufValue)}&maxUF=${Math.round(maxHouseUF)}&credit=${Math.round(loanUF)}&origin=ds1t4&region=${locationB}&propertyType=${propertyTypeB}`
+      });
+    }
+
+    else if (selectedSubsidyB === "ds19") {
+      // Opción 1: DS19 Cupo Urbano (Medios 2)
+      const zoneUrban = getDS19LocationZoneB(locationB, true, isPeripheral);
+      let subUrban = 0;
+      let capUrban = 0;
+      if (zoneUrban === "sur_islas") {
+        capUrban = 3000;
+        subUrban = 500 + 100;
+      } else if (zoneUrban === "urbana_norte_stgo") {
+        capUrban = 2800;
+        subUrban = 350 + 100;
+      } else {
+        capUrban = 2600;
+        subUrban = 350 + 100;
+      }
+      const maxHouseUrban = Math.min(maxLoanUFDS15 + savings + subUrban, capUrban);
+      const loanUrban = Math.max(0, maxHouseUrban - savings - subUrban);
+      const maxDividendUrban = loanUrban > 0 ? (loanUrban * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningUrban = "";
+      if (savings < 80) {
+        warningUrban = `⚠️ Falta Ahorro: Para proyectos DS19 (Sectores Medios) se exige un ahorro mínimo de 80 UF. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds19-urban",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "DS19 Cupo Urbano (Sectores Medios 2)",
+        description: "Adquiere tu vivienda nueva en proyectos con convenio en zonas urbanas. Incluye el beneficio DS15 aplicado automáticamente.",
+        maxHouseUF: maxHouseUrban,
+        loanUF: loanUrban,
+        savingsUF: savings,
+        subsidyUF: subUrban,
+        minAhorro: 80,
+        maxDividendUF: maxDividendUrban,
+        warning: warningUrban,
+        linkParams: `maxPrice=${Math.round(maxHouseUrban * ufValue)}&maxUF=${Math.round(maxHouseUrban)}&credit=${Math.round(loanUrban)}&origin=ds19&region=${locationB}&cupoType=urban_media`
+      });
+
+      // Opción 2: DS19 Cupo Rural (Medios 1)
+      const zoneRural = getDS19LocationZoneB(locationB, false, isPeripheral);
+      let subRural = 0;
+      let capRural = 0;
+      if (zoneRural === "sur_islas") {
+        capRural = 2400;
+        subRural = 537.5 + 100;
+      } else if (zoneRural === "urbana_norte_stgo") {
+        capRural = 1900;
+        subRural = 487.5 + 100;
+      } else {
+        capRural = 1800;
+        subRural = 425 + 100;
+      }
+      const maxHouseRural = Math.min(maxLoanUFDS15 + savings + subRural, capRural);
+      const loanRural = Math.max(0, maxHouseRural - savings - subRural);
+      const maxDividendRural = loanRural > 0 ? (loanRural * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let warningRural = "";
+      if (savings < 80) {
+        warningRural = `⚠️ Falta Ahorro: Para proyectos DS19 se exige un ahorro mínimo de 80 UF. Te faltan ${(80 - savings).toFixed(0)} UF.`;
+      }
+      options.push({
+        id: "ds19-rural",
+        badge: "Solo Vivienda Nueva - Convenio DS19",
+        title: "DS19 Cupo Rural (Sectores Medios 1)",
+        description: "Adquiere tu vivienda nueva en proyectos con convenio en sectores rurales o comunas periféricas. Incluye beneficio DS15.",
+        maxHouseUF: maxHouseRural,
+        loanUF: loanRural,
+        savingsUF: savings,
+        subsidyUF: subRural,
+        minAhorro: 80,
+        maxDividendUF: maxDividendRural,
+        warning: warningRural,
+        linkParams: `maxPrice=${Math.round(maxHouseRural * ufValue)}&maxUF=${Math.round(maxHouseRural)}&credit=${Math.round(loanRural)}&origin=ds19&region=${locationB}&cupoType=vulnerable_rural`
+      });
+    }
+
+    setResultsB(options);
   };
 
   // Calcular número total de pasos en Perfil A (total 5 pasos)
   const totalStepsA = 5;
   const progressPercentA = (step / totalStepsA) * 100;
+
+  const getGridColsClass = (length: number) => {
+    if (length === 1) return "grid-cols-1 max-w-md mx-auto";
+    if (length === 2) return "grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto";
+    if (length === 4) return "grid-cols-1 md:grid-cols-2 lg:grid-cols-4";
+    return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"; // Default for 3
+  };
 
   return (
     <div className="bg-slate-100 min-h-screen text-slate-800 font-sans flex flex-col justify-between">
@@ -1071,8 +1798,8 @@ export default function AsistenteSubsidiosPage() {
                     </p>
                   </div>
 
-                  {/* Grilla de 3 Tarjetas de Recomendación */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Grilla de Recomendaciones */}
+                  <div className={`grid ${getGridColsClass(recommendationsA.length)} gap-6`}>
                     {recommendationsA.map((card, idx) => {
                       const isSavingsShort = parseFloat(savingsUF) < card.minAhorro;
                       const missingUF = Math.max(0, card.minAhorro - (parseFloat(savingsUF) || 0));
@@ -1204,7 +1931,7 @@ export default function AsistenteSubsidiosPage() {
                                     Solo Vivienda Nueva
                                   </div>
                                   <span className="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider block mb-1">
-                                    Opción Con Beneficio DS15
+                                    {card.ds15Info?.label || "Opción Con Beneficio DS15"}
                                   </span>
                                   
                                   <div className="text-center my-2.5">
@@ -1243,7 +1970,7 @@ export default function AsistenteSubsidiosPage() {
                                   )}
 
                                   <Link 
-                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.ds15Info.maxHouseUF * ufValue)}&maxUF=${Math.round(card.ds15Info.maxHouseUF)}&credit=${Math.round(card.ds15Info.loanUF)}&origin=${card.subsidyKey}&region=${regionA}&cupoType=${card.cupoType || ""}&isNew=true`}
+                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.ds15Info.maxHouseUF * ufValue)}&maxUF=${Math.round(card.ds15Info.maxHouseUF)}&credit=${Math.round(card.ds15Info.loanUF)}&origin=${card.subsidyKey}&region=${regionA}&cupoType=${card.ds15Info?.cupoType || card.cupoType || ""}&isNew=true`}
                                     className="w-full text-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
                                   >
                                     Buscar Proyectos Nuevos DS15 →
@@ -1256,7 +1983,7 @@ export default function AsistenteSubsidiosPage() {
                                     {card.subsidyKey === "ds19" ? "Solo Vivienda Nueva" : "Nueva o Usada"}
                                   </div>
                                   <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block mb-1">
-                                    Opción Sin Beneficio DS15
+                                    {card.normalInfo?.label || "Opción Sin Beneficio DS15"}
                                   </span>
                                   
                                   <div className="text-center my-2.5">
@@ -1295,7 +2022,7 @@ export default function AsistenteSubsidiosPage() {
                                   )}
 
                                   <Link 
-                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.normalInfo.maxHouseUF * ufValue)}&maxUF=${Math.round(card.normalInfo.maxHouseUF)}&credit=${Math.round(card.normalInfo.loanUF)}&origin=${card.subsidyKey}&region=${regionA}&cupoType=${card.cupoType || ""}`}
+                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.normalInfo.maxHouseUF * ufValue)}&maxUF=${Math.round(card.normalInfo.maxHouseUF)}&credit=${Math.round(card.normalInfo.loanUF)}&origin=${card.subsidyKey}&region=${regionA}&cupoType=${card.normalInfo?.cupoType || card.cupoType || ""}`}
                                     className="w-full text-center py-2 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
                                   >
                                     Buscar Ofertas Generales →
@@ -1387,8 +2114,8 @@ export default function AsistenteSubsidiosPage() {
 
                   <form onSubmit={handleCalculateB} className="space-y-5">
                     
-                    {/* Fila 1: Ingreso y Ahorro */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Fila 1: Ingreso y Ahorro Sincronizado */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
                           Renta Líquida Familiar Mensual ($ CLP):
@@ -1405,30 +2132,39 @@ export default function AsistenteSubsidiosPage() {
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Ahorro Disponible para la Compra (UF):
+                          Ahorro Disponible ($ CLP):
                         </label>
                         <input 
                           type="number" 
                           required
                           min="0"
-                          step="1"
+                          placeholder="Ej: 3000000"
+                          className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#87c0a3]" 
+                          value={savingsCLPB} 
+                          onChange={(e) => handleSavingsCLPBChange(e.target.value)} 
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Ahorro Disponible (UF):
+                        </label>
+                        <input 
+                          type="number" 
+                          required
+                          min="0"
+                          step="0.01"
                           placeholder="Ej: 80"
                           className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#87c0a3]" 
                           value={savingsUFB} 
-                          onChange={(e) => setSavingsUFB(e.target.value)} 
+                          onChange={(e) => handleSavingsUFBChange(e.target.value)} 
                         />
-                        {savingsUFB !== "" && !isNaN(parseFloat(savingsUFB)) && (
-                          <span className="text-[10px] font-semibold text-slate-400 mt-1 block">
-                            ≈ ${Math.round(parseFloat(savingsUFB) * ufValue).toLocaleString("es-CL")} CLP
-                          </span>
-                        )}
                       </div>
                     </div>
 
-                    {/* Fila 2: Subsidio Asignado y Ubicación */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Fila 2: Subsidio, Tipo de Hogar, Entorno */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Subsidio ganado o al que postularás:</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Subsidio a Postular:</label>
                         <select 
                           className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#87c0a3]" 
                           value={selectedSubsidyB} 
@@ -1444,21 +2180,68 @@ export default function AsistenteSubsidiosPage() {
                         </select>
                       </div>
 
+                      {["ds49", "ds1t1"].includes(selectedSubsidyB) && (
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Tipo de Hogar:</label>
+                          <select 
+                            className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#87c0a3]" 
+                            value={propertyTypeB} 
+                            onChange={(e) => setPropertyTypeB(e.target.value as "casa" | "depto" | "ambos")}
+                          >
+                            <option value="ambos">Casa o Departamento (Cualquiera)</option>
+                            <option value="casa">Solo Casa</option>
+                            <option value="depto">Solo Departamento</option>
+                          </select>
+                        </div>
+                      )}
+
+                      {selectedSubsidyB === "ds49" && (
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Entorno / Ubicación:</label>
+                          <select 
+                            className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#87c0a3]" 
+                            value={isUrbanB ? "urban" : "rural"} 
+                            onChange={(e) => setIsUrbanB(e.target.value === "urban")}
+                          >
+                            <option value="urban">Urbano</option>
+                            <option value="rural">Rural</option>
+                          </select>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Fila 3: Región de la Vivienda y Comuna */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Ubicación de la vivienda:</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Región de la vivienda:</label>
                         <select 
                           className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#87c0a3]" 
                           value={locationB} 
                           onChange={(e) => setLocationB(e.target.value)}
                         >
-                          <option value="none">Zona Regular / Centro-Sur</option>
-                          <option value="north">Extremo Norte (Arica, Tarapacá, Antofagasta, Atacama)</option>
-                          <option value="south">Extremo Sur (Aysén, Magallanes)</option>
+                          {Object.keys(REGION_MAP).map((key) => (
+                            <option key={key} value={key}>{REGION_MAP[key].label}</option>
+                          ))}
                         </select>
                       </div>
+
+                      {["ds1t2", "ds1t3", "ds19"].includes(selectedSubsidyB) && DS19_COMMUNES_PERIPHERAL[locationB]?.length > 0 && (
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Comuna / Ciudad en la Región:</label>
+                          <select 
+                            className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:border-[#87c0a3]" 
+                            value={selectedCommuneB} 
+                            onChange={(e) => setSelectedCommuneB(e.target.value)}
+                          >
+                            {DS19_COMMUNES_PERIPHERAL[locationB].map((c) => (
+                              <option key={c.key} value={c.key}>{c.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Fila 3: Banco y Plazo (Solo si no es DS49) */}
+                    {/* Fila 4: Banco y Plazo (Solo si no es DS49) */}
                     {selectedSubsidyB !== "ds49" && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                         <div>
@@ -1519,92 +2302,118 @@ export default function AsistenteSubsidiosPage() {
                 </section>
               ) : (
                 // Resultados de Simulación Perfil B
-                <section className="space-y-6 animate-fade-in bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
-                  <div className="text-center pb-6 border-b border-slate-100">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                      Tu capacidad de compra estimada es
+                <div className="space-y-6 animate-fade-in">
+                  <div className="text-center pt-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 block mb-1">
+                      Resultados de Simulación (Perfil B)
                     </span>
-                    <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-none">
-                      {resultsB.maxHouseUF.toFixed(0)} UF
-                    </h2>
-                    <p className="text-lg font-bold text-emerald-600 mt-2">
-                      ≈ ${Math.round(resultsB.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
+                    <h2 className="text-2xl font-extrabold text-slate-900">Capacidad de Compra Real Estimada</h2>
+                    <p className="text-xs text-slate-500 mt-1 max-w-xl mx-auto">
+                      Hemos evaluado tus opciones en la región de {REGION_MAP[locationB]?.label} con una renta familiar líquida de ${(parseFloat(incomeCLPB) || 0).toLocaleString("es-CL")} CLP.
                     </p>
                   </div>
 
-                  {selectedSubsidyB === "ds1t4" && resultsB.originalSavingsUF < 200 && (
-                    <div className="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-xl text-xs leading-relaxed">
-                      <strong>⚠️ Ahorro Insuficiente:</strong> Tu ahorro ingresado es de <strong>{resultsB.originalSavingsUF.toFixed(0)} UF</strong>, pero el subsidio DS1 Tramo 4 exige un ahorro mínimo de <strong>200 UF</strong>. Hemos calculado tu capacidad asumiendo que alcanzarás la meta de ahorro (te falta ahorrar <strong>{(200 - resultsB.originalSavingsUF).toFixed(0)} UF</strong>, aprox. <strong>${Math.round((200 - resultsB.originalSavingsUF) * ufValue).toLocaleString("es-CL")} CLP</strong>).
-                    </div>
-                  )}
+                  <div className={`grid grid-cols-1 ${resultsB.length === 4 ? 'md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto' : resultsB.length === 3 ? 'lg:grid-cols-3' : resultsB.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' : 'max-w-xl mx-auto'} gap-6`}>
+                    {resultsB.map((card: any, idx: number) => {
+                      const isSavingsShort = card.minAhorro > 0 && (parseFloat(savingsUFB) || 0) < card.minAhorro;
+                      const missingUF = Math.max(0, card.minAhorro - (parseFloat(savingsUFB) || 0));
 
-                  {/* Desglose */}
-                  <div className="py-6 space-y-4 text-xs md:text-sm">
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide">
-                      Estructura del Presupuesto ({resultsB.subsidyName})
-                    </h3>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-slate-500 block">Tu Ahorro:</span>
-                        <strong className="text-slate-800 text-sm md:text-base">{resultsB.savingsUF.toFixed(0)} UF</strong>
-                        <span className="text-[10px] text-slate-400 block">($ {Math.round(resultsB.savingsUF * ufValue).toLocaleString("es-CL")})</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block">Aporte Subsidio Estatal:</span>
-                        <strong className="text-emerald-600 text-sm md:text-base">+{resultsB.subsidyUF.toFixed(0)} UF</strong>
-                        <span className="text-[10px] text-slate-400 block">($ {Math.round(resultsB.subsidyUF * ufValue).toLocaleString("es-CL")})</span>
-                      </div>
-                      <div className="col-span-2 pt-2 border-t border-slate-50">
-                        <span className="text-slate-500 block">Crédito Hipotecario Recomendado:</span>
-                        <strong className="text-blue-600 text-sm md:text-base">
-                          {selectedSubsidyB === "ds49" ? "No requiere deuda hipotecaria" : `${resultsB.loanUF.toFixed(0)} UF`}
-                        </strong>
-                        {selectedSubsidyB !== "ds49" && (
-                          <span className="text-[10px] text-slate-400 block">($ {Math.round(resultsB.loanUF * ufValue).toLocaleString("es-CL")} en {resultsB.bank})</span>
-                        )}
-                      </div>
-                    </div>
+                      return (
+                        <article 
+                          key={idx}
+                          className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-emerald-500 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between group"
+                        >
+                          <div>
+                            <span className="bg-emerald-50 text-emerald-700 text-[9px] font-bold py-1 px-2 rounded-full inline-block mb-3 border border-emerald-100">
+                              {card.badge}
+                            </span>
+                            
+                            <h3 className="text-base font-bold text-slate-900 mb-2 leading-tight">
+                              {card.title}
+                            </h3>
+                            
+                            <p className="text-xs text-slate-500 leading-relaxed mb-4 font-normal">
+                              {card.description}
+                            </p>
 
-                    {selectedSubsidyB !== "ds49" && resultsB.maxDividendUF > 0 && (
-                      <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex justify-between items-center text-xs mt-2">
-                        <span className="font-bold text-slate-500 uppercase">Dividendo Mensual Estimado:</span>
-                        <strong className="text-slate-900 text-sm md:text-base">
-                          {resultsB.maxDividendUF.toFixed(2)} UF 
-                          <span className="font-normal text-xs text-slate-400 ml-1">
-                            ($ {Math.round(resultsB.maxDividendUF * ufValue).toLocaleString("es-CL")})
-                          </span>
-                        </strong>
-                      </div>
-                    )}
+                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center mb-4">
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Valor Máximo de Compra</span>
+                              <strong className="text-2xl font-black text-slate-800 block">
+                                {card.maxHouseUF.toFixed(0)} UF
+                              </strong>
+                              <span className="text-xs font-bold text-emerald-600 block mt-0.5">
+                                ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
+                              </span>
+                            </div>
+
+                            <div className="space-y-1.5 border-t border-slate-100 pt-3 mb-4 text-xs">
+                              <div className="flex justify-between">
+                                <span className="text-slate-500">{isSavingsShort ? "Ahorro Mínimo:" : "Tu Ahorro:"}</span>
+                                <span className="font-bold text-slate-700">
+                                  {Math.max(card.minAhorro, parseFloat(savingsUFB) || 0).toFixed(0)} UF
+                                </span>
+                              </div>
+                              {card.subsidyUF > 0 && (
+                                <div className="flex justify-between">
+                                  <span className="text-slate-500">Aporte Estatal Subsidio:</span>
+                                  <span className="font-bold text-emerald-600">+{card.subsidyUF.toFixed(0)} UF</span>
+                                </div>
+                              )}
+                              <div className="flex justify-between">
+                                <span className="text-slate-500">Crédito Hipotecario:</span>
+                                <span className="font-bold text-blue-600">
+                                  {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
+                                </span>
+                              </div>
+                              {card.maxDividendUF > 0 && (
+                                <div className="flex justify-between pt-1.5 border-t border-slate-100/60 mt-1">
+                                  <span className="text-slate-500 font-medium">Dividendo Estimado:</span>
+                                  <span className="font-bold text-slate-900">
+                                    {card.maxDividendUF.toFixed(2)} UF ($ {Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")})
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {card.warning && (
+                              <div className="bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-lg text-[10px] leading-relaxed mb-4 text-left">
+                                {card.warning}
+                              </div>
+                            )}
+
+                            {card.info && (
+                              <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-2.5 rounded-lg text-[10px] leading-relaxed mb-4 text-left">
+                                {card.info}
+                              </div>
+                            )}
+                          </div>
+
+                          <Link 
+                            href={`/ofertas-inmobiliarias?${card.linkParams}`}
+                            className="w-full text-center py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
+                          >
+                            Buscar Ofertas Compatibles →
+                          </Link>
+                        </article>
+                      );
+                    })}
                   </div>
 
-                  {/* Botones de acción */}
-                  <div className="flex flex-col md:flex-row gap-3 pt-4 border-t border-slate-100">
-                    <Link
-                      href={`/ofertas-inmobiliarias?maxPrice=${Math.round(resultsB.maxHouseUF * ufValue)}&maxUF=${Math.round(resultsB.maxHouseUF)}&credit=${Math.round(resultsB.loanUF)}&origin=${selectedSubsidyB}&region=metropolitana`}
-                      className="flex-grow py-3.5 px-4 bg-[#87c0a3] hover:bg-[#76b092] text-slate-950 font-bold text-center text-xs md:text-sm rounded-xl transition-all shadow-sm"
-                    >
-                      Buscar Ofertas Compatibles
-                    </Link>
-
+                  <div className="flex justify-center gap-4 pt-4">
                     <Link 
                       href="/formulario"
-                      className="flex-grow py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-center text-xs md:text-sm rounded-xl transition-all shadow-sm"
+                      className="py-3 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition-all shadow-sm"
                     >
                       Evaluar mi Capacidad Gratis
                     </Link>
-                  </div>
-
-                  <div className="text-center pt-4">
                     <button
                       onClick={handleRestart}
-                      className="text-xs text-slate-400 hover:text-slate-600 font-medium underline transition-colors"
+                      className="py-3 px-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-lg transition-all"
                     >
                       Volver a simular con otros valores
                     </button>
                   </div>
-                </section>
+                </div>
               )}
 
             </div>

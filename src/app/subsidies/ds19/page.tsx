@@ -22,7 +22,7 @@ export default function DS19Page() {
   const [location, setLocation] = useState("regular"); // "regular" | "urbana_norte_stgo" | "sur_islas"
   const [propertyType, setPropertyType] = useState<"casa" | "depto">("depto");
   const [manualSubsidy, setManualSubsidy] = useState(""); // Para subsidios mínimos/variables
-  const [isDS15, setIsDS15] = useState(false);
+  const [isDS15, setIsDS15] = useState(true);
 
   // ESTA ES LA CONSTANTE CORREGIDA: Accesible para toda la página
   const isVariable = 
@@ -78,13 +78,17 @@ export default function DS19Page() {
       alert("Por favor, selecciona un banco adscrito.");
       return;
     }
-    if (sUF < 40) {
-      alert("Para proyectos DS19 se exige un ahorro mínimo de 40 UF.");
-      return;
-    }
-    if (isDS15 && sUF < 80) {
-      alert("Para activar el beneficio DS15 necesitas un ahorro de al menos 80 UF.");
-      return;
+    const esCupoVulnerable = subsidyType === "ds49" || (subsidyType === "ds1t1" && cupoType === "vulnerable");
+    if (esCupoVulnerable) {
+      if (sUF < 40) {
+        alert("Para postular al cupo vulnerable se exige un ahorro mínimo de 40 UF.");
+        return;
+      }
+    } else {
+      if (sUF < 80) {
+        alert("Para proyectos DS19 (Sectores Medios) se exige un ahorro mínimo de 80 UF (con beneficio DS15 aplicado automáticamente).");
+        return;
+      }
     }
 
     let maxLimit = 2600;
@@ -158,8 +162,8 @@ export default function DS19Page() {
     }
 
     // Aplicar beneficio DS15 (+100 UF si es sector medio)
-    const esCupoVulnerable = nombreTramoVisual.includes("Vulnerables");
-    if (isDS15 && esCupoVulnerable) {
+    const esCupoVulnerableFromTramo = nombreTramoVisual.includes("Vulnerables");
+    if (isDS15 && esCupoVulnerableFromTramo) {
       alert("El beneficio transitorio DS15 aplica exclusivamente a los tramos de Sectores Medios.");
       return;
     }
@@ -352,9 +356,9 @@ export default function DS19Page() {
               </label>
               
               <div className="pl-6">
-                <label className="flex items-center gap-2 text-sm font-bold text-blue-700 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded focus:ring-blue-500" checked={isDS15} onChange={(e) => setIsDS15(e.target.checked)} disabled={subsidyType === "ds49" || cupoType === "vulnerable"} /> 
-                  Recepción Municipal total hasta el 31/03/2024 (Aplica DS15: +100 UF Extra)
+                <label className="flex items-center gap-2 text-sm font-bold text-blue-700 cursor-not-allowed">
+                  <input type="checkbox" className="w-4 h-4 rounded" checked={true} disabled /> 
+                  Beneficio DS15 aplicado automáticamente: +100 UF Subsidio y rebaja de tasa (Mín. 80 UF de ahorro)
                 </label>
               </div>
 

@@ -16,7 +16,7 @@ export default function MaxValueDS19Page() {
   const [manualSubsidy, setManualSubsidy] = useState(""); // para subsidios variables
   const [bank, setBank] = useState("");
   const [loanTerm, setLoanTerm] = useState("25");
-  const [isDS15, setIsDS15] = useState(false);
+  const [isDS15, setIsDS15] = useState(true);
   const [isYoungSingle, setIsYoungSingle] = useState(false);
   const [ufValue, setUfValue] = useState(39200);
   const [results, setResults] = useState<any>(null);
@@ -87,20 +87,15 @@ export default function MaxValueDS19Page() {
       subsidyType === "ds49" || (subsidyType === "ds1t1" && cupoType === "vulnerable");
 
     if (esCupoVulnerable) {
-      if (savings < 10) {
-        alert("Para postular al cupo vulnerable se exige un ahorro mínimo de 10 UF.");
+      if (savings < 40) {
+        alert("Para postular al cupo vulnerable se exige un ahorro mínimo de 40 UF.");
         return;
       }
     } else {
-      if (savings < 40) {
-        alert("Para proyectos DS19 se exige un ahorro mínimo de 40 UF.");
+      if (savings < 80) {
+        alert("Para proyectos DS19 (Sectores Medios) se exige un ahorro mínimo de 80 UF.");
         return;
       }
-    }
-
-    if (isDS15 && savings < 80) {
-      alert("Para activar el beneficio DS15 necesitas un ahorro de al menos 80 UF.");
-      return;
     }
 
     if (!esCupoVulnerable && (!bank || !BANKS[bank])) {
@@ -451,15 +446,14 @@ export default function MaxValueDS19Page() {
               {subsidyType !== "ds49" && cupoType !== "vulnerable" && (
                 <>
                   <div className="pl-6">
-                    <label className="flex items-center gap-2 text-sm font-bold text-blue-700 cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm font-bold text-blue-700 cursor-not-allowed">
                       <input 
                         type="checkbox" 
                         className="w-4 h-4 rounded" 
-                        checked={isDS15} 
-                        onChange={(e) => setIsDS15(e.target.checked)} 
-                        disabled={parseFloat(savingsUF) < 80}
+                        checked={true} 
+                        disabled
                       /> 
-                      Recepción Municipal total al 31/03/2024 (Aplica DS15: +100 UF Subsidio y rebaja de tasa, mín. 80 UF de ahorro)
+                      Beneficio DS15 aplicado automáticamente: +100 UF Subsidio y rebaja de tasa (Mín. 80 UF de ahorro)
                     </label>
                   </div>
 

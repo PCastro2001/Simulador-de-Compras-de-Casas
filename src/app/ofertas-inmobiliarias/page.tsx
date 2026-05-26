@@ -210,6 +210,17 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
       }
     },
     { 
+      key: "coquimbo", 
+      label: "Coquimbo (Zona Urbana)",
+      enlaceSlug: "coquimbo",
+      portalSlug: "coquimbo-coquimbo",
+      toctoc: {
+        texto: "Coquimbo",
+        viewport: "-30.0400,-71.3900,-29.9300,-71.3100",
+        idPoligono: 2248
+      }
+    },
+    { 
       key: "ovalle", 
       label: "Ovalle (Otras Comunas)",
       enlaceSlug: "ovalle",
