@@ -318,7 +318,7 @@ export default function DS19Page() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Ahorro Neto (UF):</label>
                 <input type="number" required min="40" step="1" className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" value={savings} onChange={(e) => setSavings(e.target.value)} />
@@ -331,6 +331,16 @@ export default function DS19Page() {
                       const b = BANKS[key];
                       return <option key={key} value={key}>{b?.name || key} ({b?.tasaBase ? `${(b.tasaBase * 100).toFixed(2)}%` : 'Tasa Dinámica'})</option>;
                     })}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Plazo de Amortización:</label>
+                <select className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none" value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)}>
+                  <option value="10">10 años</option>
+                  <option value="15">15 años</option>
+                  <option value="20">20 años</option>
+                  <option value="25">25 años</option>
+                  <option value="30">30 años</option>
                 </select>
               </div>
             </div>

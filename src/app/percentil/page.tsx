@@ -4,11 +4,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchUFValue } from "@/utils/api";
+import { REGION_MAP } from "@/data/regions";
 
 export default function PercentilPage() {
   // Estados para el formulario
   const [income, setIncome] = useState<string>("");
   const [householdSize, setHouseholdSize] = useState<string>("");
+  const [region, setRegion] = useState<string>("metropolitana");
   const [ufValue, setUfValue] = useState<number>(38000);
   
   // Estados para los resultados
@@ -25,6 +27,50 @@ export default function PercentilPage() {
     }
     loadUF();
   }, []);
+
+  const getDS1Zone = (reg: string) => {
+    if (["arica-y-parinacota", "tarapaca", "antofagasta", "atacama"].includes(reg)) {
+      return "north";
+    }
+    if (["aysen", "magallanes"].includes(reg)) {
+      return "south";
+    }
+    return "none";
+  };
+
+  const isDS1T3Eligible = () => {
+    if (!result) return false;
+    const size = parseInt(householdSize) || 1;
+    const incomeNum = parseFloat(income) || 0;
+    const zone = getDS1Zone(region);
+    
+    // Si es del 90% o menos en RSH, cumple automáticamente
+    if (result.percentile <= 90) return true;
+    
+    // Si es > 90% en RSH, se aplican los límites oficiales de ingresos familiares por zona
+    const limitsNorthSouth = [2589712, 3386546, 3705280, 4204014];
+    const limitsRegular = [1992086, 2788921, 3107655, 3426388];
+    const limits = (zone === "north" || zone === "south") ? limitsNorthSouth : limitsRegular;
+    const idx = Math.min(size - 1, 3);
+    
+    return incomeNum <= limits[idx];
+  };
+
+  const isDS1T4Eligible = () => {
+    if (!result) return false;
+    const size = parseInt(householdSize) || 1;
+    const incomeNum = parseFloat(income) || 0;
+    
+    // Si es del 90% o menos en RSH, cumple automáticamente
+    if (result.percentile <= 90) return true;
+    
+    // Si es > 90% en RSH, el límite es 1.8 veces la Zona Regular del DS1 Tramo 3 (Todo Chile)
+    const limitsRegular = [1992086, 2788921, 3107655, 3426388];
+    const idx = Math.min(size - 1, 3);
+    const limit = limitsRegular[idx] * 1.8;
+    
+    return incomeNum <= limit;
+  };
 
   // Fórmulas matemáticas idénticas a tu JS original
   const calculatePercentile = (perCapitaIncome: number): number => {
@@ -124,6 +170,21 @@ export default function PercentilPage() {
               />
             </div>
 
+            <div className="form-group">
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">
+                Región de búsqueda/compra:
+              </label>
+              <select
+                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-[#6b9ac4] transition-all text-sm focus:ring-1 focus:ring-[#6b9ac4]/30"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+              >
+                {Object.keys(REGION_MAP).map((key) => (
+                  <option key={key} value={key}>{REGION_MAP[key].label}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="pt-2">
               <button
                 type="submit"
@@ -212,7 +273,7 @@ export default function PercentilPage() {
               )}
 
               {/* Lógica DS1 Tramo 3 */}
-              {result.percentile <= 100 && !(parseInt(householdSize) === 1 && parseFloat(income) > 1500000) && (
+              {result.percentile <= 100 && isDS1T3Eligible() && (
                 <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-[#6b9ac4] transition-all">
                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Sectores Medios</span>
                   <h4 className="text-base font-bold text-slate-900 mb-1">Subsidio DS1 — Tramo 3</h4>
@@ -222,7 +283,7 @@ export default function PercentilPage() {
               )}
 
               {/* Lógica DS1 Tramo 4 */}
-              {result.percentile <= 100 && !(parseInt(householdSize) === 1 && parseFloat(income) > 2300000) && (
+              {result.percentile <= 100 && isDS1T4Eligible() && (
                 <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-[#6b9ac4] transition-all">
                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Sectores Medios</span>
                   <h4 className="text-base font-bold text-slate-900 mb-1">Subsidio DS1 — Tramo 4</h4>
