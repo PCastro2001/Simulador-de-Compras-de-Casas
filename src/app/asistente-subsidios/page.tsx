@@ -134,6 +134,15 @@ export default function AsistenteSubsidiosPage() {
     setIncomeCLPA(rshIncome);
   }, [rshIncome]);
 
+  // Sincronizar integrantes de RSH si postula solo
+  useEffect(() => {
+    if (familyType === "solo") {
+      setRshMembers("1");
+    } else if (familyType === "familia" && rshMembers === "1") {
+      setRshMembers("3");
+    }
+  }, [familyType]);
+
   // Sincronizar comuna al cambiar de región en Perfil B
   useEffect(() => {
     const list = DS19_COMMUNES_PERIPHERAL[locationB];
@@ -1578,7 +1587,8 @@ export default function AsistenteSubsidiosPage() {
                         <input 
                           type="number" 
                           min="1" 
-                          className="w-full p-2.5 border border-slate-200 rounded-xl bg-white text-sm text-slate-800 focus:outline-none focus:border-[#6b9ac4]" 
+                          disabled={familyType === "solo"}
+                          className="w-full p-2.5 border border-slate-200 rounded-xl bg-white text-sm text-slate-800 focus:outline-none focus:border-[#6b9ac4] disabled:opacity-70 disabled:bg-slate-100 disabled:cursor-not-allowed" 
                           value={rshMembers} 
                           onChange={(e) => setRshMembers(e.target.value)} 
                         />
