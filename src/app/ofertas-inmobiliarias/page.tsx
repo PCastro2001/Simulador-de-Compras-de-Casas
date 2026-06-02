@@ -122,8 +122,8 @@ interface DS19Commune {
 
 const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
   "arica-y-parinacota": [
-    { 
-      key: "arica", 
+    {
+      key: "arica",
       label: "Arica",
       enlaceSlug: "arica",
       portalSlug: "arica-arica-y-parinacota",
@@ -136,8 +136,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "tarapaca": [
-    { 
-      key: "iquique", 
+    {
+      key: "iquique",
       label: "Iquique (Zona Urbana)",
       enlaceSlug: "iquique",
       portalSlug: "iquique-tarapaca",
@@ -148,8 +148,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         toctocPath: ""
       }
     },
-    { 
-      key: "alto-hospicio", 
+    {
+      key: "alto-hospicio",
       label: "Alto Hospicio (Otras Comunas)",
       enlaceSlug: "alto-hospicio",
       portalSlug: "alto-hospicio-tarapaca",
@@ -161,8 +161,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "antofagasta": [
-    { 
-      key: "antofagasta", 
+    {
+      key: "antofagasta",
       label: "Antofagasta (Zona Urbana)",
       enlaceSlug: "antofagasta",
       portalSlug: "antofagasta-antofagasta",
@@ -172,8 +172,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2250
       }
     },
-    { 
-      key: "calama", 
+    {
+      key: "calama",
       label: "Calama (Zona Urbana)",
       enlaceSlug: "calama",
       portalSlug: "calama-antofagasta",
@@ -185,8 +185,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "atacama": [
-    { 
-      key: "copiapo", 
+    {
+      key: "copiapo",
       label: "Copiapó (Zona Urbana)",
       enlaceSlug: "copiapo",
       portalSlug: "copiapo-atacama",
@@ -198,8 +198,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "coquimbo": [
-    { 
-      key: "la-serena", 
+    {
+      key: "la-serena",
       label: "La Serena (Otras Comunas)",
       enlaceSlug: "la-serena",
       portalSlug: "la-serena-coquimbo",
@@ -209,8 +209,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2248
       }
     },
-    { 
-      key: "coquimbo", 
+    {
+      key: "coquimbo",
       label: "Coquimbo (Zona Urbana)",
       enlaceSlug: "coquimbo",
       portalSlug: "coquimbo-coquimbo",
@@ -220,8 +220,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2248
       }
     },
-    { 
-      key: "ovalle", 
+    {
+      key: "ovalle",
       label: "Ovalle (Otras Comunas)",
       enlaceSlug: "ovalle",
       portalSlug: "ovalle-coquimbo",
@@ -233,8 +233,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "valparaiso": [
-    { 
-      key: "valparaiso", 
+    {
+      key: "valparaiso",
       label: "Valparaíso (Zona Urbana)",
       enlaceSlug: "valparaiso",
       portalSlug: "valparaiso-valparaiso",
@@ -244,8 +244,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "vina-del-mar", 
+    {
+      key: "vina-del-mar",
       label: "Viña del Mar (Zona Urbana)",
       enlaceSlug: "vina-del-mar",
       portalSlug: "vina-del-mar-valparaiso",
@@ -255,8 +255,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "quilpue", 
+    {
+      key: "quilpue",
       label: "Quilpué (Otras Comunas)",
       enlaceSlug: "quilpue",
       portalSlug: "quilpue-valparaiso",
@@ -266,8 +266,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "quillota", 
+    {
+      key: "quillota",
       label: "Quillota (Otras Comunas)",
       enlaceSlug: "quillota",
       portalSlug: "quillota-valparaiso",
@@ -277,8 +277,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "casablanca", 
+    {
+      key: "casablanca",
       label: "Casablanca (Otras Comunas)",
       enlaceSlug: "casablanca",
       portalSlug: "casablanca-valparaiso",
@@ -288,8 +288,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "villa-alemana", 
+    {
+      key: "villa-alemana",
       label: "Villa Alemana (Otras Comunas)",
       enlaceSlug: "villa-alemana",
       portalSlug: "villa-alemana-valparaiso",
@@ -299,8 +299,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "san-felipe", 
+    {
+      key: "san-felipe",
       label: "San Felipe (Otras Comunas)",
       enlaceSlug: "san-felipe",
       portalSlug: "san-felipe-valparaiso",
@@ -310,8 +310,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "limache", 
+    {
+      key: "limache",
       label: "Limache (Otras Comunas)",
       enlaceSlug: "limache",
       portalSlug: "limache-valparaiso",
@@ -321,8 +321,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "la-ligua", 
+    {
+      key: "la-ligua",
       label: "La Ligua (Otras Comunas)",
       enlaceSlug: "la-ligua",
       portalSlug: "la-ligua-valparaiso",
@@ -332,8 +332,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "los-andes", 
+    {
+      key: "los-andes",
       label: "Los Andes (Otras Comunas)",
       enlaceSlug: "los-andes",
       portalSlug: "los-andes-valparaiso",
@@ -343,8 +343,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "cartagena", 
+    {
+      key: "cartagena",
       label: "Cartagena (Otras Comunas)",
       enlaceSlug: "cartagena",
       portalSlug: "cartagena-valparaiso",
@@ -354,8 +354,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2247
       }
     },
-    { 
-      key: "el-tabo", 
+    {
+      key: "el-tabo",
       label: "El Tabo (Otras Comunas)",
       enlaceSlug: "el-tabo",
       portalSlug: "el-tabo-valparaiso",
@@ -367,8 +367,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "metropolitana": [
-    { 
-      key: "santiago", 
+    {
+      key: "santiago",
       label: "Gran Santiago (Provincia Urbana)",
       enlaceSlug: "",
       portalSlug: "santiago-metropolitana",
@@ -378,8 +378,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2240
       }
     },
-    { 
-      key: "melipilla", 
+    {
+      key: "melipilla",
       label: "Melipilla (Otras Comunas)",
       enlaceSlug: "melipilla",
       portalSlug: "melipilla-metropolitana",
@@ -389,8 +389,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2240
       }
     },
-    { 
-      key: "padre-hurtado", 
+    {
+      key: "padre-hurtado",
       label: "Padre Hurtado (Otras Comunas)",
       enlaceSlug: "padre-hurtado",
       portalSlug: "padre-hurtado-metropolitana",
@@ -400,8 +400,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2240
       }
     },
-    { 
-      key: "el-monte", 
+    {
+      key: "el-monte",
       label: "El Monte (Otras Comunas)",
       enlaceSlug: "el-monte",
       portalSlug: "el-monte-metropolitana",
@@ -411,8 +411,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2240
       }
     },
-    { 
-      key: "lampa", 
+    {
+      key: "lampa",
       label: "Lampa (Otras Comunas)",
       enlaceSlug: "lampa",
       portalSlug: "lampa-metropolitana",
@@ -422,8 +422,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2240
       }
     },
-    { 
-      key: "colina", 
+    {
+      key: "colina",
       label: "Colina (Otras Comunas)",
       enlaceSlug: "colina",
       portalSlug: "colina-metropolitana",
@@ -433,8 +433,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2240
       }
     },
-    { 
-      key: "batuco", 
+    {
+      key: "batuco",
       label: "Batuco (Otras Comunas)",
       enlaceSlug: "lampa",
       portalSlug: "batuco-lampa-metropolitana",
@@ -446,8 +446,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "biobio": [
-    { 
-      key: "concepcion", 
+    {
+      key: "concepcion",
       label: "Concepción (Zona Urbana)",
       enlaceSlug: "concepcion",
       portalSlug: "concepcion-biobio",
@@ -457,8 +457,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2252
       }
     },
-    { 
-      key: "los-angeles", 
+    {
+      key: "los-angeles",
       label: "Los Ángeles (Zona Urbana)",
       enlaceSlug: "los-angeles",
       portalSlug: "los-angeles-biobio",
@@ -468,8 +468,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2252
       }
     },
-    { 
-      key: "penco", 
+    {
+      key: "penco",
       label: "Penco (Otras Comunas)",
       enlaceSlug: "penco",
       portalSlug: "penco-biobio",
@@ -479,8 +479,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2252
       }
     },
-    { 
-      key: "san-pedro-de-la-paz", 
+    {
+      key: "san-pedro-de-la-paz",
       label: "San Pedro de la Paz (Otras Comunas)",
       enlaceSlug: "san-pedro-de-la-paz",
       portalSlug: "san-pedro-de-la-paz-biobio",
@@ -490,8 +490,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2252
       }
     },
-    { 
-      key: "chiguayante", 
+    {
+      key: "chiguayante",
       label: "Chiguayante (Otras Comunas)",
       enlaceSlug: "chiguayante",
       portalSlug: "chiguayante-biobio",
@@ -501,8 +501,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2252
       }
     },
-    { 
-      key: "curanilahue", 
+    {
+      key: "curanilahue",
       label: "Curanilahue (Otras Comunas)",
       enlaceSlug: "curanilahue",
       portalSlug: "curanilahue-biobio",
@@ -512,8 +512,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
         idPoligono: 2252
       }
     },
-    { 
-      key: "talcahuano", 
+    {
+      key: "talcahuano",
       label: "Talcahuano (Otras Comunas)",
       enlaceSlug: "talcahuano",
       portalSlug: "talcahuano-biobio",
@@ -525,8 +525,8 @@ const DS19_COMMUNES_BY_REGION: Record<string, DS19Commune[]> = {
     }
   ],
   "los-lagos": [
-    { 
-      key: "castro", 
+    {
+      key: "castro",
       label: "Chiloé - Castro (Zona Urbana)",
       enlaceSlug: "castro",
       portalSlug: "castro-los-lagos",
@@ -589,12 +589,12 @@ function OffersContent() {
   // Links generados
   const [links, setLinks] = useState<any>(null);
 
-  // Ejecutar generación automática al cargar con los parámetros de la URL o al cambiar comuna
+  // Ejecutar generación automática al cargar con los parámetros de la URL o al cambiar comuna/filtros
   useEffect(() => {
     if (maxPriceParam > 0) {
       generateLinks();
     }
-  }, [maxPriceParam, selectedCommuneKey]);
+  }, [maxPriceParam, selectedCommuneKey, region, adults, children, propertyCondition, propertyType]);
 
   const handleGenerate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -645,11 +645,14 @@ function OffersContent() {
     }
 
     // 1. URL TOC TOC
-    const ttState = propertyCondition === "nuevas" ? "&estado=1" : propertyCondition === "usadas" ? "&estado=0" : "&estado=2";
+    const ttState = propertyCondition === "nuevas" ? "&estado=1" : propertyCondition === "usadas" ? "&estado=2" : "&estado=0";
     const ttPropType = propertyType === "casa" ? "casa" : propertyType === "departamento" ? "departamento" : "departamento-casa";
     const ttMoneda = maxUFParam > 0 ? "2" : "1";
     const ttPrecioHasta = maxUFParam > 0 ? maxUFParam : maxPriceParam;
-    const ttPrecioDesde = maxUFParam > 0 ? "0" : "25000000";
+
+    // Calcular el valor de la UF para poner como límite mínimo 20 millones de pesos en UF si corresponde
+    const calculatedUf = (maxUFParam > 0 && maxPriceParam > 0) ? (maxPriceParam / maxUFParam) : 37700;
+    const ttPrecioDesde = maxUFParam > 0 ? Math.round(20000000 / calculatedUf).toString() : "20000000";
 
     // Construcción del path de toctoc personalizado si aplica
     let ttPath = tt;
@@ -657,22 +660,29 @@ function OffersContent() {
       ttPath = toctocCustomPath;
     }
 
-    const toctocUrl = ttPath 
-      ? `https://www.toctoc.com/resultados/mapa/compra/${ttPropType}/${ttPath}/?moneda=${ttMoneda}&precioDesde=${ttPrecioDesde}&precioHasta=${ttPrecioHasta}&dormitoriosDesde=${bedrooms}&banosDesde=1${ttState}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`
-      : `https://www.toctoc.com/resultados/mapa/compra/${ttPropType}/?moneda=${ttMoneda}&precioDesde=${ttPrecioDesde}&precioHasta=${ttPrecioHasta}&dormitoriosDesde=${bedrooms}&banosDesde=1${ttState}&disponibilidadEntrega=&numeroDeDiasTocToc=0&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`;
+    const toctocUrl = ttPath
+      ? `https://www.toctoc.com/resultados/mapa/compra/${ttPropType}/${ttPath}/?moneda=${ttMoneda}&precioDesde=${ttPrecioDesde}&precioHasta=${ttPrecioHasta}&dormitoriosDesde=${bedrooms}&dormitoriosHasta=&banosDesde=1&banosHasta=0${ttState}&disponibilidadEntrega=&numeroDeDiasTocToc=&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`
+      : `https://www.toctoc.com/resultados/mapa/compra/${ttPropType}/?moneda=${ttMoneda}&precioDesde=${ttPrecioDesde}&precioHasta=${ttPrecioHasta}&dormitoriosDesde=${bedrooms}&dormitoriosHasta=&banosDesde=1&banosHasta=0${ttState}&disponibilidadEntrega=&numeroDeDiasTocToc=&superficieDesdeUtil=0&superficieHastaUtil=0&superficieDesdeConstruida=0&superficieHastaConstruida=0&superficieDesdeTerraza=0&superficieHastaTerraza=0&superficieDesdeTerreno=0&superficieHastaTerreno=0&ordenarPor=0&pagina=1&paginaInterna=1&zoom=15&idZonaHomogenea=0&atributos=&texto=${text}&viewport=${viewport}&idPoligono=${polygon}&publicador=0&temporalidad=0`;
 
-    // 2. URL Portal Inmobiliario
-    const conditionPath = propertyCondition === "nuevas" ? "/proyectos" : propertyCondition === "usadas" ? "/propiedades-usadas" : "";
-    const portalDeptoUrl = `https://www.portalinmobiliario.com/venta/departamento${conditionPath}/${pi}/_DisplayType_M_PriceRange_30000000CLP-${maxPriceParam}CLP`;
-    const portalCasaUrl = `https://www.portalinmobiliario.com/venta/casa${conditionPath}/${pi}/_DisplayType_M_PriceRange_25000000CLP-${maxPriceParam}CLP_BEDROOMS_${bedrooms}-*`;
+    // 2. URL Portal Inmobiliario (Separado por nuevos, usados y cualquiera con mínimo de 20 millones)
+    const portalDeptoNuevosUrl = `https://www.portalinmobiliario.com/venta/departamento/proyectos/${pi}/_DisplayType_M_PriceRange_20000000CLP-${maxPriceParam}CLP`;
+    const portalDeptoUsadosUrl = `https://www.portalinmobiliario.com/venta/departamento/propiedades-usadas/${pi}/_DisplayType_M_PriceRange_20000000CLP-${maxPriceParam}CLP`;
+    const portalDeptoCualquieraUrl = `https://www.portalinmobiliario.com/venta/departamento/${pi}/_DisplayType_M_PriceRange_20000000CLP-${maxPriceParam}CLP`;
 
-    // 3. URL Enlace Inmobiliario
+    const portalCasaNuevosUrl = `https://www.portalinmobiliario.com/venta/casa/proyectos/${pi}/_DisplayType_M_PriceRange_20000000CLP-${maxPriceParam}CLP_BEDROOMS_${bedrooms}-*`;
+    const portalCasaUsadosUrl = `https://www.portalinmobiliario.com/venta/casa/propiedades-usadas/${pi}/_DisplayType_M_PriceRange_20000000CLP-${maxPriceParam}CLP_BEDROOMS_${bedrooms}-*`;
+    const portalCasaCualquieraUrl = `https://www.portalinmobiliario.com/venta/casa/${pi}/_DisplayType_M_PriceRange_20000000CLP-${maxPriceParam}CLP_BEDROOMS_${bedrooms}-*`;
+
+    // 3. URL Enlace Inmobiliario (6 opciones potenciales)
     let enlaceUrlNuevas = "";
     let enlaceUrlUsadas = "";
+    let enlaceUrlDeptosNuevos = "";
+    let enlaceUrlDeptosUsados = "";
+    let enlaceUrlCasasNuevos = "";
+    let enlaceUrlCasasUsados = "";
+
     if (activeEnlaceBase) {
       const uf = maxUFParam || 2200;
-      const propTypeSegment = propertyType === "ambos" ? "todas" : propertyType === "casa" ? "casa" : "departamento";
-
       let subsidySegment = "";
       if (originParam === "ds1t2") {
         subsidySegment = "subsidio-ds1-tramo-2+subsidio-ds1-hasta-3000-uf";
@@ -690,13 +700,22 @@ function OffersContent() {
         }
       }
 
-      if (originParam === "ds1t4") {
-        enlaceUrlNuevas = `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/banos/entrega/disponibilidad/nuevos/`;
-      } else if (subsidySegment) {
-        enlaceUrlNuevas = `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/${subsidySegment}/banos/entrega/disponibilidad/nuevos/`;
-      }
+      const buildEnlaceUrl = (type: string, isNew: boolean) => {
+        if (isNew) {
+          const activeSubsidy = subsidySegment || "subsidios";
+          return `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${type}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/${activeSubsidy}/banos/entrega/disponibilidad/nuevos/`;
+        } else {
+          return `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${type}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/banos/entrega/disponibilidad/usados/`;
+        }
+      };
 
-      enlaceUrlUsadas = `https://www.enlaceinmobiliario.cl/${activeEnlaceBase}/propiedades/${propTypeSegment}/SD0-SH0/UFD0-UFH${uf}/${bedroomSlug}/banos/entrega/disponibilidad/usados/`;
+      const propTypeSegment = propertyType === "ambos" ? "todas" : propertyType === "casa" ? "casa" : "departamento";
+      enlaceUrlNuevas = buildEnlaceUrl(propTypeSegment, true);
+      enlaceUrlUsadas = buildEnlaceUrl(propTypeSegment, false);
+      enlaceUrlDeptosNuevos = buildEnlaceUrl("departamento", true);
+      enlaceUrlDeptosUsados = buildEnlaceUrl("departamento", false);
+      enlaceUrlCasasNuevos = buildEnlaceUrl("casa", true);
+      enlaceUrlCasasUsados = buildEnlaceUrl("casa", false);
     }
 
     let ds19Url = "";
@@ -708,10 +727,18 @@ function OffersContent() {
 
     setLinks({
       toctocUrl,
-      portalDeptoUrl,
-      portalCasaUrl,
+      portalDeptoNuevosUrl,
+      portalDeptoUsadosUrl,
+      portalDeptoCualquieraUrl,
+      portalCasaNuevosUrl,
+      portalCasaUsadosUrl,
+      portalCasaCualquieraUrl,
       enlaceUrlNuevas,
       enlaceUrlUsadas,
+      enlaceUrlDeptosNuevos,
+      enlaceUrlDeptosUsados,
+      enlaceUrlCasasNuevos,
+      enlaceUrlCasasUsados,
       ds19Url,
       bedrooms,
       totalPeople
@@ -858,86 +885,170 @@ function OffersContent() {
                 <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Abrir en TocToc →</span>
               </a>
 
-              {/* Si la condición es solo nuevas, mostramos el enlace de nuevas */}
-              {propertyCondition === "nuevas" && links.enlaceUrlNuevas && (
+              {/* Enlace Inmobiliario - Nuevas */}
+              {propertyType === "ambos" && (propertyCondition === "nuevas" || propertyCondition === "ambas") && links.enlaceUrlNuevas && (
                 <a
                   href={links.enlaceUrlNuevas}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
                 >
-                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario (Nuevos)</strong>
+                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario - Nuevas (Proyectos)</strong>
                   <span className="text-xs text-slate-500 block">Proyectos nuevos filtrados con financiamiento de subsidio {originParam?.toUpperCase() || "General"}.</span>
                   <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver proyectos nuevos →</span>
                 </a>
               )}
 
-              {/* Si la condición es solo usadas, mostramos el enlace de usadas */}
-              {propertyCondition === "usadas" && links.enlaceUrlUsadas && (
+              {/* Enlace Inmobiliario - Usadas */}
+              {propertyType === "ambos" && (propertyCondition === "usadas" || propertyCondition === "ambas") && links.enlaceUrlUsadas && (
                 <a
                   href={links.enlaceUrlUsadas}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
                 >
-                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario (Usados)</strong>
+                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario - Usadas</strong>
                   <span className="text-xs text-slate-500 block">Propiedades usadas filtradas según tu presupuesto.</span>
                   <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver propiedades usadas →</span>
                 </a>
               )}
 
-              {/* Si la condición es ambas, mostramos dos enlaces distintos */}
-              {propertyCondition === "ambas" && (
-                <>
-                  {links.enlaceUrlNuevas && (
-                    <a
-                      href={links.enlaceUrlNuevas}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
-                    >
-                      <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario (Nuevos)</strong>
-                      <span className="text-xs text-slate-500 block">Proyectos nuevos filtrados con financiamiento de subsidio {originParam?.toUpperCase() || "General"}.</span>
-                      <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver proyectos nuevos →</span>
-                    </a>
-                  )}
-                  {links.enlaceUrlUsadas && (
-                    <a
-                      href={links.enlaceUrlUsadas}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
-                    >
-                      <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario (Usados)</strong>
-                      <span className="text-xs text-slate-500 block">Propiedades usadas filtradas según tu presupuesto.</span>
-                      <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver propiedades usadas →</span>
-                    </a>
-                  )}
-                </>
+              {/* Enlace Inmobiliario - Departamentos (Nuevos) */}
+              {propertyType === "departamento" && (propertyCondition === "nuevas" || propertyCondition === "ambas") && links.enlaceUrlDeptosNuevos && (
+                <a
+                  href={links.enlaceUrlDeptosNuevos}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
+                >
+                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario - Departamentos (Nuevos)</strong>
+                  <span className="text-xs text-slate-500 block">Proyectos de departamentos nuevos según tu presupuesto.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver departamentos nuevos →</span>
+                </a>
               )}
 
-              {propertyType !== 'casa' && (
+              {/* Enlace Inmobiliario - Departamentos (Usados) */}
+              {propertyType === "departamento" && (propertyCondition === "usadas" || propertyCondition === "ambas") && links.enlaceUrlDeptosUsados && (
                 <a
-                  href={links.portalDeptoUrl}
+                  href={links.enlaceUrlDeptosUsados}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
+                >
+                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario - Departamentos (Usados)</strong>
+                  <span className="text-xs text-slate-500 block">Departamentos usados filtrados según tu presupuesto.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver departamentos usados →</span>
+                </a>
+              )}
+
+              {/* Enlace Inmobiliario - Casas (Nuevas) */}
+              {propertyType === "casa" && (propertyCondition === "nuevas" || propertyCondition === "ambas") && links.enlaceUrlCasasNuevos && (
+                <a
+                  href={links.enlaceUrlCasasNuevos}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
+                >
+                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario - Casas (Nuevas)</strong>
+                  <span className="text-xs text-slate-500 block">Proyectos de casas nuevas con mínimo {links.bedrooms} dorms.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver casas nuevas →</span>
+                </a>
+              )}
+
+              {/* Enlace Inmobiliario - Casas (Usadas) */}
+              {propertyType === "casa" && (propertyCondition === "usadas" || propertyCondition === "ambas") && links.enlaceUrlCasasUsados && (
+                <a
+                  href={links.enlaceUrlCasasUsados}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50/40 transition-all block group"
+                >
+                  <strong className="text-blue-900 text-sm block mb-1">Enlace Inmobiliario - Casas (Usadas)</strong>
+                  <span className="text-xs text-slate-500 block">Casas usadas con mínimo {links.bedrooms} dorms.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Ver casas usadas →</span>
+                </a>
+              )}
+
+              {/* Portal Inmobiliario - Deptos (Nuevos) */}
+              {propertyType !== "casa" && propertyCondition === "nuevas" && links.portalDeptoNuevosUrl && (
+                <a
+                  href={links.portalDeptoNuevosUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 hover:border-[#6b9ac4] hover:bg-slate-50/50 transition-all block group"
+                >
+                  <strong className="text-slate-800 text-sm block mb-1">PortalInmobiliario - Deptos (Nuevos)</strong>
+                  <span className="text-xs text-slate-500 block">Buscar proyectos de departamentos nuevos en PortalInmobiliario.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Abrir PortalInmobiliario →</span>
+                </a>
+              )}
+
+              {/* Portal Inmobiliario - Deptos (Usados) */}
+              {propertyType !== "casa" && propertyCondition === "usadas" && links.portalDeptoUsadosUrl && (
+                <a
+                  href={links.portalDeptoUsadosUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 hover:border-[#6b9ac4] hover:bg-slate-50/50 transition-all block group"
+                >
+                  <strong className="text-slate-800 text-sm block mb-1">PortalInmobiliario - Deptos (Usados)</strong>
+                  <span className="text-xs text-slate-500 block">Buscar departamentos usados desde 20 millones en PortalInmobiliario.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Abrir PortalInmobiliario →</span>
+                </a>
+              )}
+
+              {/* Portal Inmobiliario - Deptos (Cualquiera) */}
+              {propertyType !== "casa" && propertyCondition === "ambas" && links.portalDeptoCualquieraUrl && (
+                <a
+                  href={links.portalDeptoCualquieraUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-4 rounded-xl border border-slate-200 hover:border-[#6b9ac4] hover:bg-slate-50/50 transition-all block group"
                 >
                   <strong className="text-slate-800 text-sm block mb-1">PortalInmobiliario - Deptos</strong>
-                  <span className="text-xs text-slate-500 block">Buscar departamentos según tu presupuesto en PortalInmobiliario.</span>
+                  <span className="text-xs text-slate-500 block">Buscar departamentos (nuevos y usados) en PortalInmobiliario.</span>
                   <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Abrir PortalInmobiliario →</span>
                 </a>
               )}
 
-              {propertyType !== 'departamento' && (
+              {/* Portal Inmobiliario - Casas (Nuevos) */}
+              {propertyType !== "departamento" && propertyCondition === "nuevas" && links.portalCasaNuevosUrl && (
                 <a
-                  href={links.portalCasaUrl}
+                  href={links.portalCasaNuevosUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 hover:border-[#6b9ac4] hover:bg-slate-50/50 transition-all block group"
+                >
+                  <strong className="text-slate-800 text-sm block mb-1">PortalInmobiliario - Casas (Nuevos)</strong>
+                  <span className="text-xs text-slate-500 block">Buscar proyectos de casas nuevas en PortalInmobiliario.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Abrir PortalInmobiliario →</span>
+                </a>
+              )}
+
+              {/* Portal Inmobiliario - Casas (Usados) */}
+              {propertyType !== "departamento" && propertyCondition === "usadas" && links.portalCasaUsadosUrl && (
+                <a
+                  href={links.portalCasaUsadosUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 hover:border-[#6b9ac4] hover:bg-slate-50/50 transition-all block group"
+                >
+                  <strong className="text-slate-800 text-sm block mb-1">PortalInmobiliario - Casas (Usados)</strong>
+                  <span className="text-xs text-slate-500 block">Buscar casas usadas con mínimo {links.bedrooms} dorms en PortalInmobiliario.</span>
+                  <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Abrir PortalInmobiliario →</span>
+                </a>
+              )}
+
+              {/* Portal Inmobiliario - Casas (Cualquiera) */}
+              {propertyType !== "departamento" && propertyCondition === "ambas" && links.portalCasaCualquieraUrl && (
+                <a
+                  href={links.portalCasaCualquieraUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-4 rounded-xl border border-slate-200 hover:border-[#6b9ac4] hover:bg-slate-50/50 transition-all block group"
                 >
                   <strong className="text-slate-800 text-sm block mb-1">PortalInmobiliario - Casas</strong>
-                  <span className="text-xs text-slate-500 block">Buscar casas con mínimo {links.bedrooms} dorms.</span>
+                  <span className="text-xs text-slate-500 block">Buscar casas (nuevas y usadas) con mínimo {links.bedrooms} dorms en PortalInmobiliario.</span>
                   <span className="text-xs text-blue-600 font-semibold mt-3 block group-hover:underline">Abrir PortalInmobiliario →</span>
                 </a>
               )}
