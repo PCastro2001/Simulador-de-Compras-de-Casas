@@ -96,6 +96,7 @@ export default function AsistenteSubsidiosPage() {
   const [loanTermA, setLoanTermA] = useState<string>("25");
   const [isYoungSingleA, setIsYoungSingleA] = useState<boolean>(false);
   const [selectedBankA, setSelectedBankA] = useState<string>("BancoEstado");
+  const [filterCategoryA, setFilterCategoryA] = useState<"todos" | "subsidio" | "nueva" | "usada">("todos");
 
   // --- Estados de Perfil B (Simulación Avanzada) ---
   const [incomeCLPB, setIncomeCLPB] = useState<string>("");
@@ -110,6 +111,7 @@ export default function AsistenteSubsidiosPage() {
   const [locationB, setLocationB] = useState<string>("metropolitana");
   const [selectedCommuneB, setSelectedCommuneB] = useState<string>("");
   const [resultsB, setResultsB] = useState<any>(null);
+  const [filterCategoryB, setFilterCategoryB] = useState<"todos" | "subsidio" | "nueva" | "usada">("todos");
 
   // Inicializar la UF y detectar perfil desde la URL
   useEffect(() => {
@@ -392,7 +394,7 @@ export default function AsistenteSubsidiosPage() {
     const incomeMultiplier = isYoungSingle ? 3 : 4;
     const maxMonthlyPaymentUF = (income / ufValue) / incomeMultiplier;
 
-    // Calcular tasa bancaria
+    // Tasa bancaria
     const tasaOriginal = bankData.calcularTasa ? bankData.calcularTasa(1000, term) : (bankData.tasaBase || 0.045);
     const descuento = bankData.descuentoDS15 || 0.009;
     const tasaDS15 = tasaOriginal - descuento;
@@ -413,6 +415,7 @@ export default function AsistenteSubsidiosPage() {
     const ds19Zone = getDS19LocationZone(regionA);
 
     const hhSize = familyType === "solo" ? 1 : (parseInt(rshMembers) || 3);
+    const rshNum = parseInt(rshTramo) || 100;
 
     const checkDS1T3IncomeLimit = (inc: number, sz: number, loc: string) => {
       const limitsNorthSouth = [2589712, 3386546, 3705280, 4204014];
@@ -433,7 +436,7 @@ export default function AsistenteSubsidiosPage() {
 
     const cards: any[] = [];
 
-    // --- PARÁMETROS GEOGRÁFICOS DS19 ---
+    // Topes y subsidios geográficos DS19
     const capVul = ds19Zone === "sur_islas" ? 2000 : 1550;
     const subVul = ds19Zone === "sur_islas" ? 1700 : (ds19Zone === "urbana_norte_stgo" ? 1250 : 1150);
 
@@ -443,352 +446,313 @@ export default function AsistenteSubsidiosPage() {
     const capUrban = ds19Zone === "sur_islas" ? 3000 : (ds19Zone === "urbana_norte_stgo" ? 2800 : 2600);
     const subUrban = (ds19Zone === "sur_islas" ? 500 : 350) + 100;
 
-    // --- OPCIÓN FALLBACK: SIN SUBSIDIO ---
-    const maxHouseFogaesWithDiscount = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
-    const maxHouseFogaesNormal = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
-    const maxHouseFogaes = Math.max(maxHouseFogaesWithDiscount, maxHouseFogaesNormal);
-    const loanFogaes = Math.max(0, maxHouseFogaes - savings);
-    const aplicaLeyFogaes = maxHouseFogaes < 4000;
-    
-    const maxLoanFogaesLimit = aplicaLeyFogaes ? maxLoanUFDS15 : maxLoanUFNormal;
-    const maxHouseFogaesByIncome = maxLoanFogaesLimit / 0.9;
-    let avisoFogaes = "";
-    if (maxHouseFogaes < Math.min(4500, maxHouseFogaesByIncome)) {
-      const targetUF = Math.min(4500, maxHouseFogaesByIncome);
-      const neededSavings = targetUF * 0.10;
-      avisoFogaes = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad nueva de hasta ${targetUF.toFixed(0)} UF.`;
-    }
-
-    const maxHouseUsada = Math.min(savings / 0.20, maxLoanUFNormal + savings);
-    const loanUsada = Math.max(0, maxHouseUsada - savings);
-    const maxHouseUsadaByIncome = maxLoanUFNormal / 0.8;
-    let avisoUsada = "";
-    if (maxHouseUsada < maxHouseUsadaByIncome) {
-      const targetUF = maxHouseUsadaByIncome;
-      const neededSavings = targetUF * 0.20;
-      avisoUsada = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad usada de hasta ${targetUF.toFixed(0)} UF.`;
-    }
-
-    const cardSinSubsidio = {
-      id: "sin-subsidio",
-      subsidyKey: "none",
-      badge: "Compra Directa - Financiamiento Privado",
-      title: "Crédito Hipotecario sin Subsidio",
-      description: "Compra cualquier vivienda en el mercado inmobiliario general. Obtén financiamiento privado adaptado al estado de la vivienda.",
-      hasFogaesOption: true,
-      fogaesInfo: {
-        maxHouseUF: maxHouseFogaes,
-        loanUF: loanFogaes,
-        piePercentage: 10,
-        aplicaLey: aplicaLeyFogaes,
-        aviso: avisoFogaes
-      },
-      normalInfo: {
-        maxHouseUF: maxHouseUsada,
-        loanUF: loanUsada,
-        piePercentage: 20,
-        aplicaLey: false,
-        aviso: avisoUsada
-      }
-    };
-
-    // --- LÓGICA DE RECOMMENDACIONES POR TRAMOS ---
-
-    // 1. RHS < 40% (tramo "40")
-    if (rshTramo === "40") {
-      // DS49 (Usadas)
+    // --- OPCIÓN 1: DS49 (Fondo Solidario) ---
+    if (rshNum <= 40) {
       const extraAhorro = savings - 10;
       const incentive = savings >= 60 ? 250 : (extraAhorro > 0 ? 5 * extraAhorro : 0);
-      const subsidyDS49 = 800 + 100 + incentive; // Asumimos urbano por defecto en Perfil A
+      const subsidyDS49 = 800 + 100 + incentive;
       const maxHouseDS49 = Math.min(savings + subsidyDS49, 1300);
+
       cards.push({
         id: "ds49",
         subsidyKey: "ds49",
-        badge: "Vivienda Nueva o Usada - Postulación MINVU",
-        title: "Subsidio DS49 (Fondo Solidario)",
-        description: "Postulación para comprar casa sin crédito hipotecario. Orientado a familias del 40% RSH.",
+        badge: "Vivienda Social - Postulación MINVU",
+        title: "Subsidio DS49 (Fondo Solidario de Elección de Vivienda)",
+        description: "Adquisición de vivienda social sin necesidad de crédito hipotecario. Dirigido a familias del 40% RSH.",
         maxHouseUF: maxHouseDS49,
         loanUF: 0,
         savingsUF: savings,
         subsidyUF: subsidyDS49,
         minAhorro: 10,
-        hasDS15Option: false
+        maxDividendUF: 0,
+        category: "subsidio",
+        isNew: false,
+        linkParams: `maxPrice=${Math.round(maxHouseDS49 * ufValue)}&maxUF=${Math.round(maxHouseDS49)}&credit=0&origin=ds49&region=${regionA}`
       });
+    }
 
-      // DS19 Homologado en DS49 para nuevas
-      const maxHouseDS19 = Math.min(savings + subVul, capVul);
+    // --- OPCIÓN 2: DS19 Cupo Vulnerable ---
+    if (rshNum <= 60) {
+      const maxHouseDS19Vul = Math.min(savings + subVul, capVul);
       cards.push({
         id: "ds19-vulnerable",
         subsidyKey: "ds19",
         cupoType: "vulnerable",
         badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
-        title: "Subsidio DS19 (Cupo Vulnerable - Homologado)",
-        description: "Permite comprar sin crédito hipotecario una vivienda nueva en proyectos con convenio DS19.",
-        maxHouseUF: maxHouseDS19,
+        title: "Subsidio DS19 (Cupo Vulnerable / Integración Social)",
+        description: "Permite comprar sin crédito hipotecario una vivienda nueva en proyectos seleccionados con convenio DS19.",
+        maxHouseUF: maxHouseDS19Vul,
         loanUF: 0,
         savingsUF: savings,
         subsidyUF: subVul,
         minAhorro: 40,
-        hasDS15Option: false
+        maxDividendUF: 0,
+        category: "subsidio",
+        isNew: true,
+        linkParams: `maxPrice=${Math.round(maxHouseDS19Vul * ufValue)}&maxUF=${Math.round(maxHouseDS19Vul)}&credit=0&origin=ds19&region=${regionA}&cupoType=vulnerable`
       });
-
-      // Sin Subsidio
-      cards.push(cardSinSubsidio);
     }
 
-    // 2. RHS 40 - 60% (tramo "60")
-    else if (rshTramo === "60") {
-      // DS1 T1 (Usados)
+    // --- OPCIÓN 3: DS1 Tramo 1 ---
+    if (rshNum <= 60) {
       const capT1 = ds1Zone === "north" ? 1200 : (ds1Zone === "south" ? 1250 : 1100);
       const subT1 = ds1Zone === "north" ? 700 : (ds1Zone === "south" ? 750 : 600);
       const maxHouseT1 = Math.min(maxLoanUFNormal + savings + subT1, capT1);
       const loanT1 = Math.max(0, maxHouseT1 - savings - subT1);
+      const dividendT1 = loanT1 > 0 ? (loanT1 * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+
       cards.push({
         id: "ds1t1",
         subsidyKey: "ds1t1",
-        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
+        badge: "Vivienda Nueva/Usada - MINVU",
         title: "Subsidio DS1 Tramo 1",
-        description: "Para familias hasta el 60% RSH. Requiere un crédito bancario pequeño o pago al contado.",
+        description: "Para familias hasta el 60% RSH. Requiere un crédito bancario pequeño o pago al contado de la diferencia.",
         maxHouseUF: maxHouseT1,
         loanUF: loanT1,
         savingsUF: savings,
         subsidyUF: subT1,
         minAhorro: 30,
-        hasDS15Option: false
+        maxDividendUF: dividendT1,
+        category: "subsidio",
+        isNew: false,
+        linkParams: `maxPrice=${Math.round(maxHouseT1 * ufValue)}&maxUF=${Math.round(maxHouseT1)}&credit=${Math.round(loanT1)}&origin=ds1t1&region=${regionA}`
       });
-
-      // DS19 Homologado en DS1 T1 para nuevos
-      const maxHouseRural = Math.min(maxLoanUFDS15 + savings + subRural, capRural);
-      const loanRural = Math.max(0, maxHouseRural - savings - subRural);
-
-      const maxHouseVul = Math.min(savings + subVul, capVul);
-
-      cards.push({
-        id: "ds19-homologado-t1",
-        subsidyKey: "ds19",
-        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
-        title: "Homologación a DS19 (Tramo 1)",
-        description: "Opciones para aplicar tu subsidio Tramo 1 en proyectos DS19 homologados.",
-        hasDS15Option: true,
-        normalInfo: {
-          maxHouseUF: maxHouseVul,
-          loanUF: 0,
-          subsidyUF: subVul,
-          minAhorro: 40,
-          label: "Cupo Vulnerable (Sin Deuda)",
-          cupoType: "vulnerable"
-        },
-        ds15Info: {
-          maxHouseUF: maxHouseRural,
-          loanUF: loanRural,
-          subsidyUF: subRural,
-          minAhorro: 80,
-          label: "Cupo Rural / Medios 1 (Con Crédito)",
-          cupoType: "vulnerable_rural"
-        }
-      });
-
-      // Sin Subsidio
-      cards.push(cardSinSubsidio);
     }
 
-    // 3. RHS 70 - 80% (tramo "80")
-    else if (rshTramo === "80") {
-      // DS1 T2 (Con y sin DS15)
+    // --- OPCIÓN 4: DS1 Tramo 2 (Sin DS15) ---
+    if (rshNum <= 80) {
       const resNormal = calculateDS1T2Max(maxLoanUFNormal, savings, ds1Zone);
       const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
+      const dividendNormal = loanNormal > 0 ? (loanNormal * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
 
+      cards.push({
+        id: "ds1t2-usada",
+        subsidyKey: "ds1t2",
+        badge: "Vivienda Usada o Nueva - MINVU",
+        title: "Subsidio DS1 Tramo 2 (Sin Beneficio DS15)",
+        description: "Para compra de viviendas usadas o nuevas tradicionales. Subsidio variable decreciente.",
+        maxHouseUF: resNormal.maxHouseUF,
+        loanUF: loanNormal,
+        savingsUF: savings,
+        subsidyUF: resNormal.subsidyUF,
+        minAhorro: 40,
+        maxDividendUF: dividendNormal,
+        category: "subsidio",
+        isNew: false,
+        linkParams: `maxPrice=${Math.round(resNormal.maxHouseUF * ufValue)}&maxUF=${Math.round(resNormal.maxHouseUF)}&credit=${Math.round(loanNormal)}&origin=ds1t2&region=${regionA}&isNew=false`
+      });
+    }
+
+    // --- OPCIÓN 5: DS1 Tramo 2 (Con Beneficio DS15 - Nueva) ---
+    if (rshNum <= 80) {
       const resDS15 = calculateDS1T2MaxWithDS15(maxLoanUFDS15, savings, ds1Zone);
       const loanDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
+      const dividendDS15 = loanDS15 > 0 ? (loanDS15 * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let infoDS15 = "";
+      if (savings >= 80) {
+        infoDS15 = "✨ Beneficio DS15 Activo: +150 UF de bono y tope extendido a 3.000 UF por contar con 80 UF o más de ahorro.";
+      }
 
       cards.push({
-        id: "ds1t2",
+        id: "ds1t2-nueva-ds15",
         subsidyKey: "ds1t2",
-        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
-        title: "Subsidio DS1 Tramo 2",
-        description: "Subsidio variable para tramos medios del RSH. Complementa con crédito bancario.",
-        hasDS15Option: true,
-        normalInfo: {
-          maxHouseUF: resNormal.maxHouseUF,
-          loanUF: loanNormal,
-          subsidyUF: resNormal.subsidyUF,
-          minAhorro: 40,
-          label: "Opción Sin Beneficio DS15 (Usada/Nueva)"
-        },
-        ds15Info: {
-          maxHouseUF: resDS15.maxHouseUF,
-          loanUF: loanDS15,
-          subsidyUF: resDS15.subsidyUF,
-          minAhorro: 80,
-          label: "Opción Con Beneficio DS15 (Solo Nueva)"
-        }
+        badge: "Solo Vivienda Nueva - Beneficio DS15",
+        title: "Subsidio DS1 Tramo 2 (Con Beneficio DS15)",
+        description: "Aplica en viviendas nuevas. Ofrece tasa de interés preferencial y bono adicional de 150 UF al subsidio.",
+        maxHouseUF: resDS15.maxHouseUF,
+        loanUF: loanDS15,
+        savingsUF: savings,
+        subsidyUF: resDS15.subsidyUF,
+        minAhorro: 80,
+        maxDividendUF: dividendDS15,
+        info: infoDS15,
+        category: "subsidio",
+        isNew: true,
+        linkParams: `maxPrice=${Math.round(resDS15.maxHouseUF * ufValue)}&maxUF=${Math.round(resDS15.maxHouseUF)}&credit=${Math.round(loanDS15)}&origin=ds1t2&region=${regionA}&applyRateDiscount=true&isNew=true`
       });
+    }
 
-      // DS19 (Homologado en DS1 T2)
-      const maxHouseDS19Urban = Math.min(maxLoanUFDS15 + savings + subUrban, capUrban);
-      const loanDS19Urban = Math.max(0, maxHouseDS19Urban - savings - subUrban);
-
+    // --- OPCIÓN 6: DS19 Cupo Sectores Medios 1 (Rural / Periférica) ---
+    if (rshNum <= 80) {
       const maxHouseDS19Rural = Math.min(maxLoanUFDS15 + savings + subRural, capRural);
       const loanDS19Rural = Math.max(0, maxHouseDS19Rural - savings - subRural);
+      const dividendDS19Rural = loanDS19Rural > 0 ? (loanDS19Rural * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
 
       cards.push({
-        id: "ds19-homologado-t2",
+        id: "ds19-rural",
         subsidyKey: "ds19",
         badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
-        title: "Homologación a DS19 (Tramo 2)",
-        description: "Aplica tu subsidio DS1 Tramo 2 de forma automática en proyectos integrados con convenio.",
-        hasDS15Option: true,
-        normalInfo: {
-          maxHouseUF: maxHouseDS19Urban,
-          loanUF: loanDS19Urban,
-          subsidyUF: subUrban,
-          minAhorro: 80,
-          label: "Cupo Urbano / Medios 2 (Urbano)",
-          cupoType: "urban_media"
-        },
-        ds15Info: {
-          maxHouseUF: maxHouseDS19Rural,
-          loanUF: loanDS19Rural,
-          subsidyUF: subRural,
-          minAhorro: 80,
-          label: "Cupo Rural / Medios 1 (Rural)",
-          cupoType: "vulnerable_rural"
-        }
+        title: "Homologación / Proyecto DS19 (Cupo Rural / Medios 1)",
+        description: "Viviendas nuevas en proyectos con convenio en zonas rurales o comunas periféricas. Beneficio DS15 incluido.",
+        maxHouseUF: maxHouseDS19Rural,
+        loanUF: loanDS19Rural,
+        savingsUF: savings,
+        subsidyUF: subRural,
+        minAhorro: 80,
+        maxDividendUF: dividendDS19Rural,
+        category: "subsidio",
+        isNew: true,
+        linkParams: `maxPrice=${Math.round(maxHouseDS19Rural * ufValue)}&maxUF=${Math.round(maxHouseDS19Rural)}&credit=${Math.round(loanDS19Rural)}&origin=ds19&region=${regionA}&cupoType=vulnerable_rural`
       });
-
-      // DS19 (Postulacion directa en Sector Vulnerable/Rural)
-      const maxHouseVul = Math.min(savings + subVul, capVul);
-
-      cards.push({
-        id: "ds19-directo-vul-rural",
-        subsidyKey: "ds19",
-        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
-        title: "DS19 Directo (Vulnerable / Rural)",
-        description: "Postulación directa al proyecto inmobiliario sin requerir subsidio MINVU adjudicado previamente.",
-        hasDS15Option: true,
-        normalInfo: {
-          maxHouseUF: maxHouseVul,
-          loanUF: 0,
-          subsidyUF: subVul,
-          minAhorro: 40,
-          label: "Cupo Vulnerable (Sin Deuda)",
-          cupoType: "vulnerable"
-        },
-        ds15Info: {
-          maxHouseUF: maxHouseDS19Rural,
-          loanUF: loanDS19Rural,
-          subsidyUF: subRural,
-          minAhorro: 80,
-          label: "Cupo Rural / Medios 1 (Con Deuda)",
-          cupoType: "vulnerable_rural"
-        }
-      });
-
-      // Sin Subsidio
-      cards.push(cardSinSubsidio);
     }
 
-    // 4. RHS 90% (tramo "90")
-    else if (rshTramo === "90") {
-      // DS1 T3 (Con y sin DS15)
-      const resNormal = calculateDS1T3Max(maxLoanUFNormal, savings, ds1Zone);
-      const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
-
-      const resDS15 = calculateDS1T3MaxWithDS15(maxLoanUFDS15, savings, ds1Zone);
-      const loanDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
-
-      cards.push({
-        id: "ds1t3",
-        subsidyKey: "ds1t3",
-        badge: "Vivienda Nueva/Usada o Construcción - MINVU",
-        title: "Subsidio DS1 Tramo 3",
-        description: "Tope de compra ampliado con crédito hipotecario bancario obligatorio.",
-        hasDS15Option: true,
-        normalInfo: {
-          maxHouseUF: resNormal.maxHouseUF,
-          loanUF: loanNormal,
-          subsidyUF: resNormal.subsidyUF,
-          minAhorro: 80,
-          label: "Opción Sin Beneficio DS15 (Usada/Nueva)"
-        },
-        ds15Info: {
-          maxHouseUF: resDS15.maxHouseUF,
-          loanUF: loanDS15,
-          subsidyUF: resDS15.subsidyUF,
-          minAhorro: 160,
-          label: "Opción Con Beneficio DS15 (Solo Nueva)"
-        }
-      });
-
-      // DS19 (Homologado en DS1 T3)
+    // --- OPCIÓN 7: DS19 Cupo Sectores Medios 2 (Urbano) ---
+    if (rshNum <= 90) {
       const maxHouseDS19Urban = Math.min(maxLoanUFDS15 + savings + subUrban, capUrban);
       const loanDS19Urban = Math.max(0, maxHouseDS19Urban - savings - subUrban);
+      const dividendDS19Urban = loanDS19Urban > 0 ? (loanDS19Urban * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
 
       cards.push({
-        id: "ds19-homologado-t3",
+        id: "ds19-urban",
         subsidyKey: "ds19",
-        cupoType: "urban_media",
         badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
-        title: "Homologación a DS19 (Tramo 3)",
-        description: "Homologa tu subsidio Tramo 3 en proyectos urbanos con convenio DS15 preferencial.",
+        title: "Homologación / Proyecto DS19 (Cupo Urbano / Medios 2)",
+        description: "Viviendas nuevas en proyectos integrados urbanos. Incluye subsidio estatal y beneficio de tasa DS15.",
         maxHouseUF: maxHouseDS19Urban,
         loanUF: loanDS19Urban,
         savingsUF: savings,
         subsidyUF: subUrban,
         minAhorro: 80,
-        hasDS15Option: false
+        maxDividendUF: dividendDS19Urban,
+        category: "subsidio",
+        isNew: true,
+        linkParams: `maxPrice=${Math.round(maxHouseDS19Urban * ufValue)}&maxUF=${Math.round(maxHouseDS19Urban)}&credit=${Math.round(loanDS19Urban)}&origin=ds19&region=${regionA}&cupoType=urban_media`
       });
-
-      // DS19 (Postulación Directa en sector urbano/medio)
-      cards.push({
-        id: "ds19-directo-urban",
-        subsidyKey: "ds19",
-        cupoType: "urban_media",
-        badge: "Solo Vivienda Nueva - Convenio Inmobiliaria",
-        title: "DS19 Directo (Sectores Medios)",
-        description: "Postula directamente a un proyecto DS19 urbano de integración social.",
-        maxHouseUF: maxHouseDS19Urban,
-        loanUF: loanDS19Urban,
-        savingsUF: savings,
-        subsidyUF: subUrban,
-        minAhorro: 80,
-        hasDS15Option: false
-      });
-
-      // Sin Subsidio
-      cards.push(cardSinSubsidio);
     }
 
-    // 5. RHS > 90% dentro del límite de DS1 T4
-    else if (rshTramo === "100" && meetsDS1T4Limit) {
+    // --- OPCIÓN 8: DS1 Tramo 3 (Sin DS15) ---
+    if (rshNum <= 90 || meetsDS1T3Limit) {
+      const resNormal = calculateDS1T3Max(maxLoanUFNormal, savings, ds1Zone);
+      const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
+      const dividendNormal = loanNormal > 0 ? (loanNormal * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+
+      cards.push({
+        id: "ds1t3-usada",
+        subsidyKey: "ds1t3",
+        badge: "Vivienda Usada o Nueva - MINVU",
+        title: "Subsidio DS1 Tramo 3 (Sin Beneficio DS15)",
+        description: "Tope de compra ampliado con crédito hipotecario bancario obligatorio.",
+        maxHouseUF: resNormal.maxHouseUF,
+        loanUF: loanNormal,
+        savingsUF: savings,
+        subsidyUF: resNormal.subsidyUF,
+        minAhorro: 80,
+        maxDividendUF: dividendNormal,
+        category: "subsidio",
+        isNew: false,
+        linkParams: `maxPrice=${Math.round(resNormal.maxHouseUF * ufValue)}&maxUF=${Math.round(resNormal.maxHouseUF)}&credit=${Math.round(loanNormal)}&origin=ds1t3&region=${regionA}&isNew=false`
+      });
+    }
+
+    // --- OPCIÓN 9: DS1 Tramo 3 (Con Beneficio DS15 - Nueva) ---
+    if (rshNum <= 90 || meetsDS1T3Limit) {
+      const resDS15 = calculateDS1T3MaxWithDS15(maxLoanUFDS15, savings, ds1Zone);
+      const loanDS15 = Math.max(0, resDS15.maxHouseUF - savings - resDS15.subsidyUF);
+      const dividendDS15 = loanDS15 > 0 ? (loanDS15 * monthlyRateDS15) / (1 - Math.pow(1 + monthlyRateDS15, -totalPayments)) : 0;
+      let infoDS15 = "";
+      if (savings >= 160) {
+        infoDS15 = "✨ Beneficio DS15 Activo: +150 UF de bono y tope extendido a 3.000 UF por contar con 160 UF o más de ahorro.";
+      }
+
+      cards.push({
+        id: "ds1t3-nueva-ds15",
+        subsidyKey: "ds1t3",
+        badge: "Solo Vivienda Nueva - Beneficio DS15",
+        title: "Subsidio DS1 Tramo 3 (Con Beneficio DS15)",
+        description: "Aplica en viviendas nuevas. Ofrece tasa de interés preferencial y bono de 150 UF al subsidio.",
+        maxHouseUF: resDS15.maxHouseUF,
+        loanUF: loanDS15,
+        savingsUF: savings,
+        subsidyUF: resDS15.subsidyUF,
+        minAhorro: 160,
+        maxDividendUF: dividendDS15,
+        info: infoDS15,
+        category: "subsidio",
+        isNew: true,
+        linkParams: `maxPrice=${Math.round(resDS15.maxHouseUF * ufValue)}&maxUF=${Math.round(resDS15.maxHouseUF)}&credit=${Math.round(loanDS15)}&origin=ds1t3&region=${regionA}&applyRateDiscount=true&isNew=true`
+      });
+    }
+
+    // --- OPCIÓN 10: DS1 Tramo 4 ---
+    if (meetsDS1T4Limit) {
       const minAhorro = 200;
       const effectiveSavings = savings < minAhorro ? minAhorro : savings;
       const cap = 4000;
       const sub = 400;
       const valMax = Math.min(maxLoanUFNormal + effectiveSavings + sub, cap);
       const creditReal = Math.max(0, valMax - effectiveSavings - sub);
+      const dividendT4 = creditReal > 0 ? (creditReal * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
 
       cards.push({
         id: "ds1t4",
         subsidyKey: "ds1t4",
         badge: "Vivienda Nueva/Usada - MINVU",
         title: "Subsidio DS1 Tramo 4",
-        description: "Diseñado para viviendas de hasta 4.000 UF. Apoyo estatal directo de 400 UF.",
+        description: "Diseñado para viviendas de hasta 4.000 UF en sectores medios. Apoyo estatal directo de 400 UF.",
         maxHouseUF: valMax,
         loanUF: creditReal,
         savingsUF: effectiveSavings,
         subsidyUF: sub,
         minAhorro,
-        hasDS15Option: false
+        maxDividendUF: dividendT4,
+        category: "subsidio",
+        isNew: false,
+        linkParams: `maxPrice=${Math.round(valMax * ufValue)}&maxUF=${Math.round(valMax)}&credit=${Math.round(creditReal)}&origin=ds1t4&region=${regionA}`
       });
-
-      cards.push(cardSinSubsidio);
     }
 
-    // 6. RHS > 90% supera límite de DS1 T4
-    else {
-      cards.push(cardSinSubsidio);
-    }
+    // --- OPCIONES SIN SUBSIDIO (FINANCIAMIENTO PRIVADO) ---
+
+    // FOGAES Nueva
+    const maxHouseFogaesWithDiscount = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
+    const maxHouseFogaesNormal = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
+    const maxHouseFogaes = Math.max(maxHouseFogaesWithDiscount, maxHouseFogaesNormal);
+    const loanFogaes = Math.max(0, maxHouseFogaes - savings);
+    const aplicaLeyFogaes = maxHouseFogaes < 4000;
+    const rateFogaes = aplicaLeyFogaes ? monthlyRateDS15 : monthlyRateNormal;
+    const dividendFogaes = loanFogaes > 0 ? (loanFogaes * rateFogaes) / (1 - Math.pow(1 + rateFogaes, -totalPayments)) : 0;
+
+    cards.push({
+      id: "sin-subsidio-fogaes",
+      subsidyKey: "none",
+      badge: "Compra Directa - Aval Estatal FOGAES",
+      title: "Crédito Hipotecario sin Subsidio (Vivienda Nueva con FOGAES)",
+      description: `Financiamiento hasta el 90% con aval estatal FOGAES. Permite pie del 10%${aplicaLeyFogaes ? " e incluye rebaja de tasa Ley 21.748" : ""}.`,
+      maxHouseUF: maxHouseFogaes,
+      loanUF: loanFogaes,
+      savingsUF: savings,
+      subsidyUF: 0,
+      minAhorro: 0,
+      maxDividendUF: dividendFogaes,
+      category: "privado",
+      isNew: true,
+      linkParams: `maxPrice=${Math.round(maxHouseFogaes * ufValue)}&maxUF=${Math.round(maxHouseFogaes)}&credit=${Math.round(loanFogaes)}&origin=no-subsidy&region=${regionA}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaes ? "true" : "false"}&isNew=true`
+    });
+
+    // Tradicional Usada
+    const maxHouseUsada = Math.min(savings / 0.20, maxLoanUFNormal + savings);
+    const loanUsada = Math.max(0, maxHouseUsada - savings);
+    const dividendUsada = loanUsada > 0 ? (loanUsada * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+
+    cards.push({
+      id: "sin-subsidio-usada",
+      subsidyKey: "none",
+      badge: "Compra Directa - Financiamiento Privado",
+      title: "Crédito Hipotecario sin Subsidio (Vivienda Usada)",
+      description: "Financiamiento bancario convencional hasta el 80%. Exige pie mínimo del 20%.",
+      maxHouseUF: maxHouseUsada,
+      loanUF: loanUsada,
+      savingsUF: savings,
+      subsidyUF: 0,
+      minAhorro: 0,
+      maxDividendUF: dividendUsada,
+      category: "privado",
+      isNew: false,
+      linkParams: `maxPrice=${Math.round(maxHouseUsada * ufValue)}&maxUF=${Math.round(maxHouseUsada)}&credit=${Math.round(loanUsada)}&origin=no-subsidy&region=${regionA}&applyFogaes=false&applyRateDiscount=false&isNew=false`
+    });
+
+    // --- ORDENAR DEL MAYOR VALOR MÁXIMO DE CASA AL MENOR ---
+    cards.sort((a, b) => b.maxHouseUF - a.maxHouseUF);
 
     return cards;
   };
@@ -1804,291 +1768,192 @@ export default function AsistenteSubsidiosPage() {
                     <span className="text-xs font-bold uppercase tracking-wider text-[#6b9ac4] block mb-1">Resultados de Diagnóstico</span>
                     <h2 className="text-2xl font-extrabold text-slate-900">Tus Subsidios y Alternativas de Compra</h2>
                     <p className="text-xs text-slate-500 mt-1 max-w-xl mx-auto">
-                      Hemos simulado tu perfil en {REGION_MAP[regionA].label} con una renta de ${(parseFloat(incomeCLPA) || 0).toLocaleString("es-CL")} CLP. A continuación, tus 3 opciones de financiamiento habitacional.
+                      Listado ordenado de mayor a menor valor máximo de propiedad alcanzable en {REGION_MAP[regionA]?.label || "tu región"} con tus ingresos y ahorro.
                     </p>
                   </div>
 
-                  {/* Grilla de Recomendaciones */}
-                  <div className={`grid ${getGridColsClass(recommendationsA.length)} gap-6`}>
-                    {recommendationsA.map((card, idx) => {
-                      const isSavingsShort = parseFloat(savingsUF) < card.minAhorro;
-                      const missingUF = Math.max(0, card.minAhorro - (parseFloat(savingsUF) || 0));
-                      const missingCLP = missingUF * ufValue;
+                  {/* Filtros Rápidos Perfil A */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      Filtrar Opciones ({recommendationsA.filter((card) => {
+                        if (filterCategoryA === "subsidio") return card.subsidyUF > 0;
+                        if (filterCategoryA === "nueva") return card.isNew === true;
+                        if (filterCategoryA === "usada") return card.isNew === false;
+                        return true;
+                      }).length} de {recommendationsA.length}):
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setFilterCategoryA("todos")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryA === "todos"
+                            ? "bg-slate-900 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        Todas ({recommendationsA.length})
+                      </button>
+                      <button
+                        onClick={() => setFilterCategoryA("subsidio")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryA === "subsidio"
+                            ? "bg-[#6b9ac4] text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        🏛️ Con Subsidio Estatal
+                      </button>
+                      <button
+                        onClick={() => setFilterCategoryA("nueva")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryA === "nueva"
+                            ? "bg-emerald-600 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        ✨ Vivienda Nueva
+                      </button>
+                      <button
+                        onClick={() => setFilterCategoryA("usada")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryA === "usada"
+                            ? "bg-amber-600 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        🏡 Vivienda Usada
+                      </button>
+                    </div>
+                  </div>
 
-                      return (
-                        <article 
-                          key={idx}
-                          className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-[#6b9ac4] hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group"
-                        >
-                          <div>
-                            {/* Insignia tramo */}
-                            <span className="bg-blue-50 text-[#6b9ac4] text-[9px] font-bold py-1 px-2 rounded-full inline-block mb-3 border border-blue-100">
-                              {card.badge}
-                            </span>
-                            
-                            <h3 className="text-base font-bold text-slate-900 mb-2 leading-tight">
-                              {card.title}
-                            </h3>
-                            
-                            <p className="text-xs text-slate-500 leading-relaxed mb-4 font-normal">
-                              {card.description}
-                            </p>
+                  {/* Lista Responsiva de Recomendaciones Perfil A */}
+                  <div className="space-y-4">
+                    {recommendationsA
+                      .filter((card) => {
+                        if (filterCategoryA === "subsidio") return card.subsidyUF > 0;
+                        if (filterCategoryA === "nueva") return card.isNew === true;
+                        if (filterCategoryA === "usada") return card.isNew === false;
+                        return true;
+                      })
+                      .map((card, idx) => {
+                        const isFirst = idx === 0 && filterCategoryA === "todos";
+                        const isSavingsShort = card.minAhorro > 0 && (parseFloat(savingsUF) || 0) < card.minAhorro;
+                        const missingUF = Math.max(0, card.minAhorro - (parseFloat(savingsUF) || 0));
+                        const missingCLP = missingUF * ufValue;
 
-                            {card.hasFogaesOption ? (
-                              <div className="space-y-4 my-4">
-                                {/* ESCENARIO A: Vivienda Nueva */}
-                                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-200 shadow-sm relative text-left">
-                                  <div className="absolute top-2 right-2 bg-blue-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                    Vivienda Nueva
-                                  </div>
-                                  <span className="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider block mb-1">
-                                    Con FOGAES {card.fogaesInfo.aplicaLey ? "+ Subsidio Dividendo" : ""}
+                        return (
+                          <article 
+                            key={card.id || idx}
+                            className={`bg-white border rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-300 relative ${
+                              isFirst 
+                                ? "border-emerald-400 ring-2 ring-emerald-400/20 bg-gradient-to-r from-emerald-50/40 via-white to-white" 
+                                : "border-slate-200/90 hover:border-[#6b9ac4]"
+                            }`}
+                          >
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                              
+                              {/* Columna Izquierda: Información Principal */}
+                              <div className="flex-1 space-y-3">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wide uppercase ${
+                                    isFirst 
+                                      ? "bg-emerald-600 text-white shadow-sm" 
+                                      : "bg-slate-800 text-white"
+                                  }`}>
+                                    #{idx + 1} {isFirst ? "🏆 Mayor Capacidad" : ""}
                                   </span>
-                                  
-                                  <div className="text-center my-2.5">
-                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Valor Máximo de Compra</span>
-                                    <strong className="text-2xl font-black text-slate-800 block">
-                                      {card.fogaesInfo.maxHouseUF.toFixed(0)} UF
-                                    </strong>
-                                    <span className="text-xs font-bold text-emerald-600 block">
-                                      ≈ ${Math.round(card.fogaesInfo.maxHouseUF * ufValue).toLocaleString("es-CL")}
+
+                                  <span className="bg-blue-50 text-[#6b9ac4] text-[11px] font-bold py-1 px-2.5 rounded-lg border border-blue-100">
+                                    {card.badge}
+                                  </span>
+
+                                  {card.isNew && (
+                                    <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold py-1 px-2 rounded-lg border border-emerald-200">
+                                      Vivienda Nueva
                                     </span>
-                                  </div>
-
-                                  <div className="space-y-1 text-xs border-t border-blue-100/60 pt-2 mb-3">
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Ahorro (Pie 10%):</span>
-                                      <span className="font-bold text-slate-700">{(parseFloat(savingsUF) || 0).toFixed(0)} UF</span>
-                                    </div>
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Crédito Bancario:</span>
-                                      <span className="font-bold text-blue-600">
-                                        {card.fogaesInfo.loanUF > 0 ? `${card.fogaesInfo.loanUF.toFixed(0)} UF` : "No requiere"}
-                                      </span>
-                                    </div>
-                                    {card.fogaesInfo.aplicaLey && (
-                                      <div className="text-[10px] font-semibold text-emerald-600 mt-1">
-                                        ✓ Subsidio al dividendo (Ley 21.748) aplicado automáticamente.
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {card.fogaesInfo.aviso && (
-                                    <div className="bg-sky-50 border border-sky-200 text-sky-900 p-2.5 rounded-lg text-[10px] leading-relaxed mb-3">
-                                      {card.fogaesInfo.aviso}
-                                    </div>
                                   )}
-
-                                  <Link 
-                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.fogaesInfo.maxHouseUF * ufValue)}&maxUF=${Math.round(card.fogaesInfo.maxHouseUF)}&credit=${Math.round(card.fogaesInfo.loanUF)}&origin=no-subsidy&region=${regionA}&applyFogaes=true&applyRateDiscount=${card.fogaesInfo.aplicaLey ? "true" : "false"}&isNew=true`}
-                                    className="w-full text-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
-                                  >
-                                    Buscar Proyectos Nuevos FOGAES →
-                                  </Link>
                                 </div>
 
-                                {/* ESCENARIO B: Vivienda Usada */}
-                                <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200 shadow-sm relative text-left">
-                                  <div className="absolute top-2 right-2 bg-slate-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                    Vivienda Usada
-                                  </div>
-                                  <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block mb-1">
-                                    Sin FOGAES ni Subsidio Dividendo
-                                  </span>
-                                  
-                                  <div className="text-center my-2.5">
-                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Valor Máximo de Compra</span>
-                                    <strong className="text-xl font-black text-slate-800 block">
-                                      {card.normalInfo.maxHouseUF.toFixed(0)} UF
-                                    </strong>
-                                    <span className="text-xs font-bold text-emerald-600 block">
-                                      ≈ ${Math.round(card.normalInfo.maxHouseUF * ufValue).toLocaleString("es-CL")}
-                                    </span>
-                                  </div>
-
-                                  <div className="space-y-1 text-xs border-t border-slate-200/60 pt-2 mb-3">
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Ahorro (Pie 20%):</span>
-                                      <span className="font-bold text-slate-700">{(parseFloat(savingsUF) || 0).toFixed(0)} UF</span>
-                                    </div>
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Crédito Bancario:</span>
-                                      <span className="font-bold text-blue-600">
-                                        {card.normalInfo.loanUF > 0 ? `${card.normalInfo.loanUF.toFixed(0)} UF` : "No requiere"}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {card.normalInfo.aviso && (
-                                    <div className="bg-sky-50 border border-sky-200 text-sky-900 p-2.5 rounded-lg text-[10px] leading-relaxed mb-3">
-                                      {card.normalInfo.aviso}
-                                    </div>
-                                  )}
-
-                                  <Link 
-                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.normalInfo.maxHouseUF * ufValue)}&maxUF=${Math.round(card.normalInfo.maxHouseUF)}&credit=${Math.round(card.normalInfo.loanUF)}&origin=no-subsidy&region=${regionA}&applyFogaes=false&applyRateDiscount=false&isNew=false`}
-                                    className="w-full text-center py-2 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
-                                  >
-                                    Buscar Ofertas Usadas →
-                                  </Link>
+                                <div>
+                                  <h3 className="text-lg md:text-xl font-bold text-slate-900 leading-tight">
+                                    {card.title}
+                                  </h3>
+                                  <p className="text-xs md:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                                    {card.description}
+                                  </p>
                                 </div>
+
+                                {isSavingsShort && (
+                                  <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
+                                    <strong>⚠️ Ahorro Insuficiente:</strong> Exige un ahorro mínimo de <strong>{card.minAhorro} UF</strong>. Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")} CLP</strong>).
+                                  </div>
+                                )}
+
+                                {card.info && (
+                                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-3 rounded-xl text-xs leading-relaxed">
+                                    {card.info}
+                                  </div>
+                                )}
                               </div>
-                            ) : card.hasDS15Option ? (
-                              <div className="space-y-4 my-4">
-                                {/* ESCENARIO A: Con DS15 */}
-                                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-200 shadow-sm relative text-left">
-                                  <div className="absolute top-2 right-2 bg-blue-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                    Solo Vivienda Nueva
-                                  </div>
-                                  <span className="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider block mb-1">
-                                    {card.ds15Info?.label || "Opción Con Beneficio DS15"}
+
+                              {/* Columna Derecha: Tarjeta de Valor Máximo y Financiamiento */}
+                              <div className="lg:w-80 flex flex-col justify-between bg-slate-50 border border-slate-200/80 p-4 md:p-5 rounded-xl space-y-4 shrink-0">
+                                <div className="text-center pb-3 border-b border-slate-200/60">
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                                    Valor Máximo de Casa
                                   </span>
-                                  
-                                  <div className="text-center my-2.5">
-                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Valor Máximo de Compra</span>
-                                    <strong className="text-2xl font-black text-slate-800 block">
-                                      {card.ds15Info.maxHouseUF.toFixed(0)} UF
-                                    </strong>
-                                    <span className="text-xs font-bold text-emerald-600 block">
-                                      ≈ ${Math.round(card.ds15Info.maxHouseUF * ufValue).toLocaleString("es-CL")}
-                                    </span>
-                                  </div>
-
-                                  <div className="space-y-1 text-xs border-t border-blue-100/60 pt-2 mb-3">
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>{(parseFloat(savingsUF) || 0) < card.ds15Info.minAhorro ? "Ahorro Mínimo:" : "Ahorro:"}</span>
-                                      <span className="font-bold text-slate-700">
-                                        {Math.max(card.ds15Info.minAhorro, parseFloat(savingsUF) || 0)} UF
-                                      </span>
-                                    </div>
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Aporte Subsidio:</span>
-                                      <span className="font-bold text-emerald-600">+{card.ds15Info.subsidyUF.toFixed(0)} UF</span>
-                                    </div>
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Crédito Bancario:</span>
-                                      <span className="font-bold text-blue-600">
-                                        {card.ds15Info.loanUF > 0 ? `${card.ds15Info.loanUF.toFixed(0)} UF` : "No requiere"}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {parseFloat(savingsUF) < card.ds15Info.minAhorro && (
-                                    <div className="bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-lg text-[10px] leading-relaxed mb-3">
-                                      <strong>⚠️ Falta Ahorro:</strong> Necesitas mínimo {card.ds15Info.minAhorro} UF. Te faltan <strong>{(card.ds15Info.minAhorro - (parseFloat(savingsUF) || 0)).toFixed(0)} UF</strong> (aprox. <strong>${Math.round((card.ds15Info.minAhorro - (parseFloat(savingsUF) || 0)) * ufValue).toLocaleString("es-CL")}</strong>).
-                                    </div>
-                                  )}
-
-                                  <Link 
-                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.ds15Info.maxHouseUF * ufValue)}&maxUF=${Math.round(card.ds15Info.maxHouseUF)}&credit=${Math.round(card.ds15Info.loanUF)}&origin=${card.subsidyKey}&region=${regionA}&cupoType=${card.ds15Info?.cupoType || card.cupoType || ""}&isNew=true`}
-                                    className="w-full text-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
-                                  >
-                                    Buscar Proyectos Nuevos DS15 →
-                                  </Link>
-                                </div>
-
-                                {/* ESCENARIO B: Sin DS15 */}
-                                <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200 shadow-sm relative text-left">
-                                  <div className="absolute top-2 right-2 bg-slate-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                    {card.subsidyKey === "ds19" ? "Solo Vivienda Nueva" : "Nueva o Usada"}
-                                  </div>
-                                  <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block mb-1">
-                                    {card.normalInfo?.label || "Opción Sin Beneficio DS15"}
-                                  </span>
-                                  
-                                  <div className="text-center my-2.5">
-                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Valor Máximo de Compra</span>
-                                    <strong className="text-xl font-black text-slate-800 block">
-                                      {card.normalInfo.maxHouseUF.toFixed(0)} UF
-                                    </strong>
-                                    <span className="text-xs font-bold text-emerald-600 block">
-                                      ≈ ${Math.round(card.normalInfo.maxHouseUF * ufValue).toLocaleString("es-CL")}
-                                    </span>
-                                  </div>
-
-                                  <div className="space-y-1 text-xs border-t border-slate-200/60 pt-2 mb-3">
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>{(parseFloat(savingsUF) || 0) < card.normalInfo.minAhorro ? "Ahorro Mínimo:" : "Ahorro:"}</span>
-                                      <span className="font-bold text-slate-700">
-                                        {Math.max(card.normalInfo.minAhorro, parseFloat(savingsUF) || 0)} UF
-                                      </span>
-                                    </div>
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Aporte Subsidio:</span>
-                                      <span className="font-bold text-emerald-600">+{card.normalInfo.subsidyUF.toFixed(0)} UF</span>
-                                    </div>
-                                    <div className="flex justify-between text-slate-500">
-                                      <span>Crédito Bancario:</span>
-                                      <span className="font-bold text-blue-600">
-                                        {card.normalInfo.loanUF > 0 ? `${card.normalInfo.loanUF.toFixed(0)} UF` : "No requiere"}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {parseFloat(savingsUF) < card.normalInfo.minAhorro && (
-                                    <div className="bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-lg text-[10px] leading-relaxed mb-3">
-                                      <strong>⚠️ Falta Ahorro:</strong> Necesitas mínimo {card.normalInfo.minAhorro} UF. Te faltan <strong>{(card.normalInfo.minAhorro - (parseFloat(savingsUF) || 0)).toFixed(0)} UF</strong> (aprox. <strong>${Math.round((card.normalInfo.minAhorro - (parseFloat(savingsUF) || 0)) * ufValue).toLocaleString("es-CL")}</strong>).
-                                    </div>
-                                  )}
-
-                                  <Link 
-                                    href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.normalInfo.maxHouseUF * ufValue)}&maxUF=${Math.round(card.normalInfo.maxHouseUF)}&credit=${Math.round(card.normalInfo.loanUF)}&origin=${card.subsidyKey}&region=${regionA}&cupoType=${card.normalInfo?.cupoType || card.cupoType || ""}`}
-                                    className="w-full text-center py-2 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
-                                  >
-                                    Buscar Ofertas Generales →
-                                  </Link>
-                                </div>
-                              </div>
-                            ) : (
-                              /* RENDERIZADO NORMAL SIN DS15 (DS49, DS1 T1, DS1 T4, Sin Subsidio) */
-                              <>
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center mb-4">
-                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Valor Máximo de Casa</span>
-                                  <strong className="text-2xl md:text-3xl font-black text-slate-800 block">
+                                  <strong className="text-2xl md:text-3xl font-black text-slate-900 block">
                                     {card.maxHouseUF.toFixed(0)} UF
                                   </strong>
                                   <span className="text-xs font-bold text-emerald-600 block mt-0.5">
-                                    ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")}
+                                    ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
                                   </span>
                                 </div>
 
-                                <div className="space-y-1.5 border-t border-slate-100 pt-3 mb-4 text-xs">
-                                  <div className="flex justify-between">
-                                    <span className="text-slate-500">{(parseFloat(savingsUF) || 0) < card.minAhorro ? "Ahorro Mínimo:" : "Ahorro:"}</span>
-                                    <span className="font-bold text-slate-700">
-                                      {Math.max(card.minAhorro, parseFloat(savingsUF) || 0)} UF
+                                <div className="space-y-1.5 text-xs">
+                                  <div className="flex justify-between text-slate-600">
+                                    <span>Tu Ahorro:</span>
+                                    <span className="font-bold text-slate-800">
+                                      {Math.max(card.minAhorro || 0, parseFloat(savingsUF) || 0).toFixed(0)} UF
                                     </span>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-slate-500">Aporte Estatal Subsidio:</span>
-                                    <span className="font-bold text-emerald-600">+{card.subsidyUF.toFixed(0)} UF</span>
+
+                                  <div className="flex justify-between text-slate-600">
+                                    <span>Subsidio Estatal:</span>
+                                    <span className="font-bold text-emerald-600">
+                                      {card.subsidyUF > 0 ? `+${card.subsidyUF.toFixed(0)} UF` : "0 UF"}
+                                    </span>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-slate-500">Crédito Hipotecario:</span>
+
+                                  <div className="flex justify-between text-slate-600">
+                                    <span>Crédito Hipotecario:</span>
                                     <span className="font-bold text-blue-600">
                                       {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
                                     </span>
                                   </div>
+
+                                  {card.maxDividendUF > 0 && (
+                                    <div className="flex justify-between text-slate-700 pt-1.5 border-t border-slate-200/60 font-medium">
+                                      <span>Dividendo Estimado:</span>
+                                      <span className="font-bold text-slate-900">
+                                        ${Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")}/mes
+                                      </span>
+                                    </div>
+                                  )}
                                 </div>
 
-                                {isSavingsShort && (
-                                  <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-[11px] leading-relaxed mb-4 text-left">
-                                    <strong>⚠️ Ahorro Insuficiente:</strong> Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")}</strong>) para cumplir con el mínimo de {card.minAhorro} UF requerido.
-                                  </div>
-                                )}
-
                                 <Link 
-                                  href={`/ofertas-inmobiliarias?maxPrice=${Math.round(card.maxHouseUF * ufValue)}&maxUF=${Math.round(card.maxHouseUF)}&credit=${Math.round(card.loanUF)}&origin=${card.subsidyKey}&region=${regionA}&cupoType=${card.cupoType || ""}`}
-                                  className="w-full text-center py-2.5 px-4 bg-[#6b9ac4] hover:bg-[#5a86ae] text-white font-bold text-xs rounded-lg transition-all shadow-sm block animate-pulse hover:animate-none"
+                                  href={`/ofertas-inmobiliarias?${card.linkParams}`}
+                                  className="w-full text-center py-2.5 px-4 bg-[#6b9ac4] hover:bg-[#5a86ae] text-white font-bold text-xs rounded-xl transition-all shadow-sm block"
                                 >
-                                  Buscar Ofertas Inmobiliarias →
+                                  Buscar Ofertas Compatibles →
                                 </Link>
-                              </>
-                            )}
-                          </div>
-                        </article>
-                      );
-                    })}
+                              </div>
+
+                            </div>
+                          </article>
+                        );
+                      })}
                   </div>
 
                   <div className="text-center pt-4">
@@ -2180,6 +2045,7 @@ export default function AsistenteSubsidiosPage() {
                           value={selectedSubsidyB} 
                           onChange={(e) => setSelectedSubsidyB(e.target.value)}
                         >
+                          <option value="all">Todas las Opciones / Comparar Todos los Subsidios</option>
                           <option value="none">Compra sin Subsidio (Hipotecario Tradicional)</option>
                           <option value="ds1t1">Subsidio DS1 Tramo 1</option>
                           <option value="ds1t2">Subsidio DS1 Tramo 2</option>
@@ -2319,94 +2185,198 @@ export default function AsistenteSubsidiosPage() {
                     </span>
                     <h2 className="text-2xl font-extrabold text-slate-900">Capacidad de Compra Real Estimada</h2>
                     <p className="text-xs text-slate-500 mt-1 max-w-xl mx-auto">
-                      Hemos evaluado tus opciones en la región de {REGION_MAP[locationB]?.label} con una renta familiar líquida de ${(parseFloat(incomeCLPB) || 0).toLocaleString("es-CL")} CLP.
+                      Listado ordenado de mayor a menor valor máximo de propiedad alcanzable en la región de {REGION_MAP[locationB]?.label} con tus ingresos y ahorro.
                     </p>
                   </div>
 
-                  <div className={`grid grid-cols-1 ${resultsB.length === 4 ? 'md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto' : resultsB.length === 3 ? 'lg:grid-cols-3' : resultsB.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' : 'max-w-xl mx-auto'} gap-6`}>
-                    {resultsB.map((card: any, idx: number) => {
-                      const isSavingsShort = card.minAhorro > 0 && (parseFloat(savingsUFB) || 0) < card.minAhorro;
-                      const missingUF = Math.max(0, card.minAhorro - (parseFloat(savingsUFB) || 0));
+                  {/* Filtros Rápidos Perfil B */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      Filtrar Opciones ({resultsB.filter((card: any) => {
+                        if (filterCategoryB === "subsidio") return card.subsidyUF > 0;
+                        if (filterCategoryB === "nueva") return card.isNew === true;
+                        if (filterCategoryB === "usada") return card.isNew === false;
+                        return true;
+                      }).length} de {resultsB.length}):
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setFilterCategoryB("todos")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryB === "todos"
+                            ? "bg-slate-900 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        Todas ({resultsB.length})
+                      </button>
+                      <button
+                        onClick={() => setFilterCategoryB("subsidio")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryB === "subsidio"
+                            ? "bg-[#87c0a3] text-slate-950 shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        🏛️ Con Subsidio Estatal
+                      </button>
+                      <button
+                        onClick={() => setFilterCategoryB("nueva")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryB === "nueva"
+                            ? "bg-emerald-600 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        ✨ Vivienda Nueva
+                      </button>
+                      <button
+                        onClick={() => setFilterCategoryB("usada")}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          filterCategoryB === "usada"
+                            ? "bg-amber-600 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        🏡 Vivienda Usada
+                      </button>
+                    </div>
+                  </div>
 
-                      return (
-                        <article 
-                          key={idx}
-                          className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-emerald-500 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between group"
-                        >
-                          <div>
-                            <span className="bg-emerald-50 text-emerald-700 text-[9px] font-bold py-1 px-2 rounded-full inline-block mb-3 border border-emerald-100">
-                              {card.badge}
-                            </span>
-                            
-                            <h3 className="text-base font-bold text-slate-900 mb-2 leading-tight">
-                              {card.title}
-                            </h3>
-                            
-                            <p className="text-xs text-slate-500 leading-relaxed mb-4 font-normal">
-                              {card.description}
-                            </p>
+                  {/* Lista Responsiva de Resultados Perfil B */}
+                  <div className="space-y-4">
+                    {resultsB
+                      .filter((card: any) => {
+                        if (filterCategoryB === "subsidio") return card.subsidyUF > 0;
+                        if (filterCategoryB === "nueva") return card.isNew === true;
+                        if (filterCategoryB === "usada") return card.isNew === false;
+                        return true;
+                      })
+                      .map((card: any, idx: number) => {
+                        const isFirst = idx === 0 && filterCategoryB === "todos";
+                        const isSavingsShort = card.minAhorro > 0 && (parseFloat(savingsUFB) || 0) < card.minAhorro;
+                        const missingUF = Math.max(0, card.minAhorro - (parseFloat(savingsUFB) || 0));
+                        const missingCLP = missingUF * ufValue;
 
-                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center mb-4">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Valor Máximo de Compra</span>
-                              <strong className="text-2xl font-black text-slate-800 block">
-                                {card.maxHouseUF.toFixed(0)} UF
-                              </strong>
-                              <span className="text-xs font-bold text-emerald-600 block mt-0.5">
-                                ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
-                              </span>
-                            </div>
+                        return (
+                          <article 
+                            key={card.id || idx}
+                            className={`bg-white border rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-300 relative ${
+                              isFirst 
+                                ? "border-emerald-500 ring-2 ring-emerald-500/20 bg-gradient-to-r from-emerald-50/40 via-white to-white" 
+                                : "border-slate-200/90 hover:border-emerald-500"
+                            }`}
+                          >
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                              
+                              {/* Columna Izquierda: Información Principal */}
+                              <div className="flex-1 space-y-3">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wide uppercase ${
+                                    isFirst 
+                                      ? "bg-emerald-600 text-white shadow-sm" 
+                                      : "bg-slate-800 text-white"
+                                  }`}>
+                                    #{idx + 1} {isFirst ? "🏆 Mayor Capacidad" : ""}
+                                  </span>
 
-                            <div className="space-y-1.5 border-t border-slate-100 pt-3 mb-4 text-xs">
-                              <div className="flex justify-between">
-                                <span className="text-slate-500">{isSavingsShort ? "Ahorro Mínimo:" : "Tu Ahorro:"}</span>
-                                <span className="font-bold text-slate-700">
-                                  {Math.max(card.minAhorro, parseFloat(savingsUFB) || 0).toFixed(0)} UF
-                                </span>
-                              </div>
-                              {card.subsidyUF > 0 && (
-                                <div className="flex justify-between">
-                                  <span className="text-slate-500">Aporte Estatal Subsidio:</span>
-                                  <span className="font-bold text-emerald-600">+{card.subsidyUF.toFixed(0)} UF</span>
+                                  <span className="bg-emerald-50 text-emerald-700 text-[11px] font-bold py-1 px-2.5 rounded-lg border border-emerald-100">
+                                    {card.badge}
+                                  </span>
+
+                                  {card.isNew && (
+                                    <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold py-1 px-2 rounded-lg border border-emerald-200">
+                                      Vivienda Nueva
+                                    </span>
+                                  )}
                                 </div>
-                              )}
-                              <div className="flex justify-between">
-                                <span className="text-slate-500">Crédito Hipotecario:</span>
-                                <span className="font-bold text-blue-600">
-                                  {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
-                                </span>
+
+                                <div>
+                                  <h3 className="text-lg md:text-xl font-bold text-slate-900 leading-tight">
+                                    {card.title}
+                                  </h3>
+                                  <p className="text-xs md:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                                    {card.description}
+                                  </p>
+                                </div>
+
+                                {isSavingsShort && (
+                                  <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
+                                    <strong>⚠️ Ahorro Insuficiente:</strong> Exige un ahorro mínimo de <strong>{card.minAhorro} UF</strong>. Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")} CLP</strong>).
+                                  </div>
+                                )}
+
+                                {card.warning && !isSavingsShort && (
+                                  <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
+                                    {card.warning}
+                                  </div>
+                                )}
+
+                                {card.info && (
+                                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-3 rounded-xl text-xs leading-relaxed">
+                                    {card.info}
+                                  </div>
+                                )}
                               </div>
-                              {card.maxDividendUF > 0 && (
-                                <div className="flex justify-between pt-1.5 border-t border-slate-100/60 mt-1">
-                                  <span className="text-slate-500 font-medium">Dividendo Estimado:</span>
-                                  <span className="font-bold text-slate-900">
-                                    {card.maxDividendUF.toFixed(2)} UF ($ {Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")})
+
+                              {/* Columna Derecha: Tarjeta de Valor Máximo y Financiamiento */}
+                              <div className="lg:w-80 flex flex-col justify-between bg-slate-50 border border-slate-200/80 p-4 md:p-5 rounded-xl space-y-4 shrink-0">
+                                <div className="text-center pb-3 border-b border-slate-200/60">
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                                    Valor Máximo de Casa
+                                  </span>
+                                  <strong className="text-2xl md:text-3xl font-black text-slate-900 block">
+                                    {card.maxHouseUF.toFixed(0)} UF
+                                  </strong>
+                                  <span className="text-xs font-bold text-emerald-600 block mt-0.5">
+                                    ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
                                   </span>
                                 </div>
-                              )}
+
+                                <div className="space-y-1.5 text-xs">
+                                  <div className="flex justify-between text-slate-600">
+                                    <span>Tu Ahorro:</span>
+                                    <span className="font-bold text-slate-800">
+                                      {Math.max(card.minAhorro || 0, parseFloat(savingsUFB) || 0).toFixed(0)} UF
+                                    </span>
+                                  </div>
+
+                                  <div className="flex justify-between text-slate-600">
+                                    <span>Subsidio Estatal:</span>
+                                    <span className="font-bold text-emerald-600">
+                                      {card.subsidyUF > 0 ? `+${card.subsidyUF.toFixed(0)} UF` : "0 UF"}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex justify-between text-slate-600">
+                                    <span>Crédito Hipotecario:</span>
+                                    <span className="font-bold text-blue-600">
+                                      {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
+                                    </span>
+                                  </div>
+
+                                  {card.maxDividendUF > 0 && (
+                                    <div className="flex justify-between text-slate-700 pt-1.5 border-t border-slate-200/60 font-medium">
+                                      <span>Dividendo Estimado:</span>
+                                      <span className="font-bold text-slate-900">
+                                        ${Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")}/mes
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <Link 
+                                  href={`/ofertas-inmobiliarias?${card.linkParams}`}
+                                  className="w-full text-center py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm block"
+                                >
+                                  Buscar Ofertas Compatibles →
+                                </Link>
+                              </div>
+
                             </div>
-
-                            {card.warning && (
-                              <div className="bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-lg text-[10px] leading-relaxed mb-4 text-left">
-                                {card.warning}
-                              </div>
-                            )}
-
-                            {card.info && (
-                              <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-2.5 rounded-lg text-[10px] leading-relaxed mb-4 text-left">
-                                {card.info}
-                              </div>
-                            )}
-                          </div>
-
-                          <Link 
-                            href={`/ofertas-inmobiliarias?${card.linkParams}`}
-                            className="w-full text-center py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition-all shadow-sm block"
-                          >
-                            Buscar Ofertas Compatibles →
-                          </Link>
-                        </article>
-                      );
-                    })}
+                          </article>
+                        );
+                      })}
                   </div>
 
                   <div className="flex justify-center gap-4 pt-4">
