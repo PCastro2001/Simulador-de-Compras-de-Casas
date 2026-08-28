@@ -97,6 +97,7 @@ export default function AsistenteSubsidiosPage() {
   const [isYoungSingleA, setIsYoungSingleA] = useState<boolean>(false);
   const [selectedBankA, setSelectedBankA] = useState<string>("BancoEstado");
   const [filterCategoryA, setFilterCategoryA] = useState<"todos" | "subsidio" | "nueva" | "usada">("todos");
+  const [viewModeA, setViewModeA] = useState<"grid" | "horizontal">("grid");
 
   // --- Estados de Perfil B (Simulación Avanzada) ---
   const [incomeCLPB, setIncomeCLPB] = useState<string>("");
@@ -112,6 +113,7 @@ export default function AsistenteSubsidiosPage() {
   const [selectedCommuneB, setSelectedCommuneB] = useState<string>("");
   const [resultsB, setResultsB] = useState<any>(null);
   const [filterCategoryB, setFilterCategoryB] = useState<"todos" | "subsidio" | "nueva" | "usada">("todos");
+  const [viewModeB, setViewModeB] = useState<"grid" | "horizontal">("grid");
 
   // Inicializar la UF y detectar perfil desde la URL
   useEffect(() => {
@@ -1772,17 +1774,11 @@ export default function AsistenteSubsidiosPage() {
                     </p>
                   </div>
 
-                  {/* Filtros Rápidos Perfil A */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Filtrar Opciones ({recommendationsA.filter((card) => {
-                        if (filterCategoryA === "subsidio") return card.subsidyUF > 0;
-                        if (filterCategoryA === "nueva") return card.isNew === true;
-                        if (filterCategoryA === "usada") return card.isNew === false;
-                        return true;
-                      }).length} de {recommendationsA.length}):
-                    </div>
-                    <div className="flex flex-wrap gap-2">
+                  {/* Filtros Rápidos y Selector de Vista (Perfil A) */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                    {/* Filtros de Categoría */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Filtrar:</span>
                       <button
                         onClick={() => setFilterCategoryA("todos")}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
@@ -1801,7 +1797,7 @@ export default function AsistenteSubsidiosPage() {
                             : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                         }`}
                       >
-                        🏛️ Con Subsidio Estatal
+                        🏛️ Con Subsidio
                       </button>
                       <button
                         onClick={() => setFilterCategoryA("nueva")}
@@ -1824,10 +1820,45 @@ export default function AsistenteSubsidiosPage() {
                         🏡 Vivienda Usada
                       </button>
                     </div>
+
+                    {/* Selector de Modo de Vista (Cuadros vs Lista Horizontal) */}
+                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0 self-end sm:self-auto">
+                      <button
+                        onClick={() => setViewModeA("grid")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+                          viewModeA === "grid" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800"
+                        }`}
+                        title="Ver en Cuadros / Grilla Responsiva"
+                      >
+                        <span>🔲</span>
+                        <span>Cuadros</span>
+                      </button>
+                      <button
+                        onClick={() => setViewModeA("horizontal")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+                          viewModeA === "horizontal" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800"
+                        }`}
+                        title="Ver en Lista Horizontal Deslizable"
+                      >
+                        <span>↔️</span>
+                        <span>Lista Horizontal</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Lista Responsiva de Recomendaciones Perfil A */}
-                  <div className="space-y-4">
+                  {/* Leyenda para móvil en Lista Horizontal */}
+                  {viewModeA === "horizontal" && (
+                    <div className="text-center text-[11px] text-slate-400 font-medium flex items-center justify-center gap-1.5 py-1">
+                      <span>⬅️</span> Desliza horizontalmente para explorar todas tus opciones <span>➡️</span>
+                    </div>
+                  )}
+
+                  {/* Contenedor de Recomendaciones Perfil A (Cuadros o Lista Horizontal) */}
+                  <div className={
+                    viewModeA === "horizontal"
+                      ? "flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 px-1 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
+                      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  }>
                     {recommendationsA
                       .filter((card) => {
                         if (filterCategoryA === "subsidio") return card.subsidyUF > 0;
@@ -1844,112 +1875,107 @@ export default function AsistenteSubsidiosPage() {
                         return (
                           <article 
                             key={card.id || idx}
-                            className={`bg-white border rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-300 relative ${
+                            className={`bg-white border rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative ${
+                              viewModeA === "horizontal" ? "w-[300px] sm:w-[340px] shrink-0 snap-start" : "w-full"
+                            } ${
                               isFirst 
-                                ? "border-emerald-400 ring-2 ring-emerald-400/20 bg-gradient-to-r from-emerald-50/40 via-white to-white" 
+                                ? "border-emerald-400 ring-2 ring-emerald-400/20 bg-gradient-to-b from-emerald-50/40 via-white to-white" 
                                 : "border-slate-200/90 hover:border-[#6b9ac4]"
                             }`}
                           >
-                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                              
-                              {/* Columna Izquierda: Información Principal */}
-                              <div className="flex-1 space-y-3">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wide uppercase ${
-                                    isFirst 
-                                      ? "bg-emerald-600 text-white shadow-sm" 
-                                      : "bg-slate-800 text-white"
-                                  }`}>
-                                    #{idx + 1} {isFirst ? "🏆 Mayor Capacidad" : ""}
-                                  </span>
+                            <div className="space-y-4">
+                              {/* Cabecera con Insignias */}
+                              <div className="flex flex-wrap items-center justify-between gap-1.5">
+                                <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-lg tracking-wide uppercase ${
+                                  isFirst ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-800 text-white"
+                                }`}>
+                                  #{idx + 1} {isFirst ? "🏆 Mayor Capacidad" : ""}
+                                </span>
 
-                                  <span className="bg-blue-50 text-[#6b9ac4] text-[11px] font-bold py-1 px-2.5 rounded-lg border border-blue-100">
-                                    {card.badge}
-                                  </span>
+                                <span className="bg-blue-50 text-[#6b9ac4] text-[10px] font-bold py-1 px-2.5 rounded-lg border border-blue-100">
+                                  {card.badge}
+                                </span>
+                              </div>
 
-                                  {card.isNew && (
-                                    <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold py-1 px-2 rounded-lg border border-emerald-200">
-                                      Vivienda Nueva
+                              {/* Título y Descripción */}
+                              <div>
+                                <h3 className="text-base font-bold text-slate-900 leading-tight group-hover:text-[#6b9ac4] transition-colors">
+                                  {card.title}
+                                </h3>
+                                <p className="text-xs text-slate-500 mt-1.5 leading-relaxed line-clamp-3">
+                                  {card.description}
+                                </p>
+                              </div>
+
+                              {/* Cuadro de Valor Máximo de Casa */}
+                              <div className="bg-slate-900 text-white p-4 rounded-xl text-center shadow-inner relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full blur-xl pointer-events-none" />
+                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">
+                                  Valor Máximo de Casa
+                                </span>
+                                <strong className="text-2xl sm:text-3xl font-black text-white block mt-0.5">
+                                  {card.maxHouseUF.toFixed(0)} UF
+                                </strong>
+                                <span className="text-xs font-bold text-emerald-400 block mt-0.5">
+                                  ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
+                                </span>
+                              </div>
+
+                              {/* Desglose de Financiamiento */}
+                              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 space-y-2 text-xs">
+                                <div className="flex justify-between text-slate-600">
+                                  <span>Tu Ahorro:</span>
+                                  <span className="font-bold text-slate-800">
+                                    {Math.max(card.minAhorro || 0, parseFloat(savingsUF) || 0).toFixed(0)} UF
+                                  </span>
+                                </div>
+
+                                <div className="flex justify-between text-slate-600">
+                                  <span>Aporte Subsidio Estatal:</span>
+                                  <span className="font-bold text-emerald-600">
+                                    {card.subsidyUF > 0 ? `+${card.subsidyUF.toFixed(0)} UF` : "0 UF"}
+                                  </span>
+                                </div>
+
+                                <div className="flex justify-between text-slate-600">
+                                  <span>Crédito Hipotecario:</span>
+                                  <span className="font-bold text-blue-600">
+                                    {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
+                                  </span>
+                                </div>
+
+                                {card.maxDividendUF > 0 && (
+                                  <div className="flex justify-between text-slate-700 pt-2 border-t border-slate-200/60 font-medium">
+                                    <span>Dividendo Estimado:</span>
+                                    <span className="font-bold text-slate-900">
+                                      ${Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")}/mes
                                     </span>
-                                  )}
-                                </div>
-
-                                <div>
-                                  <h3 className="text-lg md:text-xl font-bold text-slate-900 leading-tight">
-                                    {card.title}
-                                  </h3>
-                                  <p className="text-xs md:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                                    {card.description}
-                                  </p>
-                                </div>
-
-                                {isSavingsShort && (
-                                  <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
-                                    <strong>⚠️ Ahorro Insuficiente:</strong> Exige un ahorro mínimo de <strong>{card.minAhorro} UF</strong>. Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")} CLP</strong>).
-                                  </div>
-                                )}
-
-                                {card.info && (
-                                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-3 rounded-xl text-xs leading-relaxed">
-                                    {card.info}
                                   </div>
                                 )}
                               </div>
 
-                              {/* Columna Derecha: Tarjeta de Valor Máximo y Financiamiento */}
-                              <div className="lg:w-80 flex flex-col justify-between bg-slate-50 border border-slate-200/80 p-4 md:p-5 rounded-xl space-y-4 shrink-0">
-                                <div className="text-center pb-3 border-b border-slate-200/60">
-                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                                    Valor Máximo de Casa
-                                  </span>
-                                  <strong className="text-2xl md:text-3xl font-black text-slate-900 block">
-                                    {card.maxHouseUF.toFixed(0)} UF
-                                  </strong>
-                                  <span className="text-xs font-bold text-emerald-600 block mt-0.5">
-                                    ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
-                                  </span>
+                              {/* Alertas e Información */}
+                              {isSavingsShort && (
+                                <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
+                                  <strong>⚠️ Ahorro Insuficiente:</strong> Exige mínimo <strong>{card.minAhorro} UF</strong>. Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")} CLP</strong>).
                                 </div>
+                              )}
 
-                                <div className="space-y-1.5 text-xs">
-                                  <div className="flex justify-between text-slate-600">
-                                    <span>Tu Ahorro:</span>
-                                    <span className="font-bold text-slate-800">
-                                      {Math.max(card.minAhorro || 0, parseFloat(savingsUF) || 0).toFixed(0)} UF
-                                    </span>
-                                  </div>
-
-                                  <div className="flex justify-between text-slate-600">
-                                    <span>Subsidio Estatal:</span>
-                                    <span className="font-bold text-emerald-600">
-                                      {card.subsidyUF > 0 ? `+${card.subsidyUF.toFixed(0)} UF` : "0 UF"}
-                                    </span>
-                                  </div>
-
-                                  <div className="flex justify-between text-slate-600">
-                                    <span>Crédito Hipotecario:</span>
-                                    <span className="font-bold text-blue-600">
-                                      {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
-                                    </span>
-                                  </div>
-
-                                  {card.maxDividendUF > 0 && (
-                                    <div className="flex justify-between text-slate-700 pt-1.5 border-t border-slate-200/60 font-medium">
-                                      <span>Dividendo Estimado:</span>
-                                      <span className="font-bold text-slate-900">
-                                        ${Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")}/mes
-                                      </span>
-                                    </div>
-                                  )}
+                              {card.info && (
+                                <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-3 rounded-xl text-xs leading-relaxed">
+                                  {card.info}
                                 </div>
+                              )}
+                            </div>
 
-                                <Link 
-                                  href={`/ofertas-inmobiliarias?${card.linkParams}`}
-                                  className="w-full text-center py-2.5 px-4 bg-[#6b9ac4] hover:bg-[#5a86ae] text-white font-bold text-xs rounded-xl transition-all shadow-sm block"
-                                >
-                                  Buscar Ofertas Compatibles →
-                                </Link>
-                              </div>
-
+                            {/* Botón CTA */}
+                            <div className="pt-4 mt-auto">
+                              <Link 
+                                href={`/ofertas-inmobiliarias?${card.linkParams}`}
+                                className="w-full text-center py-3 px-4 bg-[#6b9ac4] hover:bg-[#5a86ae] text-white font-bold text-xs rounded-xl transition-all shadow-sm block group-hover:shadow-md"
+                              >
+                                Buscar Ofertas Compatibles →
+                              </Link>
                             </div>
                           </article>
                         );
@@ -2189,17 +2215,11 @@ export default function AsistenteSubsidiosPage() {
                     </p>
                   </div>
 
-                  {/* Filtros Rápidos Perfil B */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Filtrar Opciones ({resultsB.filter((card: any) => {
-                        if (filterCategoryB === "subsidio") return card.subsidyUF > 0;
-                        if (filterCategoryB === "nueva") return card.isNew === true;
-                        if (filterCategoryB === "usada") return card.isNew === false;
-                        return true;
-                      }).length} de {resultsB.length}):
-                    </div>
-                    <div className="flex flex-wrap gap-2">
+                  {/* Filtros Rápidos y Selector de Vista (Perfil B) */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                    {/* Filtros de Categoría */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Filtrar:</span>
                       <button
                         onClick={() => setFilterCategoryB("todos")}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
@@ -2218,7 +2238,7 @@ export default function AsistenteSubsidiosPage() {
                             : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                         }`}
                       >
-                        🏛️ Con Subsidio Estatal
+                        🏛️ Con Subsidio
                       </button>
                       <button
                         onClick={() => setFilterCategoryB("nueva")}
@@ -2241,10 +2261,45 @@ export default function AsistenteSubsidiosPage() {
                         🏡 Vivienda Usada
                       </button>
                     </div>
+
+                    {/* Selector de Modo de Vista (Cuadros vs Lista Horizontal) */}
+                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0 self-end sm:self-auto">
+                      <button
+                        onClick={() => setViewModeB("grid")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+                          viewModeB === "grid" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800"
+                        }`}
+                        title="Ver en Cuadros / Grilla Responsiva"
+                      >
+                        <span>🔲</span>
+                        <span>Cuadros</span>
+                      </button>
+                      <button
+                        onClick={() => setViewModeB("horizontal")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+                          viewModeB === "horizontal" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800"
+                        }`}
+                        title="Ver en Lista Horizontal Deslizable"
+                      >
+                        <span>↔️</span>
+                        <span>Lista Horizontal</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Lista Responsiva de Resultados Perfil B */}
-                  <div className="space-y-4">
+                  {/* Leyenda para móvil en Lista Horizontal */}
+                  {viewModeB === "horizontal" && (
+                    <div className="text-center text-[11px] text-slate-400 font-medium flex items-center justify-center gap-1.5 py-1">
+                      <span>⬅️</span> Desliza horizontalmente para explorar todas tus opciones <span>➡️</span>
+                    </div>
+                  )}
+
+                  {/* Contenedor de Resultados Perfil B (Cuadros o Lista Horizontal) */}
+                  <div className={
+                    viewModeB === "horizontal"
+                      ? "flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 px-1 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
+                      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  }>
                     {resultsB
                       .filter((card: any) => {
                         if (filterCategoryB === "subsidio") return card.subsidyUF > 0;
@@ -2261,118 +2316,113 @@ export default function AsistenteSubsidiosPage() {
                         return (
                           <article 
                             key={card.id || idx}
-                            className={`bg-white border rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-300 relative ${
+                            className={`bg-white border rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative ${
+                              viewModeB === "horizontal" ? "w-[300px] sm:w-[340px] shrink-0 snap-start" : "w-full"
+                            } ${
                               isFirst 
-                                ? "border-emerald-500 ring-2 ring-emerald-500/20 bg-gradient-to-r from-emerald-50/40 via-white to-white" 
+                                ? "border-emerald-500 ring-2 ring-emerald-500/20 bg-gradient-to-b from-emerald-50/40 via-white to-white" 
                                 : "border-slate-200/90 hover:border-emerald-500"
                             }`}
                           >
-                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                              
-                              {/* Columna Izquierda: Información Principal */}
-                              <div className="flex-1 space-y-3">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wide uppercase ${
-                                    isFirst 
-                                      ? "bg-emerald-600 text-white shadow-sm" 
-                                      : "bg-slate-800 text-white"
-                                  }`}>
-                                    #{idx + 1} {isFirst ? "🏆 Mayor Capacidad" : ""}
-                                  </span>
+                            <div className="space-y-4">
+                              {/* Cabecera con Insignias */}
+                              <div className="flex flex-wrap items-center justify-between gap-1.5">
+                                <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-lg tracking-wide uppercase ${
+                                  isFirst ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-800 text-white"
+                                }`}>
+                                  #{idx + 1} {isFirst ? "🏆 Mayor Capacidad" : ""}
+                                </span>
 
-                                  <span className="bg-emerald-50 text-emerald-700 text-[11px] font-bold py-1 px-2.5 rounded-lg border border-emerald-100">
-                                    {card.badge}
-                                  </span>
+                                <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold py-1 px-2.5 rounded-lg border border-emerald-100">
+                                  {card.badge}
+                                </span>
+                              </div>
 
-                                  {card.isNew && (
-                                    <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold py-1 px-2 rounded-lg border border-emerald-200">
-                                      Vivienda Nueva
+                              {/* Título y Descripción */}
+                              <div>
+                                <h3 className="text-base font-bold text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">
+                                  {card.title}
+                                </h3>
+                                <p className="text-xs text-slate-500 mt-1.5 leading-relaxed line-clamp-3">
+                                  {card.description}
+                                </p>
+                              </div>
+
+                              {/* Cuadro de Valor Máximo de Casa */}
+                              <div className="bg-slate-900 text-white p-4 rounded-xl text-center shadow-inner relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
+                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">
+                                  Valor Máximo de Casa
+                                </span>
+                                <strong className="text-2xl sm:text-3xl font-black text-white block mt-0.5">
+                                  {card.maxHouseUF.toFixed(0)} UF
+                                </strong>
+                                <span className="text-xs font-bold text-emerald-400 block mt-0.5">
+                                  ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
+                                </span>
+                              </div>
+
+                              {/* Desglose de Financiamiento */}
+                              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 space-y-2 text-xs">
+                                <div className="flex justify-between text-slate-600">
+                                  <span>Tu Ahorro:</span>
+                                  <span className="font-bold text-slate-800">
+                                    {Math.max(card.minAhorro || 0, parseFloat(savingsUFB) || 0).toFixed(0)} UF
+                                  </span>
+                                </div>
+
+                                <div className="flex justify-between text-slate-600">
+                                  <span>Aporte Subsidio Estatal:</span>
+                                  <span className="font-bold text-emerald-600">
+                                    {card.subsidyUF > 0 ? `+${card.subsidyUF.toFixed(0)} UF` : "0 UF"}
+                                  </span>
+                                </div>
+
+                                <div className="flex justify-between text-slate-600">
+                                  <span>Crédito Hipotecario:</span>
+                                  <span className="font-bold text-blue-600">
+                                    {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
+                                  </span>
+                                </div>
+
+                                {card.maxDividendUF > 0 && (
+                                  <div className="flex justify-between text-slate-700 pt-2 border-t border-slate-200/60 font-medium">
+                                    <span>Dividendo Estimado:</span>
+                                    <span className="font-bold text-slate-900">
+                                      ${Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")}/mes
                                     </span>
-                                  )}
-                                </div>
-
-                                <div>
-                                  <h3 className="text-lg md:text-xl font-bold text-slate-900 leading-tight">
-                                    {card.title}
-                                  </h3>
-                                  <p className="text-xs md:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                                    {card.description}
-                                  </p>
-                                </div>
-
-                                {isSavingsShort && (
-                                  <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
-                                    <strong>⚠️ Ahorro Insuficiente:</strong> Exige un ahorro mínimo de <strong>{card.minAhorro} UF</strong>. Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")} CLP</strong>).
-                                  </div>
-                                )}
-
-                                {card.warning && !isSavingsShort && (
-                                  <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
-                                    {card.warning}
-                                  </div>
-                                )}
-
-                                {card.info && (
-                                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-3 rounded-xl text-xs leading-relaxed">
-                                    {card.info}
                                   </div>
                                 )}
                               </div>
 
-                              {/* Columna Derecha: Tarjeta de Valor Máximo y Financiamiento */}
-                              <div className="lg:w-80 flex flex-col justify-between bg-slate-50 border border-slate-200/80 p-4 md:p-5 rounded-xl space-y-4 shrink-0">
-                                <div className="text-center pb-3 border-b border-slate-200/60">
-                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                                    Valor Máximo de Casa
-                                  </span>
-                                  <strong className="text-2xl md:text-3xl font-black text-slate-900 block">
-                                    {card.maxHouseUF.toFixed(0)} UF
-                                  </strong>
-                                  <span className="text-xs font-bold text-emerald-600 block mt-0.5">
-                                    ≈ ${Math.round(card.maxHouseUF * ufValue).toLocaleString("es-CL")} CLP
-                                  </span>
+                              {/* Alertas e Información */}
+                              {isSavingsShort && (
+                                <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
+                                  <strong>⚠️ Ahorro Insuficiente:</strong> Exige mínimo <strong>{card.minAhorro} UF</strong>. Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")} CLP</strong>).
                                 </div>
+                              )}
 
-                                <div className="space-y-1.5 text-xs">
-                                  <div className="flex justify-between text-slate-600">
-                                    <span>Tu Ahorro:</span>
-                                    <span className="font-bold text-slate-800">
-                                      {Math.max(card.minAhorro || 0, parseFloat(savingsUFB) || 0).toFixed(0)} UF
-                                    </span>
-                                  </div>
-
-                                  <div className="flex justify-between text-slate-600">
-                                    <span>Subsidio Estatal:</span>
-                                    <span className="font-bold text-emerald-600">
-                                      {card.subsidyUF > 0 ? `+${card.subsidyUF.toFixed(0)} UF` : "0 UF"}
-                                    </span>
-                                  </div>
-
-                                  <div className="flex justify-between text-slate-600">
-                                    <span>Crédito Hipotecario:</span>
-                                    <span className="font-bold text-blue-600">
-                                      {card.loanUF > 0 ? `${card.loanUF.toFixed(0)} UF` : "No requiere"}
-                                    </span>
-                                  </div>
-
-                                  {card.maxDividendUF > 0 && (
-                                    <div className="flex justify-between text-slate-700 pt-1.5 border-t border-slate-200/60 font-medium">
-                                      <span>Dividendo Estimado:</span>
-                                      <span className="font-bold text-slate-900">
-                                        ${Math.round(card.maxDividendUF * ufValue).toLocaleString("es-CL")}/mes
-                                      </span>
-                                    </div>
-                                  )}
+                              {card.warning && !isSavingsShort && (
+                                <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
+                                  {card.warning}
                                 </div>
+                              )}
 
-                                <Link 
-                                  href={`/ofertas-inmobiliarias?${card.linkParams}`}
-                                  className="w-full text-center py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm block"
-                                >
-                                  Buscar Ofertas Compatibles →
-                                </Link>
-                              </div>
+                              {card.info && (
+                                <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 p-3 rounded-xl text-xs leading-relaxed">
+                                  {card.info}
+                                </div>
+                              )}
+                            </div>
 
+                            {/* Botón CTA */}
+                            <div className="pt-4 mt-auto">
+                              <Link 
+                                href={`/ofertas-inmobiliarias?${card.linkParams}`}
+                                className="w-full text-center py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm block group-hover:shadow-md"
+                              >
+                                Buscar Ofertas Compatibles →
+                              </Link>
                             </div>
                           </article>
                         );
