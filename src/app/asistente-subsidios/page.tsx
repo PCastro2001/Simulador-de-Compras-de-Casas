@@ -397,8 +397,8 @@ export default function AsistenteSubsidiosPage() {
     const maxMonthlyPaymentUF = (income / ufValue) / incomeMultiplier;
 
     // Tasa bancaria
-    const tasaOriginal = bankData.calcularTasa ? bankData.calcularTasa(1000, term) : (bankData.tasaBase || 0.045);
-    const descuento = bankData.descuentoDS15 || 0.009;
+    const tasaOriginal = bankData.calcularTasa ? bankData.calcularTasa(1000, term) : (bankData.tasaBase || 0.0425);
+    const descuento = bankData.descuentoDS15 !== undefined ? bankData.descuentoDS15 : 0;
     const tasaDS15 = tasaOriginal - descuento;
 
     const monthlyRateNormal = tasaOriginal / 12;
@@ -705,52 +705,121 @@ export default function AsistenteSubsidiosPage() {
 
     // --- OPCIONES SIN SUBSIDIO (FINANCIAMIENTO PRIVADO) ---
 
-    // FOGAES Nueva
-    const maxHouseFogaesWithDiscount = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
-    const maxHouseFogaesNormal = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
-    const maxHouseFogaes = Math.max(maxHouseFogaesWithDiscount, maxHouseFogaesNormal);
-    const loanFogaes = Math.max(0, maxHouseFogaes - savings);
-    const aplicaLeyFogaes = maxHouseFogaes < 4000;
-    const rateFogaes = aplicaLeyFogaes ? monthlyRateDS15 : monthlyRateNormal;
-    const dividendFogaes = loanFogaes > 0 ? (loanFogaes * rateFogaes) / (1 - Math.pow(1 + rateFogaes, -totalPayments)) : 0;
+    // 1A. FOGAES Nueva - Versión 1: Basada en el Ahorro Actual del Usuario
+    const maxHouseFogaesWithDiscountActual = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
+    const maxHouseFogaesNormalActual = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
+    const maxHouseFogaesActual = Math.max(maxHouseFogaesWithDiscountActual, maxHouseFogaesNormalActual);
+    const loanFogaesActual = Math.max(0, maxHouseFogaesActual - savings);
+    const aplicaLeyFogaesActual = maxHouseFogaesActual < 4000;
+    const rateFogaesActual = aplicaLeyFogaesActual ? monthlyRateDS15 : monthlyRateNormal;
+    const dividendFogaesActual = loanFogaesActual > 0 ? (loanFogaesActual * rateFogaesActual) / (1 - Math.pow(1 + rateFogaesActual, -totalPayments)) : 0;
 
     cards.push({
-      id: "sin-subsidio-fogaes",
+      id: "sin-subsidio-fogaes-ahorro",
       subsidyKey: "none",
-      badge: "Compra Directa - Aval Estatal FOGAES",
-      title: "Crédito Hipotecario sin Subsidio (Vivienda Nueva con FOGAES)",
-      description: `Financiamiento hasta el 90% con aval estatal FOGAES. Permite pie del 10%${aplicaLeyFogaes ? " e incluye rebaja de tasa Ley 21.748" : ""}.`,
-      maxHouseUF: maxHouseFogaes,
-      loanUF: loanFogaes,
+      badge: "Vivienda Nueva - Ahorro Actual",
+      title: "Crédito Hipotecario sin Subsidio (Con FOGAES - Según tu ahorro)",
+      description: `Financiamiento hasta el 90% con aval estatal FOGAES (pie del 10%). Muestra la casa que puedes comprar hoy con tus ${savings.toFixed(0)} UF de ahorro${aplicaLeyFogaesActual ? " e incluye rebaja de tasa Ley 21.748" : ""}.`,
+      maxHouseUF: maxHouseFogaesActual,
+      loanUF: loanFogaesActual,
       savingsUF: savings,
       subsidyUF: 0,
       minAhorro: 0,
-      maxDividendUF: dividendFogaes,
+      savingsLabel: "Tu Ahorro Actual",
+      maxDividendUF: dividendFogaesActual,
       category: "privado",
       isNew: true,
-      linkParams: `maxPrice=${Math.round(maxHouseFogaes * ufValue)}&maxUF=${Math.round(maxHouseFogaes)}&credit=${Math.round(loanFogaes)}&origin=no-subsidy&region=${regionA}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaes ? "true" : "false"}&isNew=true`
+      linkParams: `maxPrice=${Math.round(maxHouseFogaesActual * ufValue)}&maxUF=${Math.round(maxHouseFogaesActual)}&credit=${Math.round(loanFogaesActual)}&origin=no-subsidy&region=${regionA}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaesActual ? "true" : "false"}&isNew=true`
     });
 
-    // Tradicional Usada
-    const maxHouseUsada = Math.min(savings / 0.20, maxLoanUFNormal + savings);
-    const loanUsada = Math.max(0, maxHouseUsada - savings);
-    const dividendUsada = loanUsada > 0 ? (loanUsada * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+    // 1B. FOGAES Nueva - Versión 2: Maximizado por Sueldo (Ahorro Mínimo Sugerido)
+    const maxLoanFogaesLimit = maxLoanUFDS15 > 0 ? maxLoanUFDS15 : maxLoanUFNormal;
+    const maxHouseFogaesMaximized = Math.min(4500, maxLoanFogaesLimit / 0.90);
+    const minSavingsFogaesNeeded = maxHouseFogaesMaximized * 0.10;
+    const loanFogaesMaximized = Math.max(0, maxHouseFogaesMaximized - minSavingsFogaesNeeded);
+    const aplicaLeyFogaesMax = maxHouseFogaesMaximized < 4000;
+    const rateFogaesMax = aplicaLeyFogaesMax ? monthlyRateDS15 : monthlyRateNormal;
+    const dividendFogaesMaximized = loanFogaesMaximized > 0 ? (loanFogaesMaximized * rateFogaesMax) / (1 - Math.pow(1 + rateFogaesMax, -totalPayments)) : 0;
+
+    let infoFogaesMax = "";
+    if (savings < minSavingsFogaesNeeded) {
+      infoFogaesMax = `💡 Ahorro Mínimo Sugerido: Con un pie del 10% (${minSavingsFogaesNeeded.toFixed(0)} UF, aprox. $${Math.round(minSavingsFogaesNeeded * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad nueva de hasta ${maxHouseFogaesMaximized.toFixed(0)} UF. Te faltan ${(minSavingsFogaesNeeded - savings).toFixed(0)} UF de ahorro.`;
+    } else {
+      infoFogaesMax = `✨ ¡Tu ahorro actual (${savings.toFixed(0)} UF) ya te permite alcanzar el máximo permitido por tu sueldo (${maxHouseFogaesMaximized.toFixed(0)} UF)!`;
+    }
 
     cards.push({
-      id: "sin-subsidio-usada",
+      id: "sin-subsidio-fogaes-maximizado",
       subsidyKey: "none",
-      badge: "Compra Directa - Financiamiento Privado",
-      title: "Crédito Hipotecario sin Subsidio (Vivienda Usada)",
-      description: "Financiamiento bancario convencional hasta el 80%. Exige pie mínimo del 20%.",
-      maxHouseUF: maxHouseUsada,
-      loanUF: loanUsada,
+      badge: "Vivienda Nueva - Ahorro Objetivo",
+      title: "Crédito Hipotecario sin Subsidio (Con FOGAES - Maximizado por Sueldo)",
+      description: "Financiamiento hasta 90% con aval FOGAES. Muestra la vivienda máxima alcanzable según tu sueldo y el ahorro mínimo de pie (10%) necesario para comprarla.",
+      maxHouseUF: maxHouseFogaesMaximized,
+      loanUF: loanFogaesMaximized,
+      savingsUF: minSavingsFogaesNeeded,
+      subsidyUF: 0,
+      minAhorro: minSavingsFogaesNeeded,
+      savingsLabel: "Ahorro Mínimo Requerido",
+      maxDividendUF: dividendFogaesMaximized,
+      info: infoFogaesMax,
+      category: "privado",
+      isNew: true,
+      linkParams: `maxPrice=${Math.round(maxHouseFogaesMaximized * ufValue)}&maxUF=${Math.round(maxHouseFogaesMaximized)}&credit=${Math.round(loanFogaesMaximized)}&origin=no-subsidy&region=${regionA}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaesMax ? "true" : "false"}&isNew=true`
+    });
+
+    // 2A. Tradicional Usada - Versión 1: Basada en el Ahorro Actual del Usuario
+    const maxHouseUsadaActual = Math.min(savings / 0.20, maxLoanUFNormal + savings);
+    const loanUsadaActual = Math.max(0, maxHouseUsadaActual - savings);
+    const dividendUsadaActual = loanUsadaActual > 0 ? (loanUsadaActual * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+
+    cards.push({
+      id: "sin-subsidio-usada-ahorro",
+      subsidyKey: "none",
+      badge: "Vivienda Usada - Ahorro Actual",
+      title: "Crédito Hipotecario sin Subsidio (Sin FOGAES - Según tu ahorro)",
+      description: `Financiamiento bancario convencional hasta el 80% (pie mínimo del 20%). Muestra la casa usada que puedes comprar con tus ${savings.toFixed(0)} UF de ahorro.`,
+      maxHouseUF: maxHouseUsadaActual,
+      loanUF: loanUsadaActual,
       savingsUF: savings,
       subsidyUF: 0,
       minAhorro: 0,
-      maxDividendUF: dividendUsada,
+      savingsLabel: "Tu Ahorro Actual",
+      maxDividendUF: dividendUsadaActual,
       category: "privado",
       isNew: false,
-      linkParams: `maxPrice=${Math.round(maxHouseUsada * ufValue)}&maxUF=${Math.round(maxHouseUsada)}&credit=${Math.round(loanUsada)}&origin=no-subsidy&region=${regionA}&applyFogaes=false&applyRateDiscount=false&isNew=false`
+      linkParams: `maxPrice=${Math.round(maxHouseUsadaActual * ufValue)}&maxUF=${Math.round(maxHouseUsadaActual)}&credit=${Math.round(loanUsadaActual)}&origin=no-subsidy&region=${regionA}&applyFogaes=false&applyRateDiscount=false&isNew=false`
+    });
+
+    // 2B. Tradicional Usada - Versión 2: Maximizado por Sueldo (Ahorro Mínimo Sugerido)
+    const maxHouseUsadaMaximized = maxLoanUFNormal / 0.80;
+    const minSavingsUsadaNeeded = maxHouseUsadaMaximized * 0.20;
+    const loanUsadaMaximized = Math.max(0, maxHouseUsadaMaximized - minSavingsUsadaNeeded);
+    const dividendUsadaMaximized = loanUsadaMaximized > 0 ? (loanUsadaMaximized * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+
+    let infoUsadaMax = "";
+    if (savings < minSavingsUsadaNeeded) {
+      infoUsadaMax = `💡 Ahorro Mínimo Sugerido: Con un pie del 20% (${minSavingsUsadaNeeded.toFixed(0)} UF, aprox. $${Math.round(minSavingsUsadaNeeded * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad usada de hasta ${maxHouseUsadaMaximized.toFixed(0)} UF. Te faltan ${(minSavingsUsadaNeeded - savings).toFixed(0)} UF de ahorro.`;
+    } else {
+      infoUsadaMax = `✨ ¡Tu ahorro actual (${savings.toFixed(0)} UF) ya te permite alcanzar el máximo permitido por tu sueldo (${maxHouseUsadaMaximized.toFixed(0)} UF)!`;
+    }
+
+    cards.push({
+      id: "sin-subsidio-usada-maximizado",
+      subsidyKey: "none",
+      badge: "Vivienda Usada - Ahorro Objetivo",
+      title: "Crédito Hipotecario sin Subsidio (Sin FOGAES - Maximizado por Sueldo)",
+      description: "Financiamiento bancario convencional hasta el 80%. Muestra la vivienda usada máxima alcanzable según tu sueldo y el ahorro mínimo (pie del 20%) necesario.",
+      maxHouseUF: maxHouseUsadaMaximized,
+      loanUF: loanUsadaMaximized,
+      savingsUF: minSavingsUsadaNeeded,
+      subsidyUF: 0,
+      minAhorro: minSavingsUsadaNeeded,
+      savingsLabel: "Ahorro Mínimo Requerido",
+      maxDividendUF: dividendUsadaMaximized,
+      info: infoUsadaMax,
+      category: "privado",
+      isNew: false,
+      linkParams: `maxPrice=${Math.round(maxHouseUsadaMaximized * ufValue)}&maxUF=${Math.round(maxHouseUsadaMaximized)}&credit=${Math.round(loanUsadaMaximized)}&origin=no-subsidy&region=${regionA}&applyFogaes=false&applyRateDiscount=false&isNew=false`
     });
 
     // --- ORDENAR DEL MAYOR VALOR MÁXIMO DE CASA AL MENOR ---
@@ -778,8 +847,8 @@ export default function AsistenteSubsidiosPage() {
     const incomeMultiplier = isYoungSingleB ? 3 : 4;
     const maxMonthlyPaymentUF = (income / ufValue) / incomeMultiplier;
 
-    const tasaOriginal = bankData.calcularTasa ? bankData.calcularTasa(1000, term) : (bankData.tasaBase || 0.045);
-    const descuento = bankData.descuentoDS15 || 0.009;
+    const tasaOriginal = bankData.calcularTasa ? bankData.calcularTasa(1000, term) : (bankData.tasaBase || 0.0425);
+    const descuento = bankData.descuentoDS15 !== undefined ? bankData.descuentoDS15 : 0;
     const tasaDS15 = tasaOriginal - descuento;
 
     const monthlyRateNormal = tasaOriginal / 12;
@@ -818,70 +887,114 @@ export default function AsistenteSubsidiosPage() {
 
     const options: any[] = [];
 
-    if (selectedSubsidyB === "none") {
-      // Opción A: Vivienda Nueva (Con FOGAES + Subsidio Dividendo)
-      const maxHouseFogaesWithDiscount = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
-      const maxHouseFogaesNormal = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
-      const maxHouseFogaes = Math.max(maxHouseFogaesWithDiscount, maxHouseFogaesNormal);
-      const loanFogaes = Math.max(0, maxHouseFogaes - savings);
-      const aplicaLeyFogaes = maxHouseFogaes < 4000;
-      const rateFogaes = aplicaLeyFogaes ? monthlyRateDS15 : monthlyRateNormal;
-      const maxDividendFogaes = loanFogaes > 0 ? (loanFogaes * rateFogaes) / (1 - Math.pow(1 + rateFogaes, -totalPayments)) : 0;
+    if (selectedSubsidyB === "none" || selectedSubsidyB === "all") {
+      // 1A. FOGAES Nueva - Versión 1: Basada en el Ahorro Actual
+      const maxHouseFogaesWithDiscountActual = Math.min(4000, Math.min(savings / 0.10, maxLoanUFDS15 + savings));
+      const maxHouseFogaesNormalActual = Math.min(4500, Math.min(savings / 0.10, maxLoanUFNormal + savings));
+      const maxHouseFogaesActual = Math.max(maxHouseFogaesWithDiscountActual, maxHouseFogaesNormalActual);
+      const loanFogaesActual = Math.max(0, maxHouseFogaesActual - savings);
+      const aplicaLeyFogaesActual = maxHouseFogaesActual < 4000;
+      const rateFogaesActual = aplicaLeyFogaesActual ? monthlyRateDS15 : monthlyRateNormal;
+      const maxDividendFogaesActual = loanFogaesActual > 0 ? (loanFogaesActual * rateFogaesActual) / (1 - Math.pow(1 + rateFogaesActual, -totalPayments)) : 0;
       
-      const maxLoanFogaesLimit = aplicaLeyFogaes ? maxLoanUFDS15 : maxLoanUFNormal;
-      const maxHouseFogaesByIncome = maxLoanFogaesLimit / 0.9;
-      let warningFogaes = "";
-      if (maxHouseFogaes < Math.min(4500, maxHouseFogaesByIncome)) {
-        const targetUF = Math.min(4500, maxHouseFogaesByIncome);
-        const neededSavings = targetUF * 0.10;
-        warningFogaes = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad nueva de hasta ${targetUF.toFixed(0)} UF.`;
-      }
-
       options.push({
-        id: "fogaes-nueva",
-        badge: "Vivienda Nueva - Crédito Hipotecario",
-        title: `Vivienda Nueva (Con FOGAES${aplicaLeyFogaes ? " + Subsidio Dividendo" : ""})`,
-        description: "Financiamiento hasta 90% con aval del Estado (FOGAES). Permite pie mínimo del 10%.",
-        maxHouseUF: maxHouseFogaes,
-        loanUF: loanFogaes,
+        id: "fogaes-nueva-ahorro",
+        badge: "Vivienda Nueva - Ahorro Actual",
+        title: "Crédito Hipotecario sin Subsidio (Con FOGAES - Según tu ahorro)",
+        description: `Financiamiento hasta 90% con aval del Estado (FOGAES). Basado en tus ${savings.toFixed(0)} UF de ahorro actual.`,
+        maxHouseUF: maxHouseFogaesActual,
+        loanUF: loanFogaesActual,
         savingsUF: savings,
         subsidyUF: 0,
         minAhorro: 0,
-        maxDividendUF: maxDividendFogaes,
-        warning: warningFogaes,
-        linkParams: `maxPrice=${Math.round(maxHouseFogaes * ufValue)}&maxUF=${Math.round(maxHouseFogaes)}&credit=${Math.round(loanFogaes)}&origin=no-subsidy&region=${locationB}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaes ? "true" : "false"}&isNew=true`
+        savingsLabel: "Tu Ahorro Actual",
+        maxDividendUF: maxDividendFogaesActual,
+        linkParams: `maxPrice=${Math.round(maxHouseFogaesActual * ufValue)}&maxUF=${Math.round(maxHouseFogaesActual)}&credit=${Math.round(loanFogaesActual)}&origin=no-subsidy&region=${locationB}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaesActual ? "true" : "false"}&isNew=true`
       });
 
-      // Opción B: Vivienda Usada (Sin FOGAES ni Subsidio)
-      const maxHouseUsada = Math.min(savings / 0.20, maxLoanUFNormal + savings);
-      const loanUsada = Math.max(0, maxHouseUsada - savings);
-      const maxDividendUsada = loanUsada > 0 ? (loanUsada * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
-      
-      const maxHouseUsadaByIncome = maxLoanUFNormal / 0.8;
-      let warningUsada = "";
-      if (maxHouseUsada < maxHouseUsadaByIncome) {
-        const targetUF = maxHouseUsadaByIncome;
-        const neededSavings = targetUF * 0.20;
-        warningUsada = `💡 Con un pie minimo de ${neededSavings.toFixed(0)} UF (aprox. $${Math.round(neededSavings * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad usada de hasta ${targetUF.toFixed(0)} UF.`;
+      // 1B. FOGAES Nueva - Versión 2: Maximizado por Sueldo (Ahorro Mínimo Sugerido)
+      const maxLoanFogaesLimit = maxLoanUFDS15 > 0 ? maxLoanUFDS15 : maxLoanUFNormal;
+      const maxHouseFogaesMaximized = Math.min(4500, maxLoanFogaesLimit / 0.90);
+      const minSavingsFogaesNeeded = maxHouseFogaesMaximized * 0.10;
+      const loanFogaesMaximized = Math.max(0, maxHouseFogaesMaximized - minSavingsFogaesNeeded);
+      const aplicaLeyFogaesMax = maxHouseFogaesMaximized < 4000;
+      const rateFogaesMax = aplicaLeyFogaesMax ? monthlyRateDS15 : monthlyRateNormal;
+      const maxDividendFogaesMaximized = loanFogaesMaximized > 0 ? (loanFogaesMaximized * rateFogaesMax) / (1 - Math.pow(1 + rateFogaesMax, -totalPayments)) : 0;
+
+      let warningFogaesMax = "";
+      if (savings < minSavingsFogaesNeeded) {
+        warningFogaesMax = `💡 Ahorro Mínimo Sugerido: Con un pie del 10% (${minSavingsFogaesNeeded.toFixed(0)} UF, aprox. $${Math.round(minSavingsFogaesNeeded * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad nueva de hasta ${maxHouseFogaesMaximized.toFixed(0)} UF. Te faltan ${(minSavingsFogaesNeeded - savings).toFixed(0)} UF de ahorro.`;
+      } else {
+        warningFogaesMax = `✨ ¡Tu ahorro actual (${savings.toFixed(0)} UF) ya te permite alcanzar el máximo permitido por tu sueldo (${maxHouseFogaesMaximized.toFixed(0)} UF)!`;
       }
 
       options.push({
-        id: "tradicional-usada",
-        badge: "Vivienda Usada - Crédito Hipotecario",
-        title: "Vivienda Usada (Crédito Tradicional)",
-        description: "Financiamiento convencional hasta el 80%. Requiere pie del 20%.",
-        maxHouseUF: maxHouseUsada,
-        loanUF: loanUsada,
+        id: "fogaes-nueva-maximizado",
+        badge: "Vivienda Nueva - Ahorro Objetivo",
+        title: "Crédito Hipotecario sin Subsidio (Con FOGAES - Maximizado por Sueldo)",
+        description: "Financiamiento hasta 90% con aval FOGAES. Muestra la vivienda nueva máxima alcanzable según tu sueldo y el ahorro mínimo (10%) necesario.",
+        maxHouseUF: maxHouseFogaesMaximized,
+        loanUF: loanFogaesMaximized,
+        savingsUF: minSavingsFogaesNeeded,
+        subsidyUF: 0,
+        minAhorro: minSavingsFogaesNeeded,
+        savingsLabel: "Ahorro Mínimo Requerido",
+        maxDividendUF: maxDividendFogaesMaximized,
+        warning: warningFogaesMax,
+        linkParams: `maxPrice=${Math.round(maxHouseFogaesMaximized * ufValue)}&maxUF=${Math.round(maxHouseFogaesMaximized)}&credit=${Math.round(loanFogaesMaximized)}&origin=no-subsidy&region=${locationB}&applyFogaes=true&applyRateDiscount=${aplicaLeyFogaesMax ? "true" : "false"}&isNew=true`
+      });
+
+      // 2A. Tradicional Usada - Versión 1: Basada en el Ahorro Actual
+      const maxHouseUsadaActual = Math.min(savings / 0.20, maxLoanUFNormal + savings);
+      const loanUsadaActual = Math.max(0, maxHouseUsadaActual - savings);
+      const maxDividendUsadaActual = loanUsadaActual > 0 ? (loanUsadaActual * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+
+      options.push({
+        id: "tradicional-usada-ahorro",
+        badge: "Vivienda Usada - Ahorro Actual",
+        title: "Crédito Hipotecario sin Subsidio (Sin FOGAES - Según tu ahorro)",
+        description: `Financiamiento bancario convencional hasta el 80% (pie del 20%). Basado en tus ${savings.toFixed(0)} UF de ahorro actual.`,
+        maxHouseUF: maxHouseUsadaActual,
+        loanUF: loanUsadaActual,
         savingsUF: savings,
         subsidyUF: 0,
         minAhorro: 0,
-        maxDividendUF: maxDividendUsada,
-        warning: warningUsada,
-        linkParams: `maxPrice=${Math.round(maxHouseUsada * ufValue)}&maxUF=${Math.round(maxHouseUsada)}&credit=${Math.round(loanUsada)}&origin=no-subsidy&region=${locationB}&applyFogaes=false&applyRateDiscount=false&isNew=false`
+        savingsLabel: "Tu Ahorro Actual",
+        maxDividendUF: maxDividendUsadaActual,
+        linkParams: `maxPrice=${Math.round(maxHouseUsadaActual * ufValue)}&maxUF=${Math.round(maxHouseUsadaActual)}&credit=${Math.round(loanUsadaActual)}&origin=no-subsidy&region=${locationB}&applyFogaes=false&applyRateDiscount=false&isNew=false`
+      });
+
+      // 2B. Tradicional Usada - Versión 2: Maximizado por Sueldo (Ahorro Mínimo Sugerido)
+      const maxHouseUsadaMaximized = maxLoanUFNormal / 0.80;
+      const minSavingsUsadaNeeded = maxHouseUsadaMaximized * 0.20;
+      const loanUsadaMaximized = Math.max(0, maxHouseUsadaMaximized - minSavingsUsadaNeeded);
+      const maxDividendUsadaMaximized = loanUsadaMaximized > 0 ? (loanUsadaMaximized * monthlyRateNormal) / (1 - Math.pow(1 + monthlyRateNormal, -totalPayments)) : 0;
+
+      let warningUsadaMax = "";
+      if (savings < minSavingsUsadaNeeded) {
+        warningUsadaMax = `💡 Ahorro Mínimo Sugerido: Con un pie del 20% (${minSavingsUsadaNeeded.toFixed(0)} UF, aprox. $${Math.round(minSavingsUsadaNeeded * ufValue).toLocaleString("es-CL")} CLP), podrías aprovechar al máximo tu sueldo y comprar una propiedad usada de hasta ${maxHouseUsadaMaximized.toFixed(0)} UF. Te faltan ${(minSavingsUsadaNeeded - savings).toFixed(0)} UF de ahorro.`;
+      } else {
+        warningUsadaMax = `✨ ¡Tu ahorro actual (${savings.toFixed(0)} UF) ya te permite alcanzar el máximo permitido por tu sueldo (${maxHouseUsadaMaximized.toFixed(0)} UF)!`;
+      }
+
+      options.push({
+        id: "tradicional-usada-maximizado",
+        badge: "Vivienda Usada - Ahorro Objetivo",
+        title: "Crédito Hipotecario sin Subsidio (Sin FOGAES - Maximizado por Sueldo)",
+        description: "Financiamiento bancario convencional hasta el 80%. Muestra la vivienda usada máxima alcanzable según tu sueldo y el ahorro mínimo (20%) necesario.",
+        maxHouseUF: maxHouseUsadaMaximized,
+        loanUF: loanUsadaMaximized,
+        savingsUF: minSavingsUsadaNeeded,
+        subsidyUF: 0,
+        minAhorro: minSavingsUsadaNeeded,
+        savingsLabel: "Ahorro Mínimo Requerido",
+        maxDividendUF: maxDividendUsadaMaximized,
+        warning: warningUsadaMax,
+        linkParams: `maxPrice=${Math.round(maxHouseUsadaMaximized * ufValue)}&maxUF=${Math.round(maxHouseUsadaMaximized)}&credit=${Math.round(loanUsadaMaximized)}&origin=no-subsidy&region=${locationB}&applyFogaes=false&applyRateDiscount=false&isNew=false`
       });
     }
 
-    else if (selectedSubsidyB === "ds49") {
+    if (selectedSubsidyB === "ds49" || selectedSubsidyB === "all") {
       // Opción 1: Subsidio DS49
       let extraAhorro = savings - 10;
       let incentive = 0;
@@ -947,7 +1060,7 @@ export default function AsistenteSubsidiosPage() {
       });
     }
 
-    else if (selectedSubsidyB === "ds1t1") {
+    if (selectedSubsidyB === "ds1t1" || selectedSubsidyB === "all") {
       // Opción 1: DS1 Tramo 1 Normal
       const cap = ds1ZoneB === "north" ? 1200 : (ds1ZoneB === "south" ? 1250 : 1100);
       const sub = ds1ZoneB === "north" ? 700 : (ds1ZoneB === "south" ? 750 : 600);
@@ -1044,7 +1157,7 @@ export default function AsistenteSubsidiosPage() {
       });
     }
 
-    else if (selectedSubsidyB === "ds1t2") {
+    if (selectedSubsidyB === "ds1t2" || selectedSubsidyB === "all") {
       // Opción 1: DS1 Tramo 2 Usada (Sin DS15)
       const resNormal = calculateDS1T2Max(maxLoanUFNormal, savings, ds1ZoneB);
       const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
@@ -1169,7 +1282,7 @@ export default function AsistenteSubsidiosPage() {
       });
     }
 
-    else if (selectedSubsidyB === "ds1t3") {
+    if (selectedSubsidyB === "ds1t3" || selectedSubsidyB === "all") {
       // Opción 1: DS1 Tramo 3 Usada (Sin DS15)
       const resNormal = calculateDS1T3Max(maxLoanUFNormal, savings, ds1ZoneB);
       const loanNormal = Math.max(0, resNormal.maxHouseUF - savings - resNormal.subsidyUF);
@@ -1258,7 +1371,7 @@ export default function AsistenteSubsidiosPage() {
       });
     }
 
-    else if (selectedSubsidyB === "ds1t4") {
+    if (selectedSubsidyB === "ds1t4" || selectedSubsidyB === "all") {
       const subsidyUF = 400;
       const cap = 4000;
       const effectiveSavingsB = savings < 200 ? 200 : savings;
@@ -1285,7 +1398,7 @@ export default function AsistenteSubsidiosPage() {
       });
     }
 
-    else if (selectedSubsidyB === "ds19") {
+    if (selectedSubsidyB === "ds19" || selectedSubsidyB === "all") {
       // Opción 1: DS19 Cupo Urbano (Medios 2)
       const zoneUrban = getDS19LocationZoneB(locationB, true, isPeripheral);
       let subUrban = 0;
@@ -1359,6 +1472,7 @@ export default function AsistenteSubsidiosPage() {
       });
     }
 
+    options.sort((a: any, b: any) => b.maxHouseUF - a.maxHouseUF);
     setResultsB(options);
   };
 
@@ -1924,9 +2038,9 @@ export default function AsistenteSubsidiosPage() {
                               {/* Desglose de Financiamiento */}
                               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 space-y-2 text-xs">
                                 <div className="flex justify-between text-slate-600">
-                                  <span>Tu Ahorro:</span>
+                                  <span>{card.savingsLabel || "Tu Ahorro"}:</span>
                                   <span className="font-bold text-slate-800">
-                                    {Math.max(card.minAhorro || 0, parseFloat(savingsUF) || 0).toFixed(0)} UF
+                                    {(card.savingsUF !== undefined ? card.savingsUF : Math.max(card.minAhorro || 0, parseFloat(savingsUF) || 0)).toFixed(0)} UF
                                   </span>
                                 </div>
 
@@ -1958,6 +2072,12 @@ export default function AsistenteSubsidiosPage() {
                               {isSavingsShort && (
                                 <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
                                   <strong>⚠️ Ahorro Insuficiente:</strong> Exige mínimo <strong>{card.minAhorro} UF</strong>. Te faltan <strong>{missingUF.toFixed(0)} UF</strong> (aprox. <strong>${Math.round(missingCLP).toLocaleString("es-CL")} CLP</strong>).
+                                </div>
+                              )}
+
+                              {card.warning && !isSavingsShort && (
+                                <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs leading-relaxed">
+                                  {card.warning}
                                 </div>
                               )}
 
@@ -2365,9 +2485,9 @@ export default function AsistenteSubsidiosPage() {
                               {/* Desglose de Financiamiento */}
                               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 space-y-2 text-xs">
                                 <div className="flex justify-between text-slate-600">
-                                  <span>Tu Ahorro:</span>
+                                  <span>{card.savingsLabel || "Tu Ahorro"}:</span>
                                   <span className="font-bold text-slate-800">
-                                    {Math.max(card.minAhorro || 0, parseFloat(savingsUFB) || 0).toFixed(0)} UF
+                                    {(card.savingsUF !== undefined ? card.savingsUF : Math.max(card.minAhorro || 0, parseFloat(savingsUFB) || 0)).toFixed(0)} UF
                                   </span>
                                 </div>
 
